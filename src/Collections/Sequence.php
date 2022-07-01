@@ -150,18 +150,10 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Closure(TValue, TKey): bool|null $condition
      * @return int
      */
-    public function count(): int
-    {
-        return Arr::count($this->toArray());
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool $condition
-     * @return int
-     */
-    public function countBy(Closure $condition): int
+    public function count(?Closure $condition = null): int
     {
         return Arr::count($this, $condition);
     }
@@ -456,18 +448,10 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Closure(TValue, TKey): mixed|null $callback
      * @return TValue
      */
-    public function max(): mixed
-    {
-        return Arr::max($this);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): mixed $callback
-     * @return TValue
-     */
-    public function maxBy(Closure $callback): mixed
+    public function max(?Closure $callback = null): mixed
     {
         return Arr::max($this, $callback);
     }
@@ -494,30 +478,21 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     /**
      * Returns the minimum element in the sequence.
      *
+     * @param Closure(TValue, TKey): mixed|null $callback
      * @return TValue
      */
-    public function min(): mixed
-    {
-        return Arr::min($this);
-    }
-
-    /**
-     * Returns the minimum element in the sequence using the given predicate as the comparison between elements.
-     *
-     * @param Closure(TValue, TKey): mixed $callback
-     * @return TValue|null
-     */
-    public function minBy(Closure $callback): mixed
+    public function min(?Closure $callback = null): mixed
     {
         return Arr::min($this, $callback);
     }
 
     /**
+     * @param Closure(TValue, TKey): mixed|null $callback
      * @return array<TValue>
      */
-    public function minMax(): array
+    public function minMax(?Closure $callback = null): array
     {
-        return Arr::minMax($this);
+        return Arr::minMax($this, $callback);
     }
 
     /**
@@ -647,32 +622,13 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Closure(TValue, TKey): mixed|null $callback
      * @param int $flag
      * @return static
      */
-    public function sort(int $flag = SORT_REGULAR): static
-    {
-        return $this->newInstance(Arr::sort($this, null, $flag, $this->isList));
-    }
-
-    /**
-     * @param Closure(TValue, TKey): mixed $callback
-     * @param int $flag
-     * @return static
-     */
-    public function sortBy(Closure $callback, int $flag = SORT_REGULAR): static
+    public function sort(?Closure $callback = null, int $flag = SORT_REGULAR): static
     {
         return $this->newInstance(Arr::sort($this, $callback, $flag, $this->isList));
-    }
-
-    /**
-     * @param Closure(TValue, TKey): mixed $callback
-     * @param int $flag
-     * @return static
-     */
-    public function sortByDesc(Closure $callback, int $flag = SORT_REGULAR): static
-    {
-        return $this->newInstance(Arr::sortDesc($this, $callback, $flag, $this->isList));
     }
 
     /**
@@ -694,12 +650,13 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Closure(TValue, TKey): mixed|null $callback
      * @param int $flag
      * @return static
      */
-    public function sortDesc(int $flag = SORT_REGULAR): static
+    public function sortDesc(?Closure $callback = null, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortDesc($this, null, $flag, $this->isList));
+        return $this->newInstance(Arr::sortDesc($this, $callback, $flag, $this->isList));
     }
 
     /**
@@ -765,29 +722,21 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
-     * @param int $options
+     * @param bool $formatted
      * @return string
      */
-    public function toJson(int $options = 0): string
+    public function toJson(bool $formatted = false): string
     {
-        return Json::encode($this->jsonSerialize());
+        return Json::encode($this->jsonSerialize(), $formatted);
     }
 
     /**
+     * @param Closure(TValue, TKey): bool|null $callback
      * @return static
      */
-    public function unique(): static
+    public function unique(?Closure $callback = null): static
     {
-        return $this->newInstance(Arr::unique($this, $this->isList));
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool $callback
-     * @return static
-     */
-    public function uniqueBy(Closure $callback): static
-    {
-        return $this->newInstance(Arr::uniqueBy($this, $callback, $this->isList));
+        return $this->newInstance(Arr::unique($this, $callback, $this->isList));
     }
 
     /**
