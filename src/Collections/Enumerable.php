@@ -27,7 +27,8 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function __construct(iterable|null $items = null, bool $isList = false)
     {
-        parent::__construct($items ?? []);
+        $array = Arr::from($items ?? []);
+        parent::__construct($array ?? []);
         $this->isList = $isList;
     }
 

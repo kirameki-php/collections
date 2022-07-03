@@ -19,8 +19,7 @@ class Map extends Enumerable implements ArrayAccess
      */
     public function __construct(iterable|null $items = null)
     {
-        $array = Arr::from($items ?? []);
-        parent::__construct($array, false);
+        parent::__construct($items, false);
     }
 
     /**

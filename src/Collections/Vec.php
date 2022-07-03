@@ -17,8 +17,7 @@ class Vec extends Enumerable implements ArrayAccess
      */
     public function __construct(iterable|null $items = null)
     {
-        $array = Arr::from($items ?? []);
-        parent::__construct($array, true);
+        parent::__construct($items, true);
     }
 
     /**
