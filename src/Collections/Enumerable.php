@@ -16,6 +16,8 @@ use function is_iterable;
  * @template TKey of array-key|class-string
  * @template TValue
  * @extends Iterator<TKey, TValue>
+ *
+ * @property array<int, TValue> $items
  */
 abstract class Enumerable extends Iterator implements Countable, JsonSerializable
 {
@@ -23,13 +25,13 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param iterable<TKey, TValue>|null $items
-     * @param bool $isList
+     * @param bool|null $isList
      */
-    public function __construct(iterable|null $items = null, bool $isList = false)
+    public function __construct(iterable|null $items = null, ?bool $isList = null)
     {
         $array = Arr::from($items ?? []);
-        parent::__construct($array ?? []);
-        $this->isList = $isList;
+        parent::__construct($array);
+        $this->isList = $isList ?? array_is_list($array);
     }
 
     /**
@@ -828,6 +830,16 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     public function sum(): float|int
     {
         return Arr::sum($this);
+    }
+
+    /**
+     * @param iterable<TKey, TValue> $items
+     * @param Closure(TValue, TValue): int<-1, 1>|null $by
+     * @return static
+     */
+    public function symDiff(iterable $items, Closure $by = null): static
+    {
+        return Arr::symDiff($this, $items, $by, $this->isList);
     }
 
     /**
