@@ -17,7 +17,7 @@ use function is_iterable;
  * @template TValue
  * @extends Iterator<TKey, TValue>
  */
-class Sequence extends Iterator implements Countable, JsonSerializable
+abstract class Enumerable extends Iterator implements Countable, JsonSerializable
 {
     protected bool $isList;
 
@@ -52,6 +52,48 @@ class Sequence extends Iterator implements Countable, JsonSerializable
             $values[$key] = ($item instanceof JsonSerializable) ? $item->jsonSerialize() : $item;
         }
         return $values;
+    }
+
+    /**
+     * @param TKey $offset
+     * @return bool
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->items[$offset]);
+    }
+
+    /**
+     * @param TKey $offset
+     * @return TValue
+     */
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->items[$offset];
+    }
+
+    /**
+     * @param TKey $offset
+     * @param TValue $value
+     * @return void
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        if ($offset === null) {
+            $this->items[] = $value;
+        } else {
+            Assert::validArrayKey($offset);
+            $this->items[$offset] = $value;
+        }
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->items[$offset]);
     }
 
     /**
@@ -121,6 +163,15 @@ class Sequence extends Iterator implements Countable, JsonSerializable
             $chunks[] = $converted;
         }
         return new Vec($chunks);
+    }
+
+    /**
+     * @return $this
+     */
+    public function clear(): static
+    {
+        $this->items = [];
+        return $this;
     }
 
     /**
@@ -353,6 +404,17 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param int $at
+     * @param mixed $value
+     * @return $this
+     */
+    public function insert(int $at, mixed $value): static
+    {
+        Arr::insert($this->items, $at, $value, $this->isList);
+        return $this;
+    }
+
+    /**
      * @param iterable<TKey, TValue> $items
      * @return static
      */
@@ -462,7 +524,7 @@ class Sequence extends Iterator implements Countable, JsonSerializable
      */
     public function merge(iterable $iterable): static
     {
-        return $this->newInstance(Arr::merge($this, $iterable, $this->isList));
+        return $this->newInstance(Arr::merge($this, $iterable));
     }
 
     /**
@@ -472,7 +534,7 @@ class Sequence extends Iterator implements Countable, JsonSerializable
      */
     public function mergeRecursive(iterable $iterable, int $depth = PHP_INT_MAX): static
     {
-        return $this->newInstance(Arr::mergeRecursive($this, $iterable, $depth, $this->isList));
+        return $this->newInstance(Arr::mergeRecursive($this, $iterable, $depth));
     }
 
     /**
@@ -523,6 +585,23 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @return TValue|null
+     */
+    public function pop(): mixed
+    {
+        return Arr::pop($this->items);
+    }
+
+    /**
+     * @param int $amount
+     * @return static
+     */
+    public function popMany(int $amount): static
+    {
+        return $this->newInstance(Arr::popMany($this->items, $amount));
+    }
+
+    /**
      * Move items that match condition to the top of the array.
      *
      * @param Closure(TValue, TKey): bool $condition
@@ -534,12 +613,60 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param TKey $key
+     * @return TValue|null
+     */
+    public function pull(int|string $key): mixed
+    {
+        return Arr::pull($this->items, $key, $this->isList);
+    }
+
+    /**
+     * @template TDefault
+     * @param TKey $key
+     * @param TDefault $default
+     * @return TValue|TDefault
+     */
+    public function pullOr(int|string $key, mixed $default): mixed
+    {
+        return Arr::pullOr($this->items, $key, $default, $this->isList);
+    }
+
+    /**
+     * @param TKey $key
+     * @return TValue
+     */
+    public function pullOrFail(int|string $key): mixed
+    {
+        return Arr::pullOrFail($this->items, $key, $this->isList);
+    }
+
+    /**
+     * @param iterable<array-key> $keys
+     * @return static
+     */
+    public function pullMany(iterable $keys): static
+    {
+        return $this->newInstance(Arr::pullMany($this->items, $keys, $this->isList));
+    }
+
+    /**
      * @param Closure(TValue, TValue, TKey): TValue $callback
      * @return TValue
      */
     public function reduce(Closure $callback): mixed
     {
         return Arr::reduce($this, $callback);
+    }
+
+    /**
+     * @param TValue $value
+     * @param int|null $limit
+     * @return array<int, array-key>
+     */
+    public function remove(mixed $value, ?int $limit = null): array
+    {
+        return Arr::remove($this->items, $value, $limit, $this->isList);
     }
 
     /**
@@ -592,6 +719,23 @@ class Sequence extends Iterator implements Countable, JsonSerializable
     public function satisfyAny(Closure $condition): bool
     {
         return Arr::satisfyAny($this, $condition);
+    }
+
+    /**
+     * @return TValue|null
+     */
+    public function shift(): mixed
+    {
+        return Arr::shift($this->items);
+    }
+
+    /**
+     * @param int $amount
+     * @return static
+     */
+    public function shiftMany(int $amount): static
+    {
+        return $this->newInstance(Arr::shiftMany($this->items, $amount));
     }
 
     /**

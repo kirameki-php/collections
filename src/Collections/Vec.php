@@ -2,21 +2,23 @@
 
 namespace Kirameki\Collections;
 
+use ArrayAccess;
 use Kirameki\Utils\Arr;
-use Webmozart\Assert\Assert;
 
 /**
  * @template TValue
- * @extends MutableCollection<int, TValue>
+ * @extends Enumerable<int, TValue>
+ * @implements ArrayAccess<int, TValue>
  */
-class Vec extends MutableCollection
+class Vec extends Enumerable implements ArrayAccess
 {
     /**
      * @param iterable<int, TValue>|null $items
      */
     public function __construct(iterable|null $items = null)
     {
-        parent::__construct($items, true);
+        $array = Arr::from($items ?? []);
+        parent::__construct($array, true);
     }
 
     /**
@@ -39,6 +41,35 @@ class Vec extends MutableCollection
     }
 
     /**
+     * @param int $index
+     * @return TValue|null
+     */
+    public function get(int $index): mixed
+    {
+        return Arr::get($this, $index);
+    }
+
+    /**
+     * @template TDefault
+     * @param int $index
+     * @param TDefault $default
+     * @return TValue|TDefault
+     */
+    public function getOr(int $index, mixed $default): mixed
+    {
+        return Arr::getOr($this, $index, $default);
+    }
+
+    /**
+     * @param int $index
+     * @return TValue
+     */
+    public function getOrFail(int $index): mixed
+    {
+        return Arr::getOrFail($this, $index);
+    }
+
+    /**
      * @return static<int>
      */
     public function indices(): static
@@ -53,48 +84,6 @@ class Vec extends MutableCollection
     public function notContainsIndex(int $index): bool
     {
         return Arr::notContainsKey($this, $index);
-    }
-
-    /**
-     * @param int $offset
-     * @return bool
-     */
-    public function offsetExists(mixed $offset): bool
-    {
-        return isset($this->items[$offset]);
-    }
-
-    /**
-     * @param int $offset
-     * @return TValue
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        return $this->items[$offset];
-    }
-
-    /**
-     * @param int|null $offset
-     * @param TValue $value
-     * @return void
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        if ($offset === null) {
-            $this->items[] = $value;
-        } else {
-            Assert::integer($offset);
-            $this->items[$offset] = $value;
-        }
-    }
-
-    /**
-     * @param int $offset
-     * @return void
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        Arr::pull($this->items, $offset);
     }
 
     /**

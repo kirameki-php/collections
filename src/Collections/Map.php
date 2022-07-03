@@ -2,22 +2,25 @@
 
 namespace Kirameki\Collections;
 
+use ArrayAccess;
 use Closure;
 use Kirameki\Utils\Arr;
 
 /**
  * @template TKey of array-key|class-string
  * @template TValue
- * @extends MutableCollection<TKey, TValue>
+ * @extends Enumerable<TKey, TValue>
+ * @implements ArrayAccess<TKey, TValue>
  */
-class Map extends MutableCollection
+class Map extends Enumerable implements ArrayAccess
 {
     /**
      * @param iterable<TKey, TValue>|null $items
      */
     public function __construct(iterable|null $items = null)
     {
-        parent::__construct($items, false);
+        $array = Arr::from($items ?? []);
+        parent::__construct($array, false);
     }
 
     /**
@@ -45,6 +48,35 @@ class Map extends MutableCollection
     public function firstKey(?Closure $condition = null): int|string|null
     {
         return Arr::firstKey($this, $condition);
+    }
+
+    /**
+     * @param int|string $index
+     * @return TValue|null
+     */
+    public function get(int|string $index): mixed
+    {
+        return Arr::get($this, $index);
+    }
+
+    /**
+     * @template TDefault
+     * @param int|string $key
+     * @param TDefault $default
+     * @return TValue|TDefault
+     */
+    public function getOr(int|string $key, mixed $default): mixed
+    {
+        return Arr::getOr($this, $key, $default);
+    }
+
+    /**
+     * @param int|string $key
+     * @return TValue
+     */
+    public function getOrFail(int|string $key): mixed
+    {
+        return Arr::getOrFail($this, $key);
     }
 
     /**
