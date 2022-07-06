@@ -1,10 +1,6 @@
 parameters:
     level: 8
     paths:
-        - src/Support/
+        - src/
     excludePaths:
         - tests/*
-    ignoreErrors:
-        - '#Unsafe usage of new static\(\)\.#'
-        - '#PHPDoc tag @return with type .+ is not subtype of native type static.+#'
-        - '#PHPDoc tag @return with type .+ is incompatible with native type static.+#'
