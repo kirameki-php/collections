@@ -13,7 +13,7 @@ use Webmozart\Assert\Assert;
 use function is_iterable;
 
 /**
- * @template TKey of array-key|class-string
+ * @template TKey of array-key
  * @template TValue
  * @extends Iterator<TKey, TValue>
  *
@@ -63,7 +63,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->items[$offset]);
+        return isset(((array) $this->items)[$offset]);
     }
 
     /**
@@ -72,16 +72,18 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function offsetGet(mixed $offset): mixed
     {
-        return $this->items[$offset];
+        return ((array) $this->items)[$offset];
     }
 
     /**
-     * @param TKey $offset
+     * @param TKey|null $offset
      * @param TValue $value
      * @return void
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
+        assert(is_array($this->items));
+
         if ($offset === null) {
             $this->items[] = $value;
         } else {
@@ -96,6 +98,8 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function offsetUnset(mixed $offset): void
     {
+        assert(is_array($this->items));
+
         unset($this->items[$offset]);
     }
 
@@ -544,7 +548,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      * Returns the minimum element in the sequence.
      *
      * @param Closure(TValue, TKey): mixed|null $callback
-     * @return TValue
+     * @return TValue|null
      */
     public function min(?Closure $callback = null): mixed
     {
@@ -592,6 +596,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function pop(): mixed
     {
+        assert(is_array($this->items));
         return Arr::pop($this->items);
     }
 
@@ -601,6 +606,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function popMany(int $amount): static
     {
+        assert(is_array($this->items));
         return $this->newInstance(Arr::popMany($this->items, $amount));
     }
 
@@ -621,6 +627,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function pull(int|string $key): mixed
     {
+        assert(is_array($this->items));
         return Arr::pull($this->items, $key, $this->isList);
     }
 
@@ -632,6 +639,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function pullOr(int|string $key, mixed $default): mixed
     {
+        assert(is_array($this->items));
         return Arr::pullOr($this->items, $key, $default, $this->isList);
     }
 
@@ -641,15 +649,17 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function pullOrFail(int|string $key): mixed
     {
+        assert(is_array($this->items));
         return Arr::pullOrFail($this->items, $key, $this->isList);
     }
 
     /**
-     * @param iterable<array-key> $keys
+     * @param iterable<TKey> $keys
      * @return static
      */
     public function pullMany(iterable $keys): static
     {
+        assert(is_array($this->items));
         return $this->newInstance(Arr::pullMany($this->items, $keys, $this->isList));
     }
 
@@ -669,6 +679,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function remove(mixed $value, ?int $limit = null): array
     {
+        assert(is_array($this->items));
         return Arr::remove($this->items, $value, $limit, $this->isList);
     }
 
@@ -729,6 +740,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function shift(): mixed
     {
+        assert(is_array($this->items));
         return Arr::shift($this->items);
     }
 
@@ -738,6 +750,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function shiftMany(int $amount): static
     {
+        assert(is_array($this->items));
         return $this->newInstance(Arr::shiftMany($this->items, $amount));
     }
 
@@ -839,7 +852,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function symDiff(iterable $items, Closure $by = null): static
     {
-        return Arr::symDiff($this, $items, $by, $this->isList);
+        return $this->newInstance(Arr::symDiff($this, $items, $by, $this->isList));
     }
 
     /**
