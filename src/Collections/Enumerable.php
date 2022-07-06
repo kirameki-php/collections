@@ -883,6 +883,16 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
+     * @param Closure(static): mixed $callback
+     * @return $this
+     */
+    public function tap(Closure $callback): static
+    {
+        $callback($this);
+        return $this;
+    }
+
+    /**
      * @param int<1, max>|null $depth
      * @return array<TKey, TValue>
      */
