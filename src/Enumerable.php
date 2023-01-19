@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Kirameki\Collections;
+namespace SouthPointe\Collections;
 
 use Closure;
 use Countable;
 use JsonSerializable;
-use Kirameki\Utils\Arr;
-use Kirameki\Utils\Iter;
-use Kirameki\Utils\Json;
+use SouthPointe\Collections\Json;
 use Symfony\Component\VarDumper\VarDumper;
 use Webmozart\Assert\Assert;
 use function is_iterable;
@@ -104,32 +102,32 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param int $position
+     * @param int $index
      * @return TValue|null
      */
-    public function at(int $position)
+    public function at(int $index)
     {
-        return Arr::at($this, $position);
+        return Arr::at($this, $index);
     }
 
     /**
      * @template TDefault
-     * @param int $position
+     * @param int $index
      * @param TDefault $default
      * @return TValue|TDefault
      */
-    public function atOr(int $position, mixed $default)
+    public function atOr(int $index, mixed $default)
     {
-        return Arr::atOr($this, $position, $default);
+        return Arr::atOr($this, $index, $default);
     }
 
     /**
-     * @param int $position
+     * @param int $index
      * @return TValue
      */
-    public function atOrFail(int $position)
+    public function atOrFail(int $index)
     {
-        return Arr::atOrFail($this, $position);
+        return Arr::atOrFail($this, $index);
     }
 
     /**

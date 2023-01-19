@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Kirameki\Collections;
+namespace SouthPointe\Collections;
 
 use ArrayAccess;
-use Kirameki\Utils\Arr;
 
 /**
  * @template TValue

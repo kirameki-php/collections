@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Kirameki\Collections;
+namespace SouthPointe\Collections;
 
 use ArrayAccess;
 use Closure;
-use Kirameki\Utils\Arr;
 
 /**
  * @template TKey of array-key|class-string
