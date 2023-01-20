@@ -9,7 +9,7 @@ use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use RuntimeException;
 use SouthPointe\Collections\Arr;
-use SouthPointe\Collections\Exception\DuplicateKeyException;
+use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Collections\Iter;
 use stdClass;
 use TypeError;

@@ -5,3 +5,7 @@ parameters:
     excludePaths:
     - tests/*
     ignoreErrors:
+    -
+        message: '#^Method SouthPointe\\Collections\\Arr\:\:shuffle\(\) should return array\<TKey of \(int\|string\), TValue\> but returns array\<int\|string, TValue\>\.$#'
+        count: 1
+        path: src/Arr.php

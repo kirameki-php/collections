@@ -5,6 +5,7 @@
   "license": "MIT",
   "require": {
     "php": ">= 8.2",
+    "south-pointe/core": "dev-main",
     "south-pointe/dumper": "dev-main"
   },
   "require-dev": {

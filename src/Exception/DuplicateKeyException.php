@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections\Exception;
+namespace SouthPointe\Collections\Exceptions;
 
 use LogicException;
 

@@ -3,6 +3,7 @@
 namespace SouthPointe\Collections;
 
 use ArrayAccess;
+use Closure;
 
 /**
  * @template TValue
@@ -40,7 +41,16 @@ class Vec extends Enumerable implements ArrayAccess
 
     /**
      * @param int $index
-     * @return TValue|null
+     * @return bool
+     */
+    public function doesNotContainIndex(int $index): bool
+    {
+        return Arr::doesNotContainKey($this, $index);
+    }
+
+    /**
+     * @param int $index
+     * @return TValue
      */
     public function get(int $index): mixed
     {
@@ -60,28 +70,29 @@ class Vec extends Enumerable implements ArrayAccess
 
     /**
      * @param int $index
-     * @return TValue
+     * @return TValue|null
      */
-    public function getOrFail(int $index): mixed
+    public function getOrNull(int $index): mixed
     {
-        return Arr::getOrFail($this, $index);
+        return Arr::getOrNull($this, $index);
     }
 
     /**
-     * @return static<int>
+     * @return self<int>
      */
-    public function indices(): static
+    public function indices(): self
     {
-        return $this->newInstance(Arr::keys($this));
+        return $this->newVec(Arr::keys($this));
     }
 
     /**
-     * @param int $index
-     * @return bool
+     * @template TMapValue
+     * @param Closure(TValue, int): TMapValue $callback
+     * @return Vec<TMapValue>
      */
-    public function notContainsIndex(int $index): bool
+    public function map(Closure $callback): self
     {
-        return Arr::notContainsKey($this, $index);
+        return $this->newVec(Arr::map($this, $callback));
     }
 
     /**

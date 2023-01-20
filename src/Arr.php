@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use LogicException;
 use Random\Randomizer;
 use RuntimeException;
-use SouthPointe\Collections\Exception\DuplicateKeyException;
+use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use Traversable;
 use Webmozart\Assert\Assert;
 use function abs;
@@ -259,7 +259,7 @@ final class Arr
      * @template TValue of float|int
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @return float|int|null
+     * @return TValue|null
      */
     public static function averageOrNull(
         iterable $iterable,
@@ -3787,7 +3787,7 @@ final class Arr
      * [Optional] Randomizer to be used.
      * Default randomizer (Secure) will be used if **null**.
      * Defaults to **null**.
-     * @return array<array-key, TValue>
+     * @return array<TKey, TValue>
      */
     public static function shuffle(
         iterable $iterable,

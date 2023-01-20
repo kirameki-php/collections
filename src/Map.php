@@ -40,6 +40,15 @@ class Map extends Enumerable implements ArrayAccess
     }
 
     /**
+     * @param int|string $key
+     * @return bool
+     */
+    public function doesNotContainKey(int|string $key): bool
+    {
+        return Arr::doesNotContainKey($this, $key);
+    }
+
+    /**
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TKey|null
      */
@@ -49,12 +58,12 @@ class Map extends Enumerable implements ArrayAccess
     }
 
     /**
-     * @param int|string $index
-     * @return TValue|null
+     * @param int|string $key
+     * @return TValue
      */
-    public function get(int|string $index): mixed
+    public function get(int|string $key): mixed
     {
-        return Arr::get($this, $index);
+        return Arr::get($this, $key);
     }
 
     /**
@@ -69,12 +78,12 @@ class Map extends Enumerable implements ArrayAccess
     }
 
     /**
-     * @param int|string $key
-     * @return TValue
+     * @param int|string $index
+     * @return TValue|null
      */
-    public function getOrFail(int|string $key): mixed
+    public function getOrNull(int|string $index): mixed
     {
-        return Arr::getOrFail($this, $key);
+        return Arr::getOrNull($this, $index);
     }
 
     /**
@@ -87,11 +96,11 @@ class Map extends Enumerable implements ArrayAccess
     }
 
     /**
-     * @return static<TKey>
+     * @return Vec<TKey>
      */
-    public function keys(): static
+    public function keys(): Vec
     {
-        return $this->newInstance(Arr::keys($this));
+        return $this->newVec(Arr::keys($this));
     }
 
     /**
@@ -104,12 +113,13 @@ class Map extends Enumerable implements ArrayAccess
     }
 
     /**
-     * @param int|string $key
-     * @return bool
+     * @template TMapValue
+     * @param Closure(TValue, TKey): TMapValue $callback
+     * @return Map<TKey, TMapValue>
      */
-    public function notContainsKey(int|string $key): bool
+    public function map(Closure $callback): self
     {
-        return Arr::notContainsKey($this, $key);
+        return $this->newMap(Arr::map($this, $callback));
     }
 
     /**
@@ -135,28 +145,22 @@ class Map extends Enumerable implements ArrayAccess
     /**
      * @param TKey $key
      * @param TValue $value
-     * @param bool|null $result
      * @return $this
      */
-    public function setIfExists(int|string $key, mixed $value, ?bool &$result = null): static
+    public function setIfExists(int|string $key, mixed $value): static
     {
-        $result !== null
-            ? Arr::setIfExists($this->items, $key, $value, $result)
-            : Arr::setIfExists($this->items, $key, $value);
+        Arr::setIfExists($this->items, $key, $value);
         return $this;
     }
 
     /**
      * @param TKey $key
      * @param TValue $value
-     * @param bool|null $result
      * @return $this
      */
-    public function setIfNotExists(int|string $key, mixed $value, ?bool &$result = null): static
+    public function setIfNotExists(int|string $key, mixed $value): static
     {
-        $result !== null
-            ? Arr::setIfNotExists($this->items, $key, $value, $result)
-            : Arr::setIfNotExists($this->items, $key, $value);
+        Arr::setIfNotExists($this->items, $key, $value);
         return $this;
     }
 
@@ -174,6 +178,6 @@ class Map extends Enumerable implements ArrayAccess
      */
     public function values(): Vec
     {
-        return new Vec(Arr::values($this));
+        return $this->newVec(Arr::values($this));
     }
 }

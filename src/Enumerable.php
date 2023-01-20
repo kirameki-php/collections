@@ -5,17 +5,15 @@ namespace SouthPointe\Collections;
 use Closure;
 use Countable;
 use JsonSerializable;
-use SouthPointe\Collections\Json;
-use Symfony\Component\VarDumper\VarDumper;
+use SouthPointe\Core\Json;
 use Webmozart\Assert\Assert;
 use function is_iterable;
 
 /**
+ * @phpstan-consistent-constructor
  * @template TKey of array-key
  * @template TValue
  * @extends Iterator<TKey, TValue>
- *
- * @property array<int, TValue> $items
  */
 abstract class Enumerable extends Iterator implements Countable, JsonSerializable
 {
@@ -33,10 +31,8 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @template TNewKey of array-key
-     * @template TNewValue
-     * @param iterable<TNewKey, TNewValue> $items
-     * @return static<TNewKey, TNewValue>
+     * @param iterable<TKey, TValue> $items
+     * @return static
      */
     public function newInstance(mixed $items): static
     {
@@ -44,13 +40,15 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @return array<mixed>
+     * @return array<TKey, mixed>
      */
     public function jsonSerialize(): array
     {
         $values = [];
         foreach ($this as $key => $item) {
-            $values[$key] = ($item instanceof JsonSerializable) ? $item->jsonSerialize() : $item;
+            $values[$key] = ($item instanceof JsonSerializable)
+                ? $item->jsonSerialize()
+                : $item;
         }
         return $values;
     }
@@ -103,7 +101,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param int $index
-     * @return TValue|null
+     * @return TValue
      */
     public function at(int $index)
     {
@@ -123,24 +121,15 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param int $index
-     * @return TValue
-     */
-    public function atOrFail(int $index)
-    {
-        return Arr::atOrFail($this, $index);
-    }
-
-    /**
-     * @param bool $allowEmpty
-     * @return float|int
-     */
-    public function average(bool $allowEmpty = true): float|int
-    {
-        return Arr::average($this, $allowEmpty);
-    }
-
-    /**
      * @return TValue|null
+     */
+    public function atOrNull(int $index)
+    {
+        return Arr::atOrNull($this, $index);
+    }
+
+    /**
+     * @return TValue
      */
     public function coalesce(): mixed
     {
@@ -148,11 +137,11 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @return TValue
+     * @return TValue|null
      */
-    public function coalesceOrFail(): mixed
+    public function coalesceOrNull(): mixed
     {
-        return Arr::coalesceOrFail($this);
+        return Arr::coalesceOrNull($this);
     }
 
     /**
@@ -163,11 +152,10 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     {
         $chunks = [];
         foreach (Iter::chunk($this, $size, $this->isList) as $chunk) {
-            /** @var static $converted */
             $converted = $this->newInstance($chunk);
             $chunks[] = $converted;
         }
-        return new Vec($chunks);
+        return $this->newVec($chunks);
     }
 
     /**
@@ -215,16 +203,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param bool $asArray
-     * @return $this
-     */
-    public function dd(bool $asArray = false): static
-    {
-        $this->dump($asArray);
-        exit(1);
-    }
-
-    /**
      * @param iterable<TKey, TValue> $items
      * @return static
      */
@@ -234,12 +212,21 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
+     * @param mixed $value
+     * @return bool
+     */
+    public function doesNotContain(mixed $value): bool
+    {
+        return Arr::doesNotContain($this, $value);
+    }
+
+    /**
      * @param int $amount
      * @return static
      */
-    public function drop(int $amount): static
+    public function dropFirst(int $amount): static
     {
-        return $this->newInstance(Iter::drop($this, $amount, $this->isList));
+        return $this->newInstance(Iter::dropFirst($this, $amount, $this->isList));
     }
 
     /**
@@ -258,16 +245,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     public function dropWhile(Closure $condition): static
     {
         return $this->newInstance(Iter::dropWhile($this, $condition, $this->isList));
-    }
-
-    /**
-     * @param bool $asArray
-     * @return $this
-     */
-    public function dump(bool $asArray = false): static
-    {
-        VarDumper::dump($asArray ? $this->toArray() : $this);
-        return $this;
     }
 
     /**
@@ -321,7 +298,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param Closure(TValue, TKey): bool|null $condition
-     * @return TValue|null
+     * @return TValue
      */
     public function first(?Closure $condition = null): mixed
     {
@@ -350,38 +327,11 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param Closure(TValue, TKey): bool|null $condition
-     * @return TValue
+     * @return TValue|null
      */
-    public function firstOrFail(?Closure $condition = null): mixed
+    public function firstOrNull(?Closure $condition = null): mixed
     {
-        return Arr::firstOrFail($this, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): mixed $callback
-     * @return Vec<mixed>
-     */
-    public function flatMap(Closure $callback): Vec
-    {
-        return new Vec(Arr::flatMap($this, $callback));
-    }
-
-    /**
-     * @param int<1, max> $depth
-     * @return Vec<mixed>
-     */
-    public function flatten(int $depth = 1): Vec
-    {
-        return new Vec(Arr::flatten($this, $depth));
-    }
-
-    /**
-     * @param bool $overwrite
-     * @return static
-     */
-    public function flip(bool $overwrite = false): static
-    {
-        return $this->newInstance(Arr::flip($this, $overwrite));
+        return Arr::firstOrNull($this, $condition);
     }
 
     /**
@@ -397,15 +347,13 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @template TGroupKey of array-key
-     * @param Closure(TValue, TKey): TGroupKey|TGroupKey $key
+     * @param Closure(TValue, TKey): TGroupKey $callback
      * @return Map<TGroupKey, static>
      */
-    public function groupBy(int|string|Closure $key): Map
+    public function groupBy(Closure $callback): Map
     {
-        $grouped = Arr::groupBy($this, $key, $this->isList);
-        return (new Map($grouped))->map(function(array $group): static {
-            return $this->newInstance($group);
-        });
+        $grouped = Arr::groupBy($this, $callback, $this->isList);
+        return $this->newMap($grouped)->map(fn($group) => $this->newInstance($group));
     }
 
     /**
@@ -456,19 +404,19 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @template TKeyBy of array-key
-     * @param string|Closure(TValue, TKey): TKeyBy $key
+     * @template TNewKey of string
+     * @param Closure(TValue, TKey): TNewKey $key
      * @param bool $overwrite
-     * @return Map<TKeyBy, TValue>
+     * @return Map<TNewKey, TValue>
      */
-    public function keyBy(string|Closure $key, bool $overwrite = false): Map
+    public function keyBy(Closure $key, bool $overwrite = false): Map
     {
-        return new Map(Arr::keyBy($this, $key, $overwrite));
+        return $this->newMap(Arr::keyBy($this, $key, $overwrite));
     }
 
     /**
      * @param Closure(TValue, TKey): bool|null $condition
-     * @return TValue|null
+     * @return TValue
      */
     public function last(?Closure $condition = null): mixed
     {
@@ -497,21 +445,11 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param Closure(TValue, TKey): bool|null $condition
-     * @return TValue
+     * @return TValue|null
      */
-    public function lastOrFail(?Closure $condition = null): mixed
+    public function lastOrNull(?Closure $condition = null): mixed
     {
-        return Arr::lastOrFail($this, $condition);
-    }
-
-    /**
-     * @template TMapValue
-     * @param Closure(TValue, TKey): TMapValue $callback
-     * @return static<TKey, TMapValue>
-     */
-    public function map(Closure $callback): static
-    {
-        return $this->newInstance(Arr::map($this, $callback));
+        return Arr::lastOrNull($this, $condition);
     }
 
     /**
@@ -563,15 +501,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param mixed $value
-     * @return bool
-     */
-    public function notContains(mixed $value): bool
-    {
-        return Arr::notContains($this, $value);
-    }
-
-    /**
      * @param mixed $items
      * @return bool
      */
@@ -587,6 +516,18 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     public function only(iterable $keys): static
     {
         return $this->newInstance(Arr::only($this, $keys, $this->isList));
+    }
+
+    /**
+     * Passes $this to the given callback and returns the result.
+     *
+     * @template TPipe
+     * @param  Closure($this): TPipe  $callback
+     * @return TPipe
+     */
+    public function pipe(Closure $callback)
+    {
+        return $callback($this);
     }
 
     /**
@@ -621,7 +562,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param TKey $key
-     * @return TValue|null
+     * @return TValue
      */
     public function pull(int|string $key): mixed
     {
@@ -643,12 +584,12 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param TKey $key
-     * @return TValue
+     * @return TValue|null
      */
-    public function pullOrFail(int|string $key): mixed
+    public function pullOrNull(int|string $key): mixed
     {
         assert(is_array($this->items));
-        return Arr::pullOrFail($this->items, $key, $this->isList);
+        return Arr::pullOrNull($this->items, $key, $this->isList);
     }
 
     /**
@@ -784,9 +725,9 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      * @param int $flag
      * @return static
      */
-    public function sort(?Closure $callback = null, int $flag = SORT_REGULAR): static
+    public function sortAsc(?Closure $callback = null, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sort($this, $callback, $flag, $this->isList));
+        return $this->newInstance(Arr::sortAsc($this, $callback, $flag, $this->isList));
     }
 
     /**
@@ -795,7 +736,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      */
     public function sortByKey(int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortByKey($this, $flag));
+        return $this->newInstance(Arr::sortByKeyAsc($this, $flag));
     }
 
     /**
@@ -836,14 +777,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @return float|int
-     */
-    public function sum(): float|int
-    {
-        return Arr::sum($this);
-    }
-
-    /**
      * @param iterable<TKey, TValue> $items
      * @param Closure(TValue, TValue): int<-1, 1>|null $by
      * @return static
@@ -857,9 +790,9 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      * @param int $amount
      * @return static
      */
-    public function take(int $amount): static
+    public function takeFirst(int $amount): static
     {
-        return $this->newInstance(Iter::take($this, $amount));
+        return $this->newInstance(Iter::takeFirst($this, $amount));
     }
 
     /**
@@ -935,5 +868,26 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
             }
             return $item;
         });
+    }
+
+    /**
+     * @template TNewKey of array-key
+     * @template TNewValue
+     * @param iterable<TNewKey, TNewValue> $iterable
+     * @return Map<TNewKey, TNewValue>
+     */
+    protected function newMap(iterable $iterable): Map
+    {
+        return new Map($iterable);
+    }
+
+    /**
+     * @template TNewValue
+     * @param iterable<int, TNewValue> $iterable
+     * @return Vec<TNewValue>
+     */
+    protected function newVec(iterable $iterable): Vec
+    {
+        return new Vec($iterable);
     }
 }
