@@ -984,7 +984,7 @@ final class Arr
         $array = [];
         $refs = [];
         foreach ($iterable as $key => $val) {
-            $ref = self::valueToKey($val);
+            $ref = self::valueToKeyString($val);
             $refs[$ref][] = $key;
             $array[$key] = $val;
         }
@@ -2785,7 +2785,7 @@ final class Arr
      * @template TValue
      * @param array<TKey, TValue> &$array
      * [Reference] Array to be popped.
-     * @return TValue|null
+     * @return TValue
      */
     public static function pop(
         array &$array,
@@ -3888,6 +3888,56 @@ final class Arr
     }
 
     /**
+     * Sort the given iterable by value in the given order.
+     *
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param bool $ascending
+     * Sort by ascending order if **true**, descending order if **false**.
+     * @param Closure(TValue, TKey): mixed|null $by
+     * @param int $flag
+     * Sort flag to change the behavior of the sort.
+     * @param bool|null $reindex
+     * Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return array<TKey, TValue>
+     *@see self::sortDesc()
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @see self::sortAsc()
+     */
+    public static function sort(
+        iterable $iterable,
+        bool $ascending,
+        ?Closure $by = null,
+        int $flag = SORT_REGULAR,
+        ?bool $reindex = null,
+    ): array
+    {
+        $copy = self::from($iterable);
+        $reindex ??= array_is_list($copy);
+
+        if ($by !== null) {
+            $refs = self::map($copy, $by);
+            $ascending
+                ? asort($refs, $flag)
+                : arsort($refs, $flag);
+            $sorted = self::map($refs, fn($val, $key) => $copy[$key]);
+        } else {
+            $sorted = $copy;
+            $ascending
+                ? asort($sorted, $flag)
+                : arsort($sorted, $flag);
+        }
+
+        return $reindex
+            ? array_values($sorted)
+            : $sorted;
+    }
+
+    /**
      * Sort the given iterable by value in ascending order.
      *
      * Example:
@@ -3918,9 +3968,7 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return $by !== null
-            ? self::sortByInternal($iterable, $by, $flag, true, $reindex)
-            : self::sortInternal($iterable, true, $flag, $reindex);
+        return self::sort($iterable, true, $by, $flag, $reindex);
     }
 
     /**
@@ -4005,9 +4053,7 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return $by !== null
-            ? self::sortByInternal($iterable, $by, $flag, false, $reindex)
-            : self::sortInternal($iterable, false, $flag, $reindex);
+        return self::sort($iterable, false, $by, $flag, $reindex);
     }
 
     /**
@@ -4334,7 +4380,7 @@ final class Arr
         $preserved = [];
 
         foreach ($array as $key => $val) {
-            $ref = self::valueToKey($by($val, $key));
+            $ref = self::valueToKeyString($by($val, $key));
             if (!array_key_exists($ref, $refs)) {
                 $refs[$ref] = null;
                 $reindex
@@ -4387,91 +4433,6 @@ final class Arr
     }
 
     /**
-     * Internal implementation that covers both `sort` and `SortDesc`
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable Iterable to be traversed.
-     * @param Closure(TValue, TKey): mixed $callback
-     * @param int $flag
-     * Sort flag to change the behavior of the sort.
-     * @param bool $ascending
-     * Sort by ascending order if **true**, descending order if **false**.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * @return array<TKey, TValue>
-     */
-    private static function sortByInternal(
-        iterable $iterable,
-        Closure $callback,
-        int $flag,
-        bool $ascending,
-        ?bool $reindex,
-    ): array
-    {
-        $copy = self::from($iterable);
-        $reindex ??= array_is_list($copy);
-
-        $refs = [];
-        foreach ($copy as $key => $item) {
-            $refs[$key] = $callback($item, $key);
-        }
-
-        $ascending
-            ? asort($refs, $flag)
-            : arsort($refs, $flag);
-
-        $sorted = [];
-        foreach ($refs as $key => $_) {
-            $sorted[$key] = $copy[$key];
-        }
-
-        return $reindex
-            ? array_values($sorted)
-            : $sorted;
-    }
-
-    /**
-     * Internal sorting implementation that covers `sort` and `sortDesc`
-     *
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param bool $ascending
-     * Sort by ascending order if **true**, descending order if **false**.
-     * @param int $flag
-     * Sort flag to change the behavior of the sort.
-     * @param bool|null $reindex
-     * Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
-     * @return array<TKey, TValue>
-     *@see self::sortDesc()
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @see self::sortAsc()
-     */
-    private static function sortInternal(
-        iterable $iterable,
-        bool $ascending,
-        int $flag,
-        ?bool $reindex,
-    ): array
-    {
-        $copy = self::from($iterable);
-        $reindex ??= array_is_list($copy);
-
-        $ascending
-            ? asort($copy, $flag)
-            : arsort($copy, $flag);
-
-        return $reindex
-            ? array_values($copy)
-            : $copy;
-    }
-
-    /**
      * Converts value into an identifiable string.
      * Used for checking for duplicates.
      *
@@ -4481,7 +4442,7 @@ final class Arr
      * @param mixed $val
      * @return string
      */
-    private static function valueToKey(
+    private static function valueToKeyString(
         mixed $val,
     ): string
     {
@@ -4491,7 +4452,7 @@ final class Arr
             is_float($val) => "f:$val",
             is_bool($val) => "b:$val",
             is_string($val) => "s:$val",
-            is_array($val) => 'a:' . json_encode(array_map(self::valueToKey(...), $val), JSON_THROW_ON_ERROR),
+            is_array($val) => 'a:' . json_encode(array_map(self::valueToKeyString(...), $val), JSON_THROW_ON_ERROR),
             is_object($val) => 'o:' . spl_object_id($val),
             is_resource($val) => 'r:' . get_resource_id($val),
             default => throw new LogicException('Invalid Type: ' . gettype($val)),

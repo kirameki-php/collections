@@ -50,11 +50,20 @@ class Map extends Enumerable implements ArrayAccess
 
     /**
      * @param Closure(TValue, TKey): bool|null $condition
-     * @return TKey|null
+     * @return TKey
      */
     public function firstKey(?Closure $condition = null): int|string|null
     {
         return Arr::firstKey($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): bool|null $condition
+     * @return TKey|null
+     */
+    public function firstKeyOrNull(?Closure $condition = null): int|string|null
+    {
+        return Arr::firstKeyOrNull($this, $condition);
     }
 
     /**
@@ -176,7 +185,7 @@ class Map extends Enumerable implements ArrayAccess
     /**
      * @return Vec<TValue>
      */
-    public function values(): Vec
+    public function toVec(): Vec
     {
         return $this->newVec(Arr::values($this));
     }

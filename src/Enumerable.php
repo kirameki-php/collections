@@ -7,10 +7,13 @@ use Countable;
 use JsonSerializable;
 use SouthPointe\Core\Json;
 use Webmozart\Assert\Assert;
+use function assert;
+use function is_array;
 use function is_iterable;
 
 /**
  * @phpstan-consistent-constructor
+ *
  * @template TKey of array-key
  * @template TValue
  * @extends Iterator<TKey, TValue>
@@ -186,6 +189,39 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
+     * @param iterable<array-key, TValue> $values
+     * @return bool
+     */
+    public function containsAll(
+        iterable $values,
+    ): bool
+    {
+        return Arr::containsAll($this, $values);
+    }
+
+    /**
+     * @param iterable<array-key, TValue> $values
+     * @return bool
+     */
+    public function containsAny(
+        iterable $values,
+    ): bool
+    {
+        return Arr::containsAny($this, $values);
+    }
+
+    /**
+     * @param iterable<array-key, TValue> $values
+     * @return bool
+     */
+    public function containsNone(
+        iterable $values,
+    ): bool
+    {
+        return Arr::containsNone($this, $values);
+    }
+
+    /**
      * @return static
      */
     public function copy(): static
@@ -221,12 +257,30 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
+     * @param mixed $items
+     * @return bool
+     */
+    public function doesNotEquals(mixed $items): bool
+    {
+        return !$this->equals($items);
+    }
+
+    /**
      * @param int $amount
      * @return static
      */
     public function dropFirst(int $amount): static
     {
         return $this->newInstance(Iter::dropFirst($this, $amount, $this->isList));
+    }
+
+    /**
+     * @param int $amount
+     * @return static
+     */
+    public function dropLast(int $amount): static
+    {
+        return $this->newInstance(Arr::dropLast($this, $amount, $this->isList));
     }
 
     /**
@@ -307,11 +361,20 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
 
     /**
      * @param Closure(TValue, TKey):bool $condition
-     * @return int|null
+     * @return int
      */
     public function firstIndex(Closure $condition): ?int
     {
         return Arr::firstIndex($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey):bool $condition
+     * @return int|null
+     */
+    public function firstIndexOrNull(Closure $condition): ?int
+    {
+        return Arr::firstIndexOrNull($this, $condition);
     }
 
     /**
@@ -462,6 +525,15 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
+     * @param Closure(TValue, TKey): mixed|null $callback
+     * @return TValue|null
+     */
+    public function maxOrNull(?Closure $callback = null): mixed
+    {
+        return Arr::maxOrNull($this, $callback);
+    }
+
+    /**
      * @param iterable<TKey, TValue> $iterable
      * @return static
      */
@@ -481,14 +553,21 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * Returns the minimum element in the sequence.
-     *
      * @param Closure(TValue, TKey): mixed|null $callback
-     * @return TValue|null
+     * @return TValue
      */
     public function min(?Closure $callback = null): mixed
     {
         return Arr::min($this, $callback);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): mixed|null $callback
+     * @return TValue|null
+     */
+    public function minOrNull(?Closure $callback = null): mixed
+    {
+        return Arr::minOrNull($this, $callback);
     }
 
     /**
@@ -498,15 +577,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     public function minMax(?Closure $callback = null): array
     {
         return Arr::minMax($this, $callback);
-    }
-
-    /**
-     * @param mixed $items
-     * @return bool
-     */
-    public function notEquals(mixed $items): bool
-    {
-        return !$this->equals($items);
     }
 
     /**
@@ -531,12 +601,21 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @return TValue|null
+     * @return TValue
      */
     public function pop(): mixed
     {
         assert(is_array($this->items));
         return Arr::pop($this->items);
+    }
+
+    /**
+     * @return TValue|null
+     */
+    public function popOrNull(): mixed
+    {
+        assert(is_array($this->items));
+        return Arr::popOrNull($this->items);
     }
 
     /**
@@ -623,6 +702,25 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
+     * @param TValue $search
+     * The value to replace.
+     * @param TValue $replacement
+     * Replacement for the searched value.
+     * @param int &$count
+     * [Optional][Reference] Sets the number of times replacements occurred.
+     * Any value previously set will be reset.
+     * @return array<TKey, TValue>
+     */
+    public function replace(
+        mixed $search,
+        mixed $replacement,
+        int &$count = 0,
+    ): array
+    {
+        return Arr::replace($this, $search, $replacement, $count);
+    }
+
+    /**
      * @return static
      */
     public function reverse(): static
@@ -675,12 +773,21 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @return TValue|null
+     * @return TValue
      */
     public function shift(): mixed
     {
         assert(is_array($this->items));
         return Arr::shift($this->items);
+    }
+
+    /**
+     * @return TValue|null
+     */
+    public function shiftOrNull(): mixed
+    {
+        assert(is_array($this->items));
+        return Arr::shiftOrNull($this->items);
     }
 
     /**
@@ -734,7 +841,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      * @param int $flag
      * @return static
      */
-    public function sortByKey(int $flag = SORT_REGULAR): static
+    public function sortByKeyAsc(int $flag = SORT_REGULAR): static
     {
         return $this->newInstance(Arr::sortByKeyAsc($this, $flag));
     }
@@ -793,6 +900,15 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     public function takeFirst(int $amount): static
     {
         return $this->newInstance(Iter::takeFirst($this, $amount));
+    }
+
+    /**
+     * @param int $amount
+     * @return static
+     */
+    public function takeLast(int $amount): static
+    {
+        return $this->newInstance(Arr::takeLast($this, $amount));
     }
 
     /**
