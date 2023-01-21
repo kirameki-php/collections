@@ -7,9 +7,12 @@ use Countable;
 use JsonSerializable;
 use SouthPointe\Core\Json;
 use Webmozart\Assert\Assert;
+use function array_is_list;
 use function assert;
 use function is_array;
 use function is_iterable;
+use const PHP_INT_MAX;
+use const SORT_REGULAR;
 
 /**
  * @phpstan-consistent-constructor
@@ -192,9 +195,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      * @param iterable<array-key, TValue> $values
      * @return bool
      */
-    public function containsAll(
-        iterable $values,
-    ): bool
+    public function containsAll(iterable $values): bool
     {
         return Arr::containsAll($this, $values);
     }
@@ -203,9 +204,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      * @param iterable<array-key, TValue> $values
      * @return bool
      */
-    public function containsAny(
-        iterable $values,
-    ): bool
+    public function containsAny(iterable $values): bool
     {
         return Arr::containsAny($this, $values);
     }
@@ -214,9 +213,7 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
      * @param iterable<array-key, TValue> $values
      * @return bool
      */
-    public function containsNone(
-        iterable $values,
-    ): bool
+    public function containsNone(iterable $values): bool
     {
         return Arr::containsNone($this, $values);
     }
@@ -230,12 +227,12 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param Closure(TValue, TKey): bool|null $condition
+     * @param Closure(TValue, TKey): bool|null $by
      * @return int
      */
-    public function count(?Closure $condition = null): int
+    public function count(?Closure $by = null): int
     {
-        return Arr::count($this, $condition);
+        return Arr::count($this, $by);
     }
 
     /**
@@ -828,13 +825,34 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param Closure(TValue, TKey): mixed|null $callback
+     * @param Closure(TValue, TKey): mixed|null $by
+     * @param bool $ascending
      * @param int $flag
      * @return static
      */
-    public function sortAsc(?Closure $callback = null, int $flag = SORT_REGULAR): static
+    public function sort(bool $ascending, ?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortAsc($this, $callback, $flag, $this->isList));
+        return $this->newInstance(Arr::sort($this, $ascending, $by, $flag, $this->isList));
+    }
+
+    /**
+     * @param Closure(TValue, TKey): mixed|null $by
+     * @param int $flag
+     * @return static
+     */
+    public function sortAsc(?Closure $by = null, int $flag = SORT_REGULAR): static
+    {
+        return $this->newInstance(Arr::sortAsc($this, $by, $flag, $this->isList));
+    }
+
+    /**
+     * @param bool $ascending
+     * @param int $flag
+     * @return static
+     */
+    public function sortByKey(bool $ascending, int $flag = SORT_REGULAR): static
+    {
+        return $this->newInstance(Arr::sortByKey($this, $ascending, $flag));
     }
 
     /**
@@ -856,13 +874,13 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param Closure(TValue, TKey): mixed|null $callback
+     * @param Closure(TValue, TKey): mixed|null $by
      * @param int $flag
      * @return static
      */
-    public function sortDesc(?Closure $callback = null, int $flag = SORT_REGULAR): static
+    public function sortDesc(?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortDesc($this, $callback, $flag, $this->isList));
+        return $this->newInstance(Arr::sortDesc($this, $by, $flag, $this->isList));
     }
 
     /**
@@ -958,12 +976,12 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param Closure(TValue, TKey): bool|null $callback
+     * @param Closure(TValue, TKey): bool|null $by
      * @return static
      */
-    public function unique(?Closure $callback = null): static
+    public function unique(?Closure $by = null): static
     {
-        return $this->newInstance(Arr::unique($this, $callback, $this->isList));
+        return $this->newInstance(Arr::unique($this, $by, $this->isList));
     }
 
     /**
