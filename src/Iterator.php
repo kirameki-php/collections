@@ -3,6 +3,7 @@
 namespace SouthPointe\Collections;
 
 use IteratorAggregate;
+use SouthPointe\Collections\Utils\Arr;
 use Traversable;
 
 /**

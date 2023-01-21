@@ -4,6 +4,7 @@ namespace SouthPointe\Collections;
 
 use ArrayAccess;
 use Closure;
+use SouthPointe\Collections\Utils\Arr;
 
 /**
  * @template TValue

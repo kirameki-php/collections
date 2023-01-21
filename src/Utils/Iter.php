@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace SouthPointe\Collections\Utils;
 
 use Closure;
 use Generator;

@@ -5,6 +5,8 @@ namespace SouthPointe\Collections;
 use Closure;
 use Countable;
 use JsonSerializable;
+use SouthPointe\Collections\Utils\Arr;
+use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Json;
 use Webmozart\Assert\Assert;
 use function array_is_list;
