@@ -2597,7 +2597,8 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): (int|float)|null $by
-     * [Optional]
+     * [Optional] Called for every element in `$iterable`.
+     * Returned value will be used to determine the highest number.
      * @return array{ min: TValue, max: TValue }
      */
     public static function minMax(
@@ -2630,7 +2631,8 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): (int|float)|null $by
-     * [Optional]
+     * [Optional] Called for every element in `$iterable`.
+     * Returned value will be used to determine the smallest and highest number.
      * @return array{ min: TValue, max: TValue }
      */
     public static function minMaxOrNull(
@@ -3895,6 +3897,8 @@ final class Arr
      * @param bool $ascending
      * Sort by ascending order if **true**, descending order if **false**.
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] User defined comparison callback.
+     * The value returned will be used to sort the array.
      * @param int $flag
      * Sort flag to change the behavior of the sort.
      * @param bool|null $reindex
@@ -3951,6 +3955,8 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] User defined comparison callback.
+     * The value returned will be used to sort the array.
      * @param int $flag
      * [Optional] Sort flag to change the behavior of the sort.
      * See https://www.php.net/manual/en/function.sort.php for more info.
@@ -3969,6 +3975,37 @@ final class Arr
     ): array
     {
         return self::sort($iterable, true, $by, $flag, $reindex);
+    }
+
+    /**
+     * Sort the given iterable by key in ascending order.
+     *
+     * Example:
+     * ```php
+     * Arr::sortByKey(['b' => 0, 'a' => 1]);  // ['a' => 1, 'b' => 0]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $flag
+     * [Optional] Sort flag to change the behavior of the sort.
+     * See https://www.php.net/manual/en/function.sort.php for more info.
+     * Defaults to `SORT_REGULAR`.
+     * @return array<TKey, TValue>
+     */
+    public static function sortByKey(
+        iterable $iterable,
+        bool $ascending,
+        int $flag = SORT_REGULAR
+    ): array
+    {
+        $copy = self::from($iterable);
+        $ascending
+            ? ksort($copy, $flag)
+            : krsort($copy, $flag);
+        return $copy;
     }
 
     /**
@@ -4037,6 +4074,8 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable Iterable to be traversed.
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] User defined comparison callback.
+     * The value returned will be used to sort the array.
      * @param int $flag
      * [Optional] Sort flag to change the behavior of the sort.
      * Defaults to `SORT_REGULAR`.
@@ -4162,10 +4201,16 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param iterable<TKey, TValue> $iterable1 Iterable to be traversed.
-     * @param iterable<TKey, TValue> $iterable2 Iterable to be traversed.
+     * @param iterable<TKey, TValue> $iterable1
+     * Iterable to be traversed.
+     * @param iterable<TKey, TValue> $iterable2
+     * Iterable to be traversed.
      * @param Closure(TValue, TValue): int<-1, 1>|null $by
-     * [Optional] Defaults to **null**.
+     * [Optional] User defined comparison callback.
+     * Return 1 if first argument is greater than the 2nd.
+     * Return 0 if first argument is equal to the 2nd.
+     * Return -1 if first argument is less than the 2nd.
+     * Defaults to **null**.
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
@@ -4358,6 +4403,8 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] Called for every element in `$iterable`.
+     * Returned value will be used to check for duplicates.
      * [Optional] Defaults to **null**.
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
