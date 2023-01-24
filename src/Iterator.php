@@ -5,6 +5,7 @@ namespace SouthPointe\Collections;
 use IteratorAggregate;
 use SouthPointe\Collections\Utils\Arr;
 use Traversable;
+use function iterator_to_array;
 
 /**
  * @template TKey of array-key
@@ -28,6 +29,30 @@ class Iterator implements IteratorAggregate
     public function getIterator(): Traversable
     {
         yield from $this->items;
+    }
+
+    /**
+     * @param int|null $steps
+     * @return void
+     */
+    public function iterate(int $steps = null): void
+    {
+        if ($steps === null) {
+            iterator_to_array($this);
+            return;
+        }
+
+        if ($steps === 0) {
+            return;
+        }
+
+        $count = 0;
+        foreach ($this as $_) {
+            $count++;
+            if ($steps === $count) {
+                break;
+            }
+        }
     }
 
     /**

@@ -243,22 +243,6 @@ final class Iter
     }
 
     /**
-     * Creates a Generator that will send key as value and value as key to the generator.
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable Iterable to be traversed.
-     * @return Generator<TValue, TKey>
-     */
-    public static function flip(iterable $iterable): Generator
-    {
-        foreach ($iterable as $key => $val) {
-            Assert::validArrayKey($key);
-            yield $val => $key;
-        }
-    }
-
-    /**
      * Creates a Generator that will send the key to the generator as value.
      *
      * @template TKey of array-key
@@ -295,20 +279,21 @@ final class Iter
     /**
      * Creates a Generator that will repeat through the iterable for a given amount of times.
      *
-     * @template T
-     * @param iterable<array-key, T> $iterable
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param int<0, max> $times
      * Amount of times the iterable will be repeated.
-     * @return Generator<int, T>
+     * @return Generator<TKey, TValue>
      */
     public static function repeat(iterable $iterable, int $times): Generator
     {
         Assert::greaterThanEq($times, 0);
 
         for ($i = 0; $i < $times; $i++) {
-            foreach ($iterable as $val) {
-                yield $val;
+            foreach ($iterable as $key => $val) {
+                yield $key => $val;
             }
         }
     }
