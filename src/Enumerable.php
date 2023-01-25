@@ -153,20 +153,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param int<1, max> $size
-     * @return Vec<static>
-     */
-    public function chunk(int $size): self
-    {
-        $chunks = [];
-        foreach (Iter::chunk($this, $size, $this->isList) as $chunk) {
-            $converted = $this->newInstance($chunk);
-            $chunks[] = $converted;
-        }
-        return $this->newVec($chunks);
-    }
-
-    /**
      * @return $this
      */
     public function clear(): static
@@ -901,6 +887,20 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     public function sortWithKey(Closure $comparison): static
     {
         return $this->newInstance(Arr::sortWithKey($this, $comparison));
+    }
+
+    /**
+     * @param int<1, max> $size
+     * @return Vec<static>
+     */
+    public function split(int $size): Vec
+    {
+        $chunks = [];
+        foreach (Iter::chunk($this, $size, $this->isList) as $chunk) {
+            $converted = $this->newInstance($chunk);
+            $chunks[] = $converted;
+        }
+        return $this->newVec($chunks);
     }
 
     /**
