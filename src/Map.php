@@ -5,14 +5,17 @@ namespace SouthPointe\Collections;
 use ArrayAccess;
 use Closure;
 use SouthPointe\Collections\Utils\Arr;
+use Webmozart\Assert\Assert;
+use function assert;
+use function is_array;
 
 /**
  * @template TKey of array-key|class-string
  * @template TValue
- * @extends Enumerable<TKey, TValue>
+ * @extends Seq<TKey, TValue>
  * @implements ArrayAccess<TKey, TValue>
  */
-class Map extends Enumerable implements ArrayAccess
+class Map extends Seq implements ArrayAccess
 {
     /**
      * @param iterable<TKey, TValue>|null $items
@@ -20,6 +23,50 @@ class Map extends Enumerable implements ArrayAccess
     public function __construct(iterable|null $items = null)
     {
         parent::__construct($items, false);
+    }
+
+    /**
+     * @param TKey $offset
+     * @return bool
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->items[$offset]);
+    }
+
+    /**
+     * @param TKey $offset
+     * @return TValue
+     */
+    public function offsetGet(mixed $offset): mixed
+    {
+        assert(is_array($this->items));
+
+        return $this->items[$offset];
+    }
+
+    /**
+     * @param TKey $offset
+     * @param TValue $value
+     * @return void
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        assert(is_array($this->items));
+
+        Assert::validArrayKey($offset);
+        $this->items[$offset] = $value;
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        assert(is_array($this->items));
+
+        unset($this->items[$offset]);
     }
 
     /**

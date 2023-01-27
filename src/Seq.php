@@ -10,8 +10,6 @@ use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Json;
 use Webmozart\Assert\Assert;
 use function array_is_list;
-use function assert;
-use function is_array;
 use function is_iterable;
 use const PHP_INT_MAX;
 use const SORT_REGULAR;
@@ -23,7 +21,7 @@ use const SORT_REGULAR;
  * @template TValue
  * @extends Iterator<TKey, TValue>
  */
-abstract class Enumerable extends Iterator implements Countable, JsonSerializable
+class Seq extends Iterator implements Countable, JsonSerializable
 {
     protected bool $isList;
 
@@ -59,52 +57,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
                 : $item;
         }
         return $values;
-    }
-
-    /**
-     * @param TKey $offset
-     * @return bool
-     */
-    public function offsetExists(mixed $offset): bool
-    {
-        return isset(((array) $this->items)[$offset]);
-    }
-
-    /**
-     * @param TKey $offset
-     * @return TValue
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        return ((array) $this->items)[$offset];
-    }
-
-    /**
-     * @param TKey|null $offset
-     * @param TValue $value
-     * @return void
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        assert(is_array($this->items));
-
-        if ($offset === null) {
-            $this->items[] = $value;
-        } else {
-            Assert::validArrayKey($offset);
-            $this->items[$offset] = $value;
-        }
-    }
-
-    /**
-     * @param mixed $offset
-     * @return void
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        assert(is_array($this->items));
-
-        unset($this->items[$offset]);
     }
 
     /**
@@ -501,6 +453,14 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
+     * @return LazySeq<TKey, TValue>
+     */
+    public function lazy(): LazySeq
+    {
+        return new LazySeq($this->items);
+    }
+
+    /**
      * @param Closure(TValue, TKey): mixed|null $callback
      * @return TValue
      */
@@ -586,34 +546,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @return TValue
-     */
-    public function pop(): mixed
-    {
-        assert(is_array($this->items));
-        return Arr::pop($this->items);
-    }
-
-    /**
-     * @return TValue|null
-     */
-    public function popOrNull(): mixed
-    {
-        assert(is_array($this->items));
-        return Arr::popOrNull($this->items);
-    }
-
-    /**
-     * @param int $amount
-     * @return static
-     */
-    public function popMany(int $amount): static
-    {
-        assert(is_array($this->items));
-        return $this->newInstance(Arr::popMany($this->items, $amount));
-    }
-
-    /**
      * Move items that match condition to the top of the array.
      *
      * @param Closure(TValue, TKey): bool $condition
@@ -625,65 +557,12 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     }
 
     /**
-     * @param TKey $key
-     * @return TValue
-     */
-    public function pull(int|string $key): mixed
-    {
-        assert(is_array($this->items));
-        return Arr::pull($this->items, $key, $this->isList);
-    }
-
-    /**
-     * @template TDefault
-     * @param TKey $key
-     * @param TDefault $default
-     * @return TValue|TDefault
-     */
-    public function pullOr(int|string $key, mixed $default): mixed
-    {
-        assert(is_array($this->items));
-        return Arr::pullOr($this->items, $key, $default, $this->isList);
-    }
-
-    /**
-     * @param TKey $key
-     * @return TValue|null
-     */
-    public function pullOrNull(int|string $key): mixed
-    {
-        assert(is_array($this->items));
-        return Arr::pullOrNull($this->items, $key, $this->isList);
-    }
-
-    /**
-     * @param iterable<TKey> $keys
-     * @return static
-     */
-    public function pullMany(iterable $keys): static
-    {
-        assert(is_array($this->items));
-        return $this->newInstance(Arr::pullMany($this->items, $keys, $this->isList));
-    }
-
-    /**
      * @param Closure(TValue, TValue, TKey): TValue $callback
      * @return TValue
      */
     public function reduce(Closure $callback): mixed
     {
         return Arr::reduce($this, $callback);
-    }
-
-    /**
-     * @param TValue $value
-     * @param int|null $limit
-     * @return array<int, array-key>
-     */
-    public function remove(mixed $value, ?int $limit = null): array
-    {
-        assert(is_array($this->items));
-        return Arr::remove($this->items, $value, $limit, $this->isList);
     }
 
     /**
@@ -755,34 +634,6 @@ abstract class Enumerable extends Iterator implements Countable, JsonSerializabl
     public function satisfyAny(Closure $condition): bool
     {
         return Arr::satisfyAny($this, $condition);
-    }
-
-    /**
-     * @return TValue
-     */
-    public function shift(): mixed
-    {
-        assert(is_array($this->items));
-        return Arr::shift($this->items);
-    }
-
-    /**
-     * @return TValue|null
-     */
-    public function shiftOrNull(): mixed
-    {
-        assert(is_array($this->items));
-        return Arr::shiftOrNull($this->items);
-    }
-
-    /**
-     * @param int $amount
-     * @return static
-     */
-    public function shiftMany(int $amount): static
-    {
-        assert(is_array($this->items));
-        return $this->newInstance(Arr::shiftMany($this->items, $amount));
     }
 
     /**

@@ -9,9 +9,9 @@ use SouthPointe\Collections\Utils\Iter;
 /**
  * @template TKey of array-key
  * @template TValue
- * @extends Enumerable<TKey, TValue>
+ * @extends Seq<TKey, TValue>
  */
-class Sequence extends Enumerable
+class LazySeq extends Seq
 {
     /**
      * @template TNewKey as array-key
@@ -92,7 +92,7 @@ class Sequence extends Enumerable
     }
 
     /**
-     * @return Sequence<int, TKey>
+     * @return LazySeq<int, TKey>
      */
     public function keys(): self
     {
@@ -102,7 +102,7 @@ class Sequence extends Enumerable
     /**
      * @template TMapValue
      * @param Closure(TValue, TKey): TMapValue $callback
-     * @return Sequence<TKey, TMapValue>
+     * @return LazySeq<TKey, TMapValue>
      */
     public function map(Closure $callback): self
     {
