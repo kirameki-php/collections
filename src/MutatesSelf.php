@@ -3,9 +3,10 @@
 namespace SouthPointe\Collections;
 
 use SouthPointe\Collections\Utils\Arr;
+use Webmozart\Assert\Assert;
 
 /**
- * @template TKey of array-key
+ * @template TKey of array-key|class-string
  * @template TValue
  */
 trait MutatesSelf
@@ -16,15 +17,31 @@ trait MutatesSelf
     protected bool $isList;
 
     /**
-     * @var array<TKey, TValue>
+     * @return array<TKey, TValue>
      */
-    protected iterable $items;
+    abstract protected function &getItemsAsRef(): array;
 
     /**
      * @param iterable<TKey, TValue> $iterable
      * @return static
      */
-    public abstract function newInstance(iterable $iterable): static;
+    abstract public function newInstance(iterable $iterable): static;
+
+    /**
+     * @param int|null $offset
+     * @param TValue $value
+     * @return void
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $ref = &$this->getItemsAsRef();
+        if ($offset === null) {
+            $ref[] = $value;
+        } else {
+            Assert::validArrayKey($offset);
+            $ref[$offset] = $value;
+        }
+    }
 
     /**
      * @param mixed $offset
@@ -32,7 +49,8 @@ trait MutatesSelf
      */
     public function offsetUnset(mixed $offset): void
     {
-        unset($this->items[$offset]);
+        $ref = &$this->getItemsAsRef();
+        unset($ref[$offset]);
     }
 
     /**
@@ -40,7 +58,8 @@ trait MutatesSelf
      */
     public function pop(): mixed
     {
-        return Arr::pop($this->items);
+        $ref = &$this->getItemsAsRef();
+        return Arr::pop($ref);
     }
 
     /**
@@ -48,7 +67,8 @@ trait MutatesSelf
      */
     public function popOrNull(): mixed
     {
-        return Arr::popOrNull($this->items);
+        $ref = &$this->getItemsAsRef();
+        return Arr::popOrNull($ref);
     }
 
     /**
@@ -57,7 +77,8 @@ trait MutatesSelf
      */
     public function popMany(int $amount): static
     {
-        return $this->newInstance(Arr::popMany($this->items, $amount));
+        $ref = &$this->getItemsAsRef();
+        return $this->newInstance(Arr::popMany($ref, $amount));
     }
 
     /**
@@ -66,7 +87,8 @@ trait MutatesSelf
      */
     public function pull(int|string $key): mixed
     {
-        return Arr::pull($this->items, $key, $this->isList);
+        $ref = &$this->getItemsAsRef();
+        return Arr::pull($ref, $key, $this->isList);
     }
 
     /**
@@ -77,7 +99,8 @@ trait MutatesSelf
      */
     public function pullOr(int|string $key, mixed $default): mixed
     {
-        return Arr::pullOr($this->items, $key, $default, $this->isList);
+        $ref = &$this->getItemsAsRef();
+        return Arr::pullOr($ref, $key, $default, $this->isList);
     }
 
     /**
@@ -86,7 +109,8 @@ trait MutatesSelf
      */
     public function pullOrNull(int|string $key): mixed
     {
-        return Arr::pullOrNull($this->items, $key, $this->isList);
+        $ref = &$this->getItemsAsRef();
+        return Arr::pullOrNull($ref, $key, $this->isList);
     }
 
     /**
@@ -95,7 +119,8 @@ trait MutatesSelf
      */
     public function pullMany(iterable $keys): static
     {
-        return $this->newInstance(Arr::pullMany($this->items, $keys, $this->isList));
+        $ref = &$this->getItemsAsRef();
+        return $this->newInstance(Arr::pullMany($ref, $keys, $this->isList));
     }
 
     /**
@@ -105,7 +130,8 @@ trait MutatesSelf
      */
     public function remove(mixed $value, ?int $limit = null): array
     {
-        return Arr::remove($this->items, $value, $limit, $this->isList);
+        $ref = &$this->getItemsAsRef();
+        return Arr::remove($ref, $value, $limit, $this->isList);
     }
 
     /**
@@ -113,7 +139,8 @@ trait MutatesSelf
      */
     public function shift(): mixed
     {
-        return Arr::shift($this->items);
+        $ref = &$this->getItemsAsRef();
+        return Arr::shift($ref);
     }
 
     /**
@@ -121,7 +148,8 @@ trait MutatesSelf
      */
     public function shiftOrNull(): mixed
     {
-        return Arr::shiftOrNull($this->items);
+        $ref = &$this->getItemsAsRef();
+        return Arr::shiftOrNull($ref);
     }
 
     /**
@@ -130,6 +158,7 @@ trait MutatesSelf
      */
     public function shiftMany(int $amount): static
     {
-        return $this->newInstance(Arr::shiftMany($this->items, $amount));
+        $ref = &$this->getItemsAsRef();
+        return $this->newInstance(Arr::shiftMany($ref, $amount));
     }
 }

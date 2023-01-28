@@ -8,13 +8,18 @@ use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use RuntimeException;
+use SouthPointe\Collections\Map;
+use SouthPointe\Collections\MutableMap;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Collections\Utils\Iter;
 use stdClass;
 use TypeError;
 use function array_keys;
+use function array_pop;
+use function array_shift;
 use function array_values;
+use function dump;
 use function in_array;
 use function is_array;
 use function is_int;
@@ -29,6 +34,13 @@ use const NAN;
 
 class ArrTest extends TestCase
 {
+    public function test_a()
+    {
+        $map = new MutableMap(['a' => 1]);
+        dump($map->pop());
+        dump($map);
+    }
+
     public function test_append(): void
     {
         self::assertSame([], Arr::append([]), 'empty');

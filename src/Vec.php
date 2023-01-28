@@ -5,7 +5,7 @@ namespace SouthPointe\Collections;
 use ArrayAccess;
 use Closure;
 use SouthPointe\Collections\Utils\Arr;
-use Webmozart\Assert\Assert;
+use SouthPointe\Core\Exceptions\NotSupportedException;
 use function assert;
 use function is_array;
 
@@ -51,14 +51,10 @@ class Vec extends Seq implements ArrayAccess
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        assert(is_array($this->items));
-
-        if ($offset === null) {
-            $this->items[] = $value;
-        } else {
-            Assert::validArrayKey($offset);
-            $this->items[$offset] = $value;
-        }
+        throw new NotSupportedException('Calling offsetSet on non-mutable class: ' . static::class, [
+            'this' => $this,
+            'offset' => $offset,
+        ]);
     }
 
     /**
@@ -67,9 +63,10 @@ class Vec extends Seq implements ArrayAccess
      */
     public function offsetUnset(mixed $offset): void
     {
-        assert(is_array($this->items));
-
-        unset($this->items[$offset]);
+        throw new NotSupportedException('Calling offsetUnset on non-mutable class: ' . static::class, [
+            'this' => $this,
+            'offset' => $offset,
+        ]);
     }
 
     /**

@@ -6,6 +6,6 @@ parameters:
     - tests/*
     ignoreErrors:
     -
-        message: '#^Method SouthPointe\\Collections\\Arr\:\:shuffle\(\) should return array\<TKey of \(int\|string\), TValue\> but returns array\<int\|string, TValue\>\.$#'
+        message: '#^Method SouthPointe\\Collections\\Utils\\Arr\:\:shuffle\(\) should return array\<TKey of \(int\|string\), TValue\> but returns array\<int\|string, TValue\>\.$#'
         count: 1
-        path: src/Arr.php
+        path: src/Utils/Arr.php

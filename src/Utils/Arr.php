@@ -1415,7 +1415,7 @@ final class Arr
      * ```
      *
      * @template TKey of array-key
-     * @template TValue
+     * @template TValue of array-key
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param bool $overwrite
@@ -1429,14 +1429,14 @@ final class Arr
     ): array
     {
         $flipped = [];
-        foreach (Iter::flip($iterable) as $key => $val) {
+        foreach ($iterable as $key => $val) {
             Assert::validArrayKey($key);
 
-            if (!$overwrite && array_key_exists($key, $flipped)) {
-                throw new DuplicateKeyException($key, $iterable);
+            if (!$overwrite && array_key_exists($val, $flipped)) {
+                throw new DuplicateKeyException($val, $iterable);
             }
 
-            $flipped[$key] = $val;
+            $flipped[$val] = $key;
         }
         return $flipped;
     }
