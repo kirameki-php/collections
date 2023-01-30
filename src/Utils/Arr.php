@@ -1434,7 +1434,7 @@ final class Arr
     {
         $flipped = [];
         foreach ($iterable as $key => $val) {
-            Assert::validArrayKey($key);
+            Assert::validArrayKey($val);
 
             if (!$overwrite && array_key_exists($val, $flipped)) {
                 throw new DuplicateKeyException($val, $iterable);
@@ -3327,7 +3327,7 @@ final class Arr
         int $times,
     ): array
     {
-        return iterator_to_array(Iter::repeat($iterable, $times));
+        return iterator_to_array(Iter::repeat($iterable, $times), false);
     }
 
     /**
@@ -3596,6 +3596,76 @@ final class Arr
             }
         }
         return false;
+    }
+
+    /**
+     * Runs the condition though each element of the given iterable and
+     * will return **true** if all the iterations that run through the condition
+     * returned **false**. **false** otherwise.
+     *
+     * Example:
+     * ```php
+     * Arr::satisfyNone(['a', 'b'], static fn($v) => empty($v)); // true
+     * Arr::satisfyNone([1, 2.1], static fn($v) => is_int($v)); // false
+     * Arr::satisfyNone([]); // true
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return bool
+     */
+    public static function satisfyNone(
+        iterable $iterable,
+        Closure $condition,
+    ): bool
+    {
+        foreach ($iterable as $key => $val) {
+            if (self::verify($condition, $key, $val)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Runs the condition though each element of the given iterable and
+     * will return **true** if iterations that run through the condition
+     * returned **true** only once, **false** otherwise (including empty iterable).
+     *
+     * Example:
+     * ```php
+     * Arr::satisfyOnce([1, 'a'], static fn($v) => is_int($v)); // true
+     * Arr::satisfyOnce([1, 2], static fn($v) => is_int($v)); // false
+     * Arr::satisfyOnce([]); // false
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return bool
+     */
+    public static function satisfyOnce(
+        iterable $iterable,
+        Closure $condition,
+    ): bool
+    {
+        $satisfied = false;
+        foreach ($iterable as $key => $val) {
+            if (self::verify($condition, $key, $val)) {
+                if ($satisfied) {
+                    return false;
+                }
+                $satisfied = true;
+            }
+        }
+        return $satisfied;
     }
 
     /**

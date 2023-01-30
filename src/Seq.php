@@ -655,6 +655,24 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Closure(TValue, TKey): bool $condition
+     * @return bool
+     */
+    public function satisfyNone(Closure $condition): bool
+    {
+        return Arr::satisfyNone($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): bool $condition
+     * @return bool
+     */
+    public function satisfyOnce(Closure $condition): bool
+    {
+        return Arr::satisfyOnce($this, $condition);
+    }
+
+    /**
      * @return static
      */
     public function shuffle(): static

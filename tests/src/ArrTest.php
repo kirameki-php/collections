@@ -8,18 +8,13 @@ use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use RuntimeException;
-use SouthPointe\Collections\Map;
-use SouthPointe\Collections\MutableMap;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Collections\Utils\Iter;
 use stdClass;
 use TypeError;
 use function array_keys;
-use function array_pop;
-use function array_shift;
 use function array_values;
-use function dump;
 use function in_array;
 use function is_array;
 use function is_int;
@@ -34,13 +29,6 @@ use const NAN;
 
 class ArrTest extends TestCase
 {
-    public function test_a()
-    {
-        $map = new MutableMap(['a' => 1]);
-        dump($map->pop());
-        dump($map);
-    }
-
     public function test_append(): void
     {
         self::assertSame([], Arr::append([]), 'empty');
@@ -2354,6 +2342,35 @@ class ArrTest extends TestCase
         self::assertTrue(Arr::satisfyAny(['a' => 1, 'b' => 2], static fn($v, $k) => true));
         self::assertFalse(Arr::satisfyAny(['a' => 1, 'b' => 2], static fn($v) => false));
         self::assertTrue(Arr::satisfyAny(['a' => 1, 'b' => 2], static fn($v, $k) => $k === 'b'));
+    }
+
+    public function test_satisfyNone(): void
+    {
+        self::assertTrue(Arr::satisfyNone([], static fn($v) => is_int($v)), 'empty');
+        self::assertFalse(Arr::satisfyNone([1, 1], static fn($v) => is_int($v)), 'list: all true');
+        self::assertTrue(Arr::satisfyNone(['a', 'b'], static fn($v) => empty($v)), 'list all false');
+        self::assertFalse(Arr::satisfyNone(['a' => 1], static fn($v, $k) => is_int($v)), 'assoc');
+    }
+
+    public function test_satisfyOnce(): void
+    {
+        // empty
+        self::assertFalse(Arr::satisfyOnce([], static fn($v) => is_int($v)));
+
+        // list one true
+        self::assertTrue(Arr::satisfyOnce([1, null, 'a'], static fn($v) => is_int($v)));
+
+        // list one false
+        self::assertFalse(Arr::satisfyOnce([1, 1, 'a'], static fn($v) => is_int($v)));
+
+        // list all true
+        self::assertFalse(Arr::satisfyOnce([1, 1], static fn($v) => is_int($v)));
+
+        // list all false
+        self::assertFalse(Arr::satisfyOnce(['a', 'b'], static fn($v) => empty($v)));
+
+        // assoc
+        self::assertTrue(Arr::satisfyOnce(['a' => 1], static fn($v, $k) => is_int($v)));
     }
 
     public function test_set(): void
