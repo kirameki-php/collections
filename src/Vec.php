@@ -145,6 +145,14 @@ class Vec extends Seq implements ArrayAccess
     }
 
     /**
+     * @return MutableVec<TValue>
+     */
+    public function mutable(): MutableVec
+    {
+        return new MutableVec($this->items);
+    }
+
+    /**
      * @param int $size
      * @param TValue $value
      * @return static

@@ -141,12 +141,30 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param iterable<array-key, TValue> $keys
+     * @return bool
+     */
+    public function containsAllKeys(iterable $keys): bool
+    {
+        return Arr::containsAllKeys($this, $keys);
+    }
+
+    /**
      * @param iterable<array-key, TValue> $values
      * @return bool
      */
     public function containsAny(iterable $values): bool
     {
         return Arr::containsAny($this, $values);
+    }
+
+    /**
+     * @param iterable<array-key, TValue> $keys
+     * @return bool
+     */
+    public function containsAnyKeys(iterable $keys): bool
+    {
+        return Arr::containsAnyKeys($this, $keys);
     }
 
     /**

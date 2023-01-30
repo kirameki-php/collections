@@ -1421,7 +1421,11 @@ final class Arr
      * @param bool $overwrite
      * [Optional] Will overwrite existing keys if set to **true**.
      * If set to **false** and a duplicate key is found, a DuplicateKeyException will be thrown.
-     * @return array<array-key, TKey>
+     * @return array<TValue, TKey>
+     * The flipped array.
+     * @throws DuplicateKeyException
+     * Thrown if there are two values with the same value.
+     * Change the `overwrite` argument to **true** to suppress this error.
      */
     public static function flip(
         iterable $iterable,
@@ -1667,6 +1671,9 @@ final class Arr
      * If **false**, exception will be thrown on duplicate key.
      * Defaults to **false**.
      * @return void
+     * @throws DuplicateKeyException
+     * Thrown when the keys in `$values` already exist in `$array`.
+     * Change the `overwrite` argument to **true** to suppress this error.
      */
     public static function insert(
         array &$array,
@@ -1943,7 +1950,12 @@ final class Arr
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): TNewKey $callback
      * @param bool $overwrite
+     * [Optional] If **true**, duplicate keys will be overwritten.
+     * If **false**, exception will be thrown on duplicate keys.
      * @return array<TNewKey, TValue>
+     * @throws DuplicateKeyException
+     * Thrown when the value returned by `$callback` already exist in `$array` as a key.
+     * Change the `overwrite` argument to **true** to suppress this error.
      */
     public static function keyBy(
         iterable $iterable,

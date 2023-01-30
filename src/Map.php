@@ -182,6 +182,14 @@ class Map extends Seq implements ArrayAccess
     }
 
     /**
+     * @return MutableMap<TKey, TValue>
+     */
+    public function mutable(): MutableMap
+    {
+        return new MutableMap($this->items);
+    }
+
+    /**
      * @param TKey $key
      * @return bool
      */
