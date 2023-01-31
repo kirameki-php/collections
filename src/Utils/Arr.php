@@ -8,6 +8,7 @@ use LogicException;
 use Random\Randomizer;
 use RuntimeException;
 use SouthPointe\Collections\Exceptions\DuplicateKeyException;
+use SouthPointe\Core\Exceptions\InvalidOperationException;
 use Traversable;
 use Webmozart\Assert\Assert;
 use function abs;
@@ -1107,7 +1108,7 @@ final class Arr
     /**
      * Returns the first element in iterable.
      * If `$condition` is set, the first element which meets the condition is returned instead.
-     * If condition has no matches, a RuntimeException is thrown.
+     * If condition has no matches, a `InvalidOperationException` is thrown.
      *
      * Example:
      * ```php
@@ -1124,6 +1125,8 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TValue
+     * @throws InvalidOperationException
+     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function first(
         iterable $iterable,
@@ -1136,7 +1139,10 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new RuntimeException($message);
+            throw new InvalidOperationException($message, [
+                'iterable' => $iterable,
+                'condition' => $condition,
+            ]);
         }
 
         return $result;
@@ -1144,7 +1150,7 @@ final class Arr
 
     /**
      * Returns the first index of iterable which meets the given condition.
-     * Throws a RuntimeException if there were no matches.
+     * Throws a `InvalidOperationException` if there were no matches.
      *
      * Example:
      * ```php
@@ -1161,6 +1167,8 @@ final class Arr
      * @param Closure(TValue, TKey): bool|TValue $condition
      * User defined condition callback. The callback must return a boolean value.
      * @return int|null
+     * @throws InvalidOperationException
+     * Thrown if condition has no matches.
      */
     public static function firstIndex(
         iterable $iterable,
@@ -1170,7 +1178,10 @@ final class Arr
         $result = self::firstIndexOrNull($iterable, $condition);
 
         if ($result === null) {
-            throw new RuntimeException('Failed to find matching condition.');
+            throw new InvalidOperationException('Failed to find matching condition.', [
+                'iterable' => $iterable,
+                'condition' => $condition,
+            ]);
         }
 
         return $result;
@@ -1217,7 +1228,7 @@ final class Arr
 
     /**
      * Returns the first key of the given iterable which meets the given condition.
-     * Throws a RuntimeException if the given iterable is empty or if there were no
+     * Throws a `InvalidOperationException` if the given iterable is empty or if there were no
      * matching conditions.
      *
      * Example:
@@ -1235,6 +1246,8 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TKey
+     * @throws InvalidOperationException
+     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function firstKey(
         iterable $iterable,
@@ -1247,7 +1260,10 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new RuntimeException($message);
+            throw new InvalidOperationException($message, [
+                'iterable' => $iterable,
+                'condition' => $condition,
+            ]);
         }
 
         /** @var TKey */
@@ -2000,13 +2016,13 @@ final class Arr
     /**
      * Returns the last element in iterable.
      * If `$condition` is set, the last element which meets the condition is returned instead.
-     * If condition has no matches, a RuntimeException is thrown.
+     * If condition has no matches, a InvalidOperationException is thrown.
      *
      * Example:
      * ```php
      * Arr::last([1, 2], fn($val) => true); // 2
-     * Arr::last([1, 2], fn($val) => false); // RuntimeException: Failed to find matching condition.
-     * Arr::last([], fn($val) => true); // RuntimeException: Iterable must contain at least one element.
+     * Arr::last([1, 2], fn($val) => false); // InvalidOperationException: Failed to find matching condition.
+     * Arr::last([], fn($val) => true); // InvalidOperationException: Iterable must contain at least one element.
      * ```
      *
      * @template TKey of array-key
@@ -2017,6 +2033,8 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TValue
+     * @throws InvalidOperationException
+     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function last(
         iterable $iterable,
@@ -2029,7 +2047,10 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new RuntimeException($message);
+            throw new InvalidOperationException($message, [
+                'iterable' => $iterable,
+                'condition' => $condition,
+            ]);
         }
 
         return $result;
@@ -2120,13 +2141,13 @@ final class Arr
 
     /**
      * Returns the last key of the given iterable which meets the given condition.
-     * Throws RuntimeException if there are no matches.
+     * Throws `InvalidOperationException` if there are no matches.
      *
      * Example:
      * ```php
      * Arr::lastKey(['a' => 1, 'b' => 2]); // 'b'
      * Arr::lastKey([1, 2], fn($val) => true); // 2
-     * Arr::lastKey([1, 2], fn($val) => false); // RuntimeException
+     * Arr::lastKey([1, 2], fn($val) => false); // InvalidOperationException
      * ```
      *
      * @template TKey of array-key
@@ -2137,6 +2158,8 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TKey|null
+     * @throws InvalidOperationException
+     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function lastKey(
         iterable $iterable,
@@ -2149,7 +2172,10 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new RuntimeException($message);
+            throw new InvalidOperationException($message, [
+                'iterable' => $iterable,
+                'condition' => $condition,
+            ]);
         }
 
         return $result;
@@ -2336,7 +2362,7 @@ final class Arr
         $maxVal = self::maxOrNull($iterable, $by);
 
         if ($maxVal === null) {
-            throw new RuntimeException('$iterable must contain at least one element.');
+            throw new InvalidOperationException('$iterable must contain at least one element.');
         }
 
         return $maxVal;
