@@ -4,11 +4,13 @@ namespace SouthPointe\Collections\Utils;
 
 use Closure;
 use InvalidArgumentException;
+use JsonException;
 use LogicException;
 use Random\Randomizer;
 use RuntimeException;
 use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Core\Exceptions\InvalidOperationException;
+use SouthPointe\Core\Exceptions\UnreachableException;
 use Traversable;
 use Webmozart\Assert\Assert;
 use function abs;
@@ -213,9 +215,9 @@ final class Arr
     }
 
     /**
-     * Get the average of the elements inside iterable.
+     * Get the average of the elements inside `$iterable`.
      * The elements must be af type int or float.
-     * If the iterable is empty or contains NAN, a RuntimeException will be thrown.
+     * Throws `RuntimeException` If the iterable is empty or contains NAN.
      *
      * Example:
      * ```php
@@ -244,10 +246,10 @@ final class Arr
     }
 
     /**
-     * Get the average of the elements inside iterable.
+     * Get the average of the elements inside `$iterable`.
      * The elements must be af type int or float.
-     * If the iterable is empty, **null** will be returned.
-     * A RuntimeException will the thrown if iterable contains NAN.
+     * If `$iterable` is empty, **null** will be returned.
+     * Throws `RuntimeException` if iterable contains NAN.
      *
      * Example:
      * ```php
@@ -337,7 +339,7 @@ final class Arr
 
     /**
      * Returns the first non-null value in the array.
-     * Throws an exception if the list is empty or if all elements in the array are **null**.
+     * Throws `RuntimeException` if `$iterable` is empty or if all elements are **null**.
      *
      * Example:
      * ```php
@@ -366,7 +368,7 @@ final class Arr
 
     /**
      * Returns the first non-null value in the array.
-     * Returns **null** if the list is empty or if all elements in the array are **null**.
+     * Returns **null** if `$iterable` is empty or if all elements are **null**.
      *
      * Example:
      * ```php
@@ -394,7 +396,7 @@ final class Arr
     }
 
     /**
-     * Returns an array with all null elements removed from given iterable.
+     * Returns an array with all null elements removed from `$iterable`.
      *
      * Example:
      * ```php
@@ -440,7 +442,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if value exists as an element in iterable, **false** otherwise.
+     * Returns **true** if value exists in `$iterable`, **false** otherwise.
      *
      * Example:
      * ```php
@@ -655,8 +657,8 @@ final class Arr
     }
 
     /**
-     * Counts all the elements in iterable.
-     * If a condition is given, it will only increase the count if the condition returns true.
+     * Counts all the elements in `$iterable`.
+     * If a condition is given, it will only increase the count if the condition returns **true**.
      *
      * Example:
      * ```php
@@ -963,7 +965,7 @@ final class Arr
     }
 
     /**
-     * Returns duplicates in the given iterable.
+     * Returns duplicate values in `$iterable`.
      *
      * Example:
      * ```php
@@ -1001,7 +1003,7 @@ final class Arr
     }
 
     /**
-     * Iterates through the given iterable and call the `$callback` for each element.
+     * Iterates through `$iterable` and invoke `$callback` for each element.
      *
      * Example:
      * ```php
@@ -1033,8 +1035,9 @@ final class Arr
     }
 
     /**
-     * Returns a new array with the given keys removed from the iterable.
+     * Returns a new array with the given keys removed from `$iterable`.
      * Non-existent keys will be ignored.
+     * TODO option to not ignore key.
      *
      * Example:
      * ```php
@@ -1108,7 +1111,7 @@ final class Arr
     /**
      * Returns the first element in iterable.
      * If `$condition` is set, the first element which meets the condition is returned instead.
-     * If condition has no matches, a `InvalidOperationException` is thrown.
+     * Throws `InvalidOperationException` if condition has no matches.
      *
      * Example:
      * ```php
@@ -1125,8 +1128,6 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TValue
-     * @throws InvalidOperationException
-     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function first(
         iterable $iterable,
@@ -1150,14 +1151,15 @@ final class Arr
 
     /**
      * Returns the first index of iterable which meets the given condition.
-     * Throws a `InvalidOperationException` if there were no matches.
+     *
+     * Throws `InvalidOperationException` if `$condition` has no matches.
      *
      * Example:
      * ```php
      * Arr::firstIndex([1, 2, 3], fn($val) => $val > 1); // 1
      * Arr::firstIndex([1, 2, 3], fn($val) => $val > 3); // null
      * Arr::firstIndex(['a' => 1, 'b' => 2], fn($val, $key) => $key === 'b'); // 1
-     * Arr::firstIndex([1], fn($v, $k) => false); // RuntimeException
+     * Arr::firstIndex([1], fn($v, $k) => false); // InvalidOperationException
      * ```
      *
      * @template TKey of array-key
@@ -1167,8 +1169,6 @@ final class Arr
      * @param Closure(TValue, TKey): bool|TValue $condition
      * User defined condition callback. The callback must return a boolean value.
      * @return int|null
-     * @throws InvalidOperationException
-     * Thrown if condition has no matches.
      */
     public static function firstIndex(
         iterable $iterable,
@@ -1228,14 +1228,14 @@ final class Arr
 
     /**
      * Returns the first key of the given iterable which meets the given condition.
-     * Throws a `InvalidOperationException` if the given iterable is empty or if there were no
-     * matching conditions.
+     *
+     * Throws `InvalidOperationException` if no condition is met or if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::firstKey(['a' => 1, 'b' => 2], fn($v, $k) => $k === 'b'); // 'b'
      * Arr::firstKey([1, 2, 3], fn($val) => $val > 1); // 1
-     * Arr::firstKey([1, 2, 3], fn($val) => $val > 3); // RuntimeException
+     * Arr::firstKey([1, 2, 3], fn($val) => $val > 3); // InvalidOperationException
      * ```
      *
      * @template TKey of array-key
@@ -1246,8 +1246,6 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TKey
-     * @throws InvalidOperationException
-     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function firstKey(
         iterable $iterable,
@@ -1424,6 +1422,9 @@ final class Arr
     /**
      * Flip the given iterable so that keys become values and values become keys.
      *
+     * Throws `DuplicateKeyException` if there are two values with the same value.
+     * Set `$overwrite` to **true** to suppress this error.
+     *
      * Example:
      * ```php
      * Arr::flip(['a' => 'b', 'c' => 'd']); // ['b' => 'a', 'd' => 'c']
@@ -1439,9 +1440,6 @@ final class Arr
      * If set to **false** and a duplicate key is found, a DuplicateKeyException will be thrown.
      * @return array<TValue, TKey>
      * The flipped array.
-     * @throws DuplicateKeyException
-     * Thrown if there are two values with the same value.
-     * Change the `overwrite` argument to **true** to suppress this error.
      */
     public static function flip(
         iterable $iterable,
@@ -1665,6 +1663,9 @@ final class Arr
     /**
      * Takes an array (reference) and insert given values at the given position.
      *
+     * Throws `DuplicateKeyException` when the keys in `$values` already exist in `$array`.
+     * Change the `overwrite` argument to **true** to suppress this error.
+     *
      * Example:
      * ```php
      * $list = [1, 3];
@@ -1687,9 +1688,6 @@ final class Arr
      * If **false**, exception will be thrown on duplicate key.
      * Defaults to **false**.
      * @return void
-     * @throws DuplicateKeyException
-     * Thrown when the keys in `$values` already exist in `$array`.
-     * Change the `overwrite` argument to **true** to suppress this error.
      */
     public static function insert(
         array &$array,
@@ -1950,9 +1948,12 @@ final class Arr
     }
 
     /**
-     * Return an array which contains values from the given iterable,
-     * with the keys being the results of running the given callback
-     * on each element of the given iterable.
+     * Return an array which contains values from `$iterable` with the keys
+     * being the results of running `$callback($val, $key)` on each element.
+     *
+     * Throws `DuplicateKeyException` when the value returned by `$callback`
+     * already exist in `$array` as a key. Set `$overwrite` to **true** to
+     * suppress this error.
      *
      * Example:
      * ```php
@@ -1969,9 +1970,6 @@ final class Arr
      * [Optional] If **true**, duplicate keys will be overwritten.
      * If **false**, exception will be thrown on duplicate keys.
      * @return array<TNewKey, TValue>
-     * @throws DuplicateKeyException
-     * Thrown when the value returned by `$callback` already exist in `$array` as a key.
-     * Change the `overwrite` argument to **true** to suppress this error.
      */
     public static function keyBy(
         iterable $iterable,
@@ -2016,7 +2014,7 @@ final class Arr
     /**
      * Returns the last element in iterable.
      * If `$condition` is set, the last element which meets the condition is returned instead.
-     * If condition has no matches, a InvalidOperationException is thrown.
+     * Throws `InvalidOperationException` if condition is not met or if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -2033,8 +2031,6 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TValue
-     * @throws InvalidOperationException
-     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function last(
         iterable $iterable,
@@ -2057,14 +2053,15 @@ final class Arr
     }
 
     /**
-     * Returns the last index of iterable which meets the given condition.
-     * Returns **null** if there were no matches.
+     * Returns the last index of `$iterable` which meets the given condition.
+     *
+     * Throws `InvalidOperationException` if no condition is met or if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::lastIndex([1, 2, 3, 4], fn($v) => true); // 3
      * Arr::lastIndex(['a' => 1, 'b' => 2]); // 1
-     * Arr::lastIndex([1, 2], fn($v) => false); // RuntimeException
+     * Arr::lastIndex([1, 2], fn($v) => false); // InvalidOperationException
      * ```
      *
      * @template TKey of array-key
@@ -2084,7 +2081,13 @@ final class Arr
         $result = self::lastIndexOrNull($iterable, $condition);
 
         if ($result === null) {
-            throw new RuntimeException('Failed to find matching condition.');
+            $message = ($condition !== null)
+                ? 'Failed to find matching condition.'
+                : '$iterable must contain at least one element.';
+            throw new InvalidOperationException($message, [
+                'iterable' => $iterable,
+                'condition' => $condition,
+            ]);
         }
 
         return $result;
@@ -2140,8 +2143,8 @@ final class Arr
     }
 
     /**
-     * Returns the last key of the given iterable which meets the given condition.
-     * Throws `InvalidOperationException` if there are no matches.
+     * Returns the last key of `$iterable` which meets the given condition.
+     * Throws `InvalidOperationException` if no condition is met or if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -2158,8 +2161,6 @@ final class Arr
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
      * @return TKey|null
-     * @throws InvalidOperationException
-     * Thrown if condition has no matches or given iterable is empty.
      */
     public static function lastKey(
         iterable $iterable,
@@ -2182,8 +2183,8 @@ final class Arr
     }
 
     /**
-     * Returns the last key of the given iterable which meets the given condition.
-     * Returns **null** if there are no matches.
+     * Returns the last key of `$iterable` which meets the given condition.
+     * Returns **null** if condition is not met.
      *
      * Example:
      * ```php
@@ -2225,9 +2226,9 @@ final class Arr
     }
 
     /**
-     * Returns the last element in iterable.
+     * Returns the last element in `$iterable`.
      * If `$condition` is set, the last element which meets the condition is returned instead.
-     * If condition has no matches, value of `$default` is returned.
+     * Returns the value of `$default` if no condition met.
      *
      * Example:
      * ```php
@@ -2275,7 +2276,7 @@ final class Arr
     /**
      * Returns the last element in iterable.
      * If `$condition` is set, the last element which meets the condition is returned instead.
-     * **null** is returned, if no element matches the `$condition` or is empty.
+     * Returns **null** if no element matches the `$condition` or is empty.
      *
      * Example:
      * ```php
@@ -2303,8 +2304,8 @@ final class Arr
     }
 
     /**
-     * Returns a new array containing results returned from invoking the
-     * provided closure on each element on given iterable.
+     * Returns a new array containing results returned from invoking
+     * `$callback` on each element on `$iterable`.
      *
      * Example:
      * ```php
@@ -2331,10 +2332,10 @@ final class Arr
     }
 
     /**
-     * Returns the largest element from the given array.
+     * Returns the largest element from `$iterable`.
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.
-     * If the iterable is empty or contains NAN, a RuntimeException will be thrown.
+     * Throws `RuntimeException`, If `$iterable` is empty or contains NAN.
      *
      * Example:
      * ```php
@@ -2369,11 +2370,11 @@ final class Arr
     }
 
     /**
-     * Returns the largest element from the given array.
+     * Returns the largest element from `$iterable`.
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.
-     * If the given iterable is empty, null is returned.
-     * A RuntimeException will the thrown if iterable contains NAN.
+     * Returns **null** if `$iterable` is empty.
+     * A RuntimeException will the thrown if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2529,7 +2530,8 @@ final class Arr
      * Returns the smallest element from the given array.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
-     * If the iterable is empty or contains NAN, a RuntimeException will be thrown.
+     * Throws `InvalidOperationException` if no match is found or if `$iterable` is empty.
+     * Throws `RuntimeException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2558,18 +2560,24 @@ final class Arr
         $minVal = self::minOrNull($iterable, $by);
 
         if ($minVal === null) {
-            throw new RuntimeException('$iterable must contain at least one element.');
+            $message = ($by !== null)
+                ? 'Failed to find matching condition.'
+                : '$iterable must contain at least one element.';
+            throw new InvalidOperationException($message, [
+                'iterable' => $iterable,
+                'condition' => $by,
+            ]);
         }
 
         return $minVal;
     }
 
     /**
-     * Returns the smallest element from the given array.
+     * Returns the smallest element from `$iterable`.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
-     * If the iterable is empty, **null** will be returned.
-     * A RuntimeException will the thrown if iterable contains NAN.
+     * Returns **null** if the iterable is empty.
+     * Throws `RuntimeException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2617,17 +2625,17 @@ final class Arr
     }
 
     /**
-     * Returns the smallest and largest element from the given array.
+     * Returns the smallest and largest element from `$iterable` as array{ min: , max: }.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
-     * If the iterable is empty, a RuntimeException will be thrown.
-     * A RuntimeException will the thrown if iterable contains NAN.
+     * Throws `InvalidOperationException` if no match is found or if `$iterable` is empty.
+     * Throws `RuntimeException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
      * Arr::minMax([-1, 0, 1]) // ['min' => -1, 'max' => 1]
      * Arr::minMax([1]) // ['min' => 1, 'max' => 1]
-     * Arr::minMax([]) // RuntimeException
+     * Arr::minMax([]) // InvalidOperationException
      * ```
      *
      * @template TKey of array-key
@@ -2646,7 +2654,13 @@ final class Arr
     {
         $result = self::minMaxOrNull($iterable, $by);
         if ($result === null) {
-            throw new RuntimeException('$iterable must contain at least one element.');
+            $message = ($by !== null)
+                ? 'Failed to find matching condition.'
+                : '$iterable must contain at least one element.';
+            throw new InvalidOperationException($message, [
+                'iterable' => $iterable,
+                'condition' => $by,
+            ]);
         }
         return $result;
     }
@@ -2656,7 +2670,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
      * If the iterable is empty, **null** will be returned.
-     * A RuntimeException will the thrown if iterable contains NAN.
+     * Throws `RuntimeException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2725,7 +2739,8 @@ final class Arr
     /**
      * Returns a new array which only contain the elements that has matching
      * keys in the given iterable. Non-existent keys will be ignored.
-     * 
+     * TODO option to not ignore key.
+     *
      * Example:
      * ```php
      * Arr::only(['a' => 1, 'b' => 2, 'c' => 3], ['b', 'd']); // ['b' => 2]
@@ -2765,13 +2780,13 @@ final class Arr
     }
 
     /**
-     * Returns a list (array) with a given value padded to the right side of the given
-     * iterable up to the given length.
+     * Returns a list (array) with a given value padded to the right side of
+     * `$iterable` up to `$length`.
      * To apply padding to the left instead, use a negative integer for `$length`.
      *
      * Padding can only be applied to a list, so make sure to provide an iterable
      * that only contain int as key. If an iterable with a string key is given,
-     * a InvalidArgumentException will be thrown.
+     * a `InvalidArgumentException` will be thrown.
      *
      * Example:
      * ```php
@@ -2799,7 +2814,9 @@ final class Arr
         $arrSize = count($array);
         $absSize = abs($length);
 
-        Assert::isList($array, 'Padding can only be applied to a list, map given.');
+        if (!array_is_list($array)) {
+            throw new InvalidArgumentException('Padding can only be applied to a list, map given.');
+        }
 
         if ($arrSize <= $absSize) {
             $repeated = array_fill(0, $absSize - $arrSize, $value);
@@ -2812,7 +2829,7 @@ final class Arr
 
     /**
      * Pops the element off the end of the given array (reference).
-     * Throws a RuntimeException, if the array is empty.
+     * Throws `InvalidOperationException`, if `&$array` is empty.
      *
      * Example:
      * ```php
@@ -2834,7 +2851,7 @@ final class Arr
         $popped = self::popOrNull($array);
 
         if ($popped === null) {
-            throw new RuntimeException('&$array must contain at least one element.');
+            throw new InvalidOperationException('&$array must contain at least one element.');
         }
 
         return $popped;
@@ -2893,9 +2910,9 @@ final class Arr
     }
 
     /**
-     * Prepend value(s) to the front of the given iterable.
+     * Prepend value(s) to the front of `$iterable`.
      * The iterable must be convertable to a list.
-     * Will throw `InvalidArgumentException` if map is given.
+     * Throws `InvalidArgumentException` if map is given.
      *
      * Example:
      * ```php
@@ -2927,7 +2944,7 @@ final class Arr
     }
 
     /**
-     * Move elements that match condition to the top of the array.
+     * Returns an array with elements that match `$condition` moved to the top.
      *
      * Example:
      * ```php
@@ -2978,9 +2995,9 @@ final class Arr
     }
 
     /**
-     * Remove the given key from the array and return the pulled value.
-     * If the given key is not found, a RuntimeException is thrown.
+     * Removes the given key from `&$array` and returns the pulled value.
      * If the given array is a list, the list will be re-indexed.
+     * Throws `RuntimeException` if the given key is not found.
      *
      * Example:
      * ```php
@@ -3017,8 +3034,8 @@ final class Arr
     }
 
     /**
-     * Remove the given key from the array and return the pulled value.
-     * If the given key is not found, the default value is returned instead.
+     * Removes the given key from the array and returns the pulled value.
+     * If the given key is not found, value of `$default` is returned instead.
      * If the given array is a list, the list will be re-indexed.
      *
      * Example:
@@ -3067,9 +3084,9 @@ final class Arr
     }
 
     /**
-     * Remove the given key from the array and return the pulled value.
+     * Removes the given key from the array and returns the pulled value.
      * If the given key is not found, **null** is returned instead.
-     * If the given array is a list, the list will be re-indexed.
+     * If `&$array` is a list, the list will be re-indexed.
      *
      * Example:
      * ```php
@@ -3100,7 +3117,7 @@ final class Arr
     }
 
     /**
-     * Remove given keys from the array and return the pulled values as list.
+     * Removes `$keys` from the `&$array` and returns the pulled values as list.
      * If the given array is a list, the list will be re-indexed.
      *
      * Example:
@@ -3148,7 +3165,7 @@ final class Arr
 
     /**
      * Pushes values to the end of the given list (reference).
-     * Will throw `InvalidArgumentException` if map is given.
+     * Throws `InvalidArgumentException` if map is given.
      *
      * Example:
      * ```php
@@ -3177,8 +3194,11 @@ final class Arr
     }
 
     /**
-     * Iteratively reduce the given iterable to a single value using the
-     * provided callback.
+     * Iteratively reduce `$iterable` to a single value by invoking
+     * `$callback($reduced, $val, $key)`.
+     * Throws `InvalidOperationException` if `$iterable` is empty.
+     *
+     * TODO make a OrNull version.
      *
      * Example:
      * ```php
@@ -3211,7 +3231,9 @@ final class Arr
             }
         }
 
-        Assert::notNull($result, 'Iterable must contain at least one element.');
+        if (!$initialized) {
+            throw new InvalidOperationException('$iterable must contain at least one element.');
+        }
 
         return $result;
     }
@@ -3248,7 +3270,7 @@ final class Arr
     }
 
     /**
-     * Remove the given value from the array.
+     * Removes the given value from `&$array`.
      * Limit can be set to specify the number of times a value should be removed.
      * Returns the keys of the removed value.
      *
@@ -3303,7 +3325,7 @@ final class Arr
     }
 
     /**
-     * Remove the specified key from the given array.
+     * Removes the specified key from `&$array`.
      * Returns **true** if key exists, **false** otherwise.
      *
      * Example:
@@ -3333,7 +3355,7 @@ final class Arr
     }
 
     /**
-     * Repeat a given iterable for a given number of times.
+     * Returns an array which contains `$iterable` for a given number of times.
      *
      * Example
      * ```php
@@ -3357,8 +3379,8 @@ final class Arr
     }
 
     /**
-     * Returns an array which contains keys and values from given iterable
-     * but with the search value replaced with the replacement value.
+     * Returns an array which contains keys and values from `$iterable`
+     * but with the `$search` value replaced with the `$replacement` value.
      *
      * Example:
      * ```php
@@ -3397,7 +3419,7 @@ final class Arr
     }
 
     /**
-     * Returns an array which contain all elements of the given iterable in reverse order.
+     * Returns an array which contain all elements of `$iterable` in reverse order.
      *
      * Example:
      * ```php
@@ -3426,9 +3448,9 @@ final class Arr
     }
 
     /**
-     * Convert the given iterable to an array and rotate the array to the right
-     * by n steps. If the provided step is a negative value, the array will
-     * rotate to the left instead.
+     * Converts `$iterable` to an array and rotate the array to the right
+     * by `$steps`. If `$steps` is a negative value, the array will rotate
+     * to the left instead.
      *
      * Example:
      * ```php
@@ -3485,7 +3507,7 @@ final class Arr
     }
 
     /**
-     * Returns a random element from the given iterable.
+     * Returns a random element from `$iterable`.
      *
      * Example:
      * ```php
@@ -3519,9 +3541,11 @@ final class Arr
     }
 
     /**
-     * Returns a list of n random elements from the given iterable.
+     * Returns a list of `$amount` random elements from `$iterable`.
      * Order of elements that were sampled will be retained.
      * Ex: Arr::sampleMany([1, 2], 2); will always return [1, 2] and never [2, 1]
+     * TODO add no duplicates examples
+     * TODO check for positive amount
      *
      * Example:
      * ```php
@@ -4267,7 +4291,7 @@ final class Arr
     /**
      * Get the sum of the elements inside iterable.
      * The elements must be af type int or float.
-     * If the iterable contains NAN, a RuntimeException will be thrown.
+     * Throws `RuntimeException` if the iterable contains NAN.
      *
      * Example:
      * ```php
@@ -4300,6 +4324,7 @@ final class Arr
 
     /**
      * Returns the symmetric difference of the given iterables.
+     * Throws `InvalidArgumentException` if comparing a map to a list.
      *
      * Example:
      * ```php
@@ -4354,7 +4379,7 @@ final class Arr
     }
 
     /**
-     * Take the first n elements from given iterable.
+     * Take the first n elements from `$iterable`.
      *
      * Example:
      * ```php
@@ -4379,7 +4404,7 @@ final class Arr
     }
 
     /**
-     * Take the last n elements from given iterable.
+     * Take the last n elements from `$iterable`.
      *
      * Example:
      * ```php
@@ -4413,7 +4438,7 @@ final class Arr
     }
 
     /**
-     * Takes elements in iterable until `$condition` returns **true**.
+     * Takes elements in `$iterable` until `$condition` returns **true**.
      *
      * Example:
      * ```php
@@ -4601,17 +4626,25 @@ final class Arr
         mixed $val,
     ): string
     {
-        return match (true) {
-            is_null($val) => '',
-            is_int($val) => "i:$val",
-            is_float($val) => "f:$val",
-            is_bool($val) => "b:$val",
-            is_string($val) => "s:$val",
-            is_array($val) => 'a:' . json_encode(array_map(self::valueToKeyString(...), $val), JSON_THROW_ON_ERROR),
-            is_object($val) => 'o:' . spl_object_id($val),
-            is_resource($val) => 'r:' . get_resource_id($val),
-            default => throw new LogicException('Invalid Type: ' . gettype($val)),
-        };
+        try {
+            return match (true) {
+                is_null($val) => '',
+                is_int($val) => "i:$val",
+                is_float($val) => "f:$val",
+                is_bool($val) => "b:$val",
+                is_string($val) => "s:$val",
+                is_array($val) => 'a:' . json_encode(array_map(self::valueToKeyString(...), $val), JSON_THROW_ON_ERROR),
+                is_object($val) => 'o:' . spl_object_id($val),
+                is_resource($val) => 'r:' . get_resource_id($val),
+                default => throw new LogicException('Invalid Type: ' . gettype($val)),
+            };
+        } catch (JsonException $e) {
+            throw new UnreachableException(
+                message: 'json_encode should never throw an error here but it did.',
+                context: ['value' => $val],
+                previous: $e,
+            );
+        }
     }
 
     /**

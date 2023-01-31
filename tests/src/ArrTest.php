@@ -11,6 +11,7 @@ use RuntimeException;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Collections\Utils\Iter;
+use SouthPointe\Core\Exceptions\InvalidOperationException;
 use stdClass;
 use TypeError;
 use function array_keys;
@@ -1504,7 +1505,7 @@ class ArrTest extends TestCase
 
     public function test_max_with_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidOperationException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::max([]);
     }
