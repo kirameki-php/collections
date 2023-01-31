@@ -2,7 +2,6 @@
 
 namespace SouthPointe\Collections;
 
-use Webmozart\Assert\Assert;
 use function assert;
 use function is_array;
 

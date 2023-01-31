@@ -1942,7 +1942,7 @@ final class Arr
     {
         $str = null;
         foreach ($iterable as $value) {
-            $str.= $str !== null
+            $str .= $str !== null
                 ? $glue . $value
                 : $value;
         }
@@ -2124,7 +2124,7 @@ final class Arr
                 return $count - 1;
             }
             end($array);
-            while(($key = key($array)) !== null) {
+            while (($key = key($array)) !== null) {
                 --$count;
                 $val = current($array);
                 /** @var TKey $key */
@@ -2211,7 +2211,7 @@ final class Arr
 
         $condition ??= static fn() => true;
 
-        while(($key = key($copy)) !== null) {
+        while (($key = key($copy)) !== null) {
             $val = current($copy);
             /** @var TKey $key */
             /** @var TValue $val */
@@ -2259,7 +2259,7 @@ final class Arr
 
         $condition ??= static fn($v, $k) => true;
 
-        while(($key = key($array)) !== null) {
+        while (($key = key($array)) !== null) {
             /** @var TKey $key */
             /** @var TValue $val */
             $val = current($array);
@@ -2508,7 +2508,7 @@ final class Arr
         foreach ($merging as $key => $val) {
             if (is_int($key)) {
                 $merged[] = $val;
-            } else if ($depth > 1 && array_key_exists($key, $merged) && is_iterable($merged[$key]) && is_iterable($val)) {
+            } elseif ($depth > 1 && array_key_exists($key, $merged) && is_iterable($merged[$key]) && is_iterable($val)) {
                 $left = $merged[$key];
                 $right = $val;
                 /**
@@ -2725,7 +2725,7 @@ final class Arr
     /**
      * Returns a new array which only contain the elements that has matching
      * keys in the given iterable. Non-existent keys will be ignored.
-
+     * 
      * Example:
      * ```php
      * Arr::only(['a' => 1, 'b' => 2, 'c' => 3], ['b', 'd']); // ['b' => 2]
@@ -3912,7 +3912,7 @@ final class Arr
         $keys = $randomizer->shuffleArray(array_keys($array));
 
         $shuffled = [];
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $shuffled[$key] = $array[$key];
         }
 
@@ -4014,7 +4014,7 @@ final class Arr
      * If **null**, the result will be re-indexed only if it's a list.
      * Defaults to **null**.
      * @return array<TKey, TValue>
-     *@see self::sortDesc()
+     * @see self::sortDesc()
      *
      * @template TKey of array-key
      * @template TValue
@@ -4106,7 +4106,7 @@ final class Arr
     public static function sortByKey(
         iterable $iterable,
         bool $ascending,
-        int $flag = SORT_REGULAR
+        int $flag = SORT_REGULAR,
     ): array
     {
         $copy = self::from($iterable);
@@ -4287,7 +4287,7 @@ final class Arr
     ): mixed
     {
         $total = 0;
-        foreach($iterable as $val) {
+        foreach ($iterable as $val) {
             $total += $val;
         }
 
@@ -4601,7 +4601,7 @@ final class Arr
         mixed $val,
     ): string
     {
-        return match(true) {
+        return match (true) {
             is_null($val) => '',
             is_int($val) => "i:$val",
             is_float($val) => "f:$val",

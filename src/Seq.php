@@ -555,7 +555,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      * Passes $this to the given callback and returns the result.
      *
      * @template TPipe
-     * @param  Closure($this): TPipe  $callback
+     * @param Closure($this): TPipe $callback
      * @return TPipe
      */
     public function pipe(Closure $callback)

@@ -6,7 +6,6 @@ use ArrayAccess;
 use Closure;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Core\Exceptions\NotSupportedException;
-use Webmozart\Assert\Assert;
 use function assert;
 use function is_array;
 

@@ -18,7 +18,7 @@ class Iterator implements IteratorAggregate
      * @param iterable<TKey, TValue> $items
      */
     public function __construct(
-        protected iterable $items = []
+        protected iterable $items = [],
     )
     {
     }

@@ -31,7 +31,7 @@ class LazySeq extends Seq
      */
     public function chunk(int $size): self
     {
-        return self::fromClosure(function () use ($size) {
+        return self::fromClosure(function() use ($size) {
             foreach (Iter::chunk($this, $size) as $key => $chunk) {
                 yield $key => $this->newInstance($chunk);
             }
@@ -67,7 +67,7 @@ class LazySeq extends Seq
      */
     public function each(Closure $callback): static
     {
-        return self::fromClosure(function () use ($callback) {
+        return self::fromClosure(function() use ($callback) {
             foreach ($this as $key => $item) {
                 $callback($item, $key);
                 yield $key => $item;
