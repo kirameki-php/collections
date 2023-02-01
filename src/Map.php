@@ -6,6 +6,7 @@ use ArrayAccess;
 use Closure;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Core\Exceptions\NotSupportedException;
+use function array_is_list;
 use function assert;
 use function is_array;
 
@@ -24,6 +25,19 @@ class Map extends Seq implements ArrayAccess
     {
         parent::__construct($items, false);
     }
+
+    /**
+     * @template TNewValue
+     * @param TNewValue ...$values
+     * @return self<string, TNewValue>
+     */
+    public static function of(mixed ...$values): self
+    {
+        assert(!array_is_list($values));
+        /** @var array<string, TNewValue> $values */
+        return new self($values);
+    }
+
 
     /**
      * @param TKey $offset

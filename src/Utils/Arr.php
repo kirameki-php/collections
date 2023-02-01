@@ -111,7 +111,7 @@ final class Arr
 
     /**
      * Returns the item at the given index.
-     * Error is thrown if the index does not exist.
+     * Throws `InvalidArgumentException` if the index does not exist.
      *
      * Example:
      * ```php
@@ -137,7 +137,7 @@ final class Arr
         $result = self::atOr($iterable, $index, self::miss());
 
         if ($result instanceof self) {
-            throw new RuntimeException("Index out of bounds. position: $index");
+            throw new InvalidArgumentException("Index out of bounds. position: $index");
         }
 
         return $result;
@@ -215,7 +215,7 @@ final class Arr
     /**
      * Get the average of the elements inside `$iterable`.
      * The elements must be af type int or float.
-     * Throws `RuntimeException` If the iterable is empty or contains NAN.
+     * Throws `InvalidArgumentException` If the iterable is empty or contains NAN.
      *
      * Example:
      * ```php
@@ -237,7 +237,7 @@ final class Arr
         $average = self::averageOrNull($iterable);
 
         if ($average === null) {
-            throw new RuntimeException('$iterable must contain at least one element.');
+            throw new InvalidArgumentException('$iterable must contain at least one element.');
         }
 
         return $average;
@@ -247,7 +247,7 @@ final class Arr
      * Get the average of the elements inside `$iterable`.
      * The elements must be af type int or float.
      * If `$iterable` is empty, **null** will be returned.
-     * Throws `RuntimeException` if iterable contains NAN.
+     * Throws `InvalidArgumentException` if iterable contains NAN.
      *
      * Example:
      * ```php
@@ -278,7 +278,7 @@ final class Arr
         }
 
         if (is_float($sum) && is_nan($sum)) {
-            throw new RuntimeException('$iterable cannot contain NAN.');
+            throw new InvalidArgumentException('$iterable cannot contain NAN.');
         }
 
         return $sum / $size;
@@ -337,12 +337,12 @@ final class Arr
 
     /**
      * Returns the first non-null value in the array.
-     * Throws `RuntimeException` if `$iterable` is empty or if all elements are **null**.
+     * Throws `InvalidArgumentException` if `$iterable` is empty or if all elements are **null**.
      *
      * Example:
      * ```php
      * Arr::coalesce([null, null, 1]); // 1
-     * Arr::coalesce([null, null]); // RuntimeException
+     * Arr::coalesce([null, null]); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -358,7 +358,7 @@ final class Arr
         $result = self::coalesceOrNull($iterable);
 
         if ($result === null) {
-            throw new RuntimeException('Non-null value could not be found.');
+            throw new InvalidArgumentException('Non-null value could not be found.');
         }
 
         return $result;
@@ -1536,13 +1536,13 @@ final class Arr
 
     /**
      * Returns the element of the given key.
-     * If key does not exist, an exception is thrown.
+     * Throws `InvalidArgumentException` if key does not exist.
      *
      * Example:
      * ```php
      * Arr::get([1, 2], key: 1); // 2
      * Arr::get(['a' => 1], key: 'a'); // 1
-     * Arr::get(['a' => 1], key: 'c'); // RuntimeException: Undefined array key "c"
+     * Arr::get(['a' => 1], key: 'c'); // InvalidArgumentException: Undefined array key "c"
      * ```
      *
      * @template TKey of array-key
@@ -1561,7 +1561,7 @@ final class Arr
         $result = self::getOr($iterable, $key, self::miss());
 
         if ($result instanceof self) {
-            throw new RuntimeException(
+            throw new InvalidArgumentException(
                 'Undefined key ' . (is_string($key) ? "\"$key\"" : $key)
             );
         }
@@ -2363,11 +2363,11 @@ final class Arr
      * Returns the largest element from `$iterable`.
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.
-     * Throws `RuntimeException`, If `$iterable` is empty or contains NAN.
+     * Throws `InvalidArgumentException`, If `$iterable` is empty or contains NAN.
      *
      * Example:
      * ```php
-     * Arr::max([], fn($i) => true) // RuntimeException
+     * Arr::max([], fn($i) => true) // InvalidArgumentException
      * Arr::max([1, 2, 3]) // 3
      * Arr::max([-1, -2, -3]) // -1
      * Arr::max([-1, -2, -3], abs(...)) // 3
@@ -2402,7 +2402,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.
      * Returns **null** if `$iterable` is empty.
-     * A RuntimeException will the thrown if `$iterable` contains NAN.
+     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2442,7 +2442,7 @@ final class Arr
         }
 
         if (is_float($maxVal) && is_nan($maxVal)) {
-            throw new RuntimeException('$iterable cannot contain NAN.');
+            throw new InvalidArgumentException('$iterable cannot contain NAN.');
         }
 
         return $maxVal;
@@ -2559,11 +2559,11 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
      * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
-     * Throws `RuntimeException` if `$iterable` contains NAN.
+     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
-     * Arr::min([], fn($i) => true) // RuntimeException
+     * Arr::min([], fn($i) => true) // InvalidArgumentException
      * Arr::min([1, 2, 3]) // 1
      * Arr::min([-1, -2, -3]) // -3
      * Arr::min([-1, -2, -3], abs(...)) // 3
@@ -2605,7 +2605,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
      * Returns **null** if the iterable is empty.
-     * Throws `RuntimeException` if `$iterable` contains NAN.
+     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2646,7 +2646,7 @@ final class Arr
         }
 
         if (is_float($minVal) && is_nan($minVal)) {
-            throw new RuntimeException('$iterable cannot contain NAN.');
+            throw new InvalidArgumentException('$iterable cannot contain NAN.');
         }
 
         return $minVal;
@@ -2657,7 +2657,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
      * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
-     * Throws `RuntimeException` if `$iterable` contains NAN.
+     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2698,7 +2698,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
      * If the iterable is empty, **null** will be returned.
-     * Throws `RuntimeException` if `$iterable` contains NAN.
+     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2746,7 +2746,7 @@ final class Arr
         }
 
         if ((is_float($minVal) && is_nan($minVal)) || (is_float($maxVal) && is_nan($maxVal))) {
-            throw new RuntimeException('$iterable cannot contain NAN.');
+            throw new InvalidArgumentException('$iterable cannot contain NAN.');
         }
 
         return [
@@ -2863,7 +2863,7 @@ final class Arr
      * ```php
      * $array = ['a' => 1];
      * Arr::pop($array); // 1
-     * Arr::pop($array); // RuntimeException
+     * Arr::pop($array); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -3030,13 +3030,13 @@ final class Arr
     /**
      * Removes the given key from `&$array` and returns the pulled value.
      * If the given array is a list, the list will be re-indexed.
-     * Throws `RuntimeException` if the given key is not found.
+     * Throws `InvalidArgumentException` if the given key is not found.
      *
      * Example:
      * ```php
      * $array = ['a' => 1];
      * Arr::pull($array, 'a'); // 1
-     * Arr::pull($array, 'a'); // RuntimeException
+     * Arr::pull($array, 'a'); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -3060,7 +3060,7 @@ final class Arr
         $result = self::pullOr($array, $key, self::miss(), $reindex);
 
         if ($result instanceof self) {
-            throw new RuntimeException("Tried to pull undefined key \"$key\"");
+            throw new InvalidArgumentException("Tried to pull undefined key \"$key\"");
         }
 
         return $result;
@@ -3541,6 +3541,8 @@ final class Arr
 
     /**
      * Returns a random element from `$iterable`.
+     * Throws `InvalidArgumentException` if `$iterable` is empty.
+     * TODO add Or and OrNull version
      *
      * Example:
      * ```php
@@ -3566,7 +3568,7 @@ final class Arr
         $array = self::from($iterable);
 
         if (self::isEmpty($array)) {
-            throw new RuntimeException('$iterable must contain at least one element.');
+            throw new InvalidArgumentException('$iterable must contain at least one element.');
         }
 
         $key = $randomizer->pickArrayKeys($array, 1)[0];
@@ -3850,8 +3852,8 @@ final class Arr
     }
 
     /**
-     * Shift an element off the beginning of array.
-     * Throws a RuntimeException if the given array is empty.
+     * Shift an element off the beginning of `&$array`.
+     * Throws a `InvalidArgumentException` if `&$array` is empty.
      *
      * Example:
      * ```php
@@ -3859,7 +3861,7 @@ final class Arr
      * Arr::shift($list); // 1 ($list is now [2])
      *
      * $empty = [];
-     * Arr::shift($empty); // RuntimeException
+     * Arr::shift($empty); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -4024,12 +4026,12 @@ final class Arr
      * Returns the only element in the given iterable.
      * If a condition is also given, the sole element of a sequence that satisfies a specified
      * condition is returned instead.
-     * If there are more than one element which will be returned, a RuntimeException will be thrown.
+     * Throws `InvalidArgumentException` if there are more than one element in `$iterable`.
      *
      * Example:
      * ```php
      * Arr::sole([1]); // 1
-     * Arr::sole([1, 2]); // RuntimeException
+     * Arr::sole([1, 2]); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -4051,7 +4053,7 @@ final class Arr
             : self::from($iterable);
 
         if (($count = count($array)) !== 1) {
-            throw new RuntimeException("Expected only one element in result. $count given.");
+            throw new InvalidArgumentException("Expected only one element in result. $count given.");
         }
 
         /** @var TValue $current */
@@ -4330,7 +4332,7 @@ final class Arr
     /**
      * Get the sum of the elements inside iterable.
      * The elements must be af type int or float.
-     * Throws `RuntimeException` if the iterable contains NAN.
+     * Throws `InvalidArgumentException` if the iterable contains NAN.
      *
      * Example:
      * ```php
@@ -4355,7 +4357,7 @@ final class Arr
         }
 
         if (is_float($total) && is_nan($total)) {
-            throw new RuntimeException('$iterable cannot contain NAN.');
+            throw new InvalidArgumentException('$iterable cannot contain NAN.');
         }
 
         return $total;

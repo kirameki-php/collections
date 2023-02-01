@@ -6,7 +6,6 @@ use Exception;
 use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
-use RuntimeException;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
@@ -56,14 +55,14 @@ class ArrTest extends TestCase
 
     public function test_at_on_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Index out of bounds. position: 0');
         self::assertSame(null, Arr::at([], 0));
     }
 
     public function test_at_missing_index(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Index out of bounds. position: 5');
         self::assertSame(null, Arr::at([1, 2, 3], 5));
     }
@@ -113,13 +112,13 @@ class ArrTest extends TestCase
 
     public function test_average_not_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         Arr::average([]);
     }
 
     public function test_average_with_NAN(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::average([NAN, -INF, INF]);
     }
@@ -136,7 +135,7 @@ class ArrTest extends TestCase
 
     public function test_averageOrNull_with_NAN(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::average([NAN, -INF, INF]);
     }
@@ -211,14 +210,14 @@ class ArrTest extends TestCase
 
     public function test_coalesce_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Non-null value could not be found.');
         Arr::coalesce([]);
     }
 
     public function test_coalesce_only_null(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Non-null value could not be found.');
         Arr::coalesce([null]);
     }
@@ -757,7 +756,7 @@ class ArrTest extends TestCase
 
     public function test_getOrFail_invalid_key_exception(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Undefined key 2');
         Arr::get([1, 2], 2);
     }
@@ -1510,7 +1509,7 @@ class ArrTest extends TestCase
 
     public function test_max_with_NAN(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::max([NAN, -INF, INF]);
     }
@@ -1530,7 +1529,7 @@ class ArrTest extends TestCase
 
     public function test_maxOrNull_with_NAN(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::maxOrNull([NAN, -INF, INF]);
     }
@@ -1614,7 +1613,7 @@ class ArrTest extends TestCase
 
     public function test_min_with_NAN(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::min([NAN, -INF, INF]);
     }
@@ -1645,7 +1644,7 @@ class ArrTest extends TestCase
 
     public function test_minMax_with_NAN(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::minMax([NAN, -INF, INF]);
     }
@@ -1890,7 +1889,7 @@ class ArrTest extends TestCase
 
     public function test_pull_on_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Tried to pull undefined key "1"');
         $empty = [];
         Arr::pull($empty, 1);
@@ -1898,7 +1897,7 @@ class ArrTest extends TestCase
 
     public function test_pull_undefined_key(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Tried to pull undefined key "c"');
         $assoc = ['a' => 1, 'b' => 2];
         Arr::pull($assoc, 'c');
