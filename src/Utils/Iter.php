@@ -4,7 +4,7 @@ namespace SouthPointe\Collections\Utils;
 
 use Closure;
 use Generator;
-use Webmozart\Assert\Assert;
+use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use function count;
 use function is_iterable;
 use const PHP_INT_MAX;
@@ -26,7 +26,12 @@ final class Iter
      */
     public static function chunk(iterable $iterable, int $size, bool $reindex = false): Generator
     {
-        Assert::positiveInteger($size);
+        if ($size < 1) {
+            throw new InvalidArgumentException("Expected: \$size >= 1. Got: {$size}", [
+                'iterable' => $iterable,
+                'size' => $size,
+            ]);
+        }
 
         $remaining = $size;
         $chunk = [];
@@ -86,7 +91,13 @@ final class Iter
      */
     public static function dropFirst(iterable $iterable, int $amount, bool $reindex = false): Generator
     {
-        Assert::greaterThanEq($amount, 0);
+        if ($amount < 0) {
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
+                'iterable' => $iterable,
+                'amount' => $amount,
+            ]);
+        }
+
         return self::slice($iterable, $amount, PHP_INT_MAX, $reindex);
     }
 
@@ -215,7 +226,13 @@ final class Iter
      */
     public static function flatten(iterable $iterable, int $depth = 1): Generator
     {
-        Assert::positiveInteger($depth);
+        if ($depth <= 0) {
+            throw new InvalidArgumentException("Expected: \$depth > 0. Got: {$depth}", [
+                'iterable' => $iterable,
+                'depth' => $depth,
+            ]);
+        }
+
         return self::flattenImpl($iterable, $depth);
     }
 
@@ -283,13 +300,18 @@ final class Iter
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param int<0, max> $times
+     * @param int $times
      * Amount of times the iterable will be repeated.
      * @return Generator<TKey, TValue>
      */
     public static function repeat(iterable $iterable, int $times): Generator
     {
-        Assert::greaterThanEq($times, 0);
+        if ($times < 0) {
+            throw new InvalidArgumentException("Expected: \$times >= 0. Got: {$times}", [
+                'iterable' => $iterable,
+                'times' => $times,
+            ]);
+        }
 
         for ($i = 0; $i < $times; $i++) {
             foreach ($iterable as $key => $val) {
@@ -366,7 +388,13 @@ final class Iter
      */
     public static function takeFirst(iterable $iterable, int $amount): Generator
     {
-        Assert::greaterThanEq($amount, 0);
+        if ($amount < 0) {
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
+                'iterable' => $iterable,
+                'amount' => $amount,
+            ]);
+        }
+
         return self::slice($iterable, 0, $amount);
     }
 

@@ -3,7 +3,9 @@
 namespace SouthPointe\Collections;
 
 use SouthPointe\Collections\Utils\Arr;
-use Webmozart\Assert\Assert;
+use SouthPointe\Core\Exceptions\InvalidArgumentException;
+use function gettype;
+use function SouthPointe\Core\is_not_array_key;
 
 /**
  * @template TKey of array-key|class-string
@@ -35,12 +37,21 @@ trait MutatesSelf
     public function offsetSet(mixed $offset, mixed $value): void
     {
         $ref = &$this->getItemsAsRef();
+
         if ($offset === null) {
             $ref[] = $value;
-        } else {
-            Assert::validArrayKey($offset);
-            $ref[$offset] = $value;
+            return;
         }
+
+        if (is_not_array_key($offset)) {
+            throw new InvalidArgumentException('Expected: $offset\'s type to be int|string. Got: ' . gettype($offset), [
+                'this' => $this,
+                'offset' => $offset,
+                'value' => $value,
+            ]);
+        }
+
+        $ref[$offset] = $value;
     }
 
     /**

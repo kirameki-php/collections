@@ -14,8 +14,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-timer" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/phpstan/extension-installer" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/phpstan/phpstan-webmozart-assert" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpstan/phpstan" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpspec/prophecy" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phar-io/version" />

@@ -3,16 +3,13 @@
 namespace SouthPointe\Collections\Utils;
 
 use Closure;
-use InvalidArgumentException;
 use JsonException;
 use LogicException;
 use Random\Randomizer;
 use RuntimeException;
-use SouthPointe\Collections\Exceptions\DuplicateKeyException;
-use SouthPointe\Core\Exceptions\InvalidOperationException;
+use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
 use Traversable;
-use Webmozart\Assert\Assert;
 use function abs;
 use function array_diff;
 use function array_diff_ukey;
@@ -58,6 +55,7 @@ use function krsort;
 use function ksort;
 use function max;
 use function prev;
+use function SouthPointe\Core\is_not_array_key;
 use function spl_object_id;
 use function uasort;
 use function uksort;
@@ -893,7 +891,13 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        Assert::greaterThanEq($amount, 0);
+        if ($amount < 0) {
+            throw new InvalidArgumentException("Expected \$amount >= 0. Got: {$amount}", [
+                'iterable' => $iterable,
+                'amount' => $amount,
+            ]);
+        }
+
         $array = self::from($iterable);
         $length = count($array);
         $reindex ??= array_is_list($array);
@@ -1111,13 +1115,13 @@ final class Arr
     /**
      * Returns the first element in iterable.
      * If `$condition` is set, the first element which meets the condition is returned instead.
-     * Throws `InvalidOperationException` if condition has no matches.
+     * Throws `InvalidArgumentException` if condition has no matches.
      *
      * Example:
      * ```php
      * Arr::first([1, 2], fn($val) => $val > 1); // 2
-     * Arr::first([1, 2], fn($val) => $val > 2); // RuntimeException: Failed to find matching condition.
-     * Arr::first([], fn($val) => $val > 2); // RuntimeException: Iterable must contain at least one element.
+     * Arr::first([1, 2], fn($val) => $val > 2); // InvalidArgumentException: Failed to find matching condition.
+     * Arr::first([], fn($val) => $val > 2); // InvalidArgumentException: $iterable must contain at least one element.
      * ```
      *
      * @template TKey of array-key
@@ -1140,7 +1144,7 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new InvalidOperationException($message, [
+            throw new InvalidArgumentException($message, [
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -1152,14 +1156,14 @@ final class Arr
     /**
      * Returns the first index of iterable which meets the given condition.
      *
-     * Throws `InvalidOperationException` if `$condition` has no matches.
+     * Throws `InvalidArgumentException` if `$condition` has no matches.
      *
      * Example:
      * ```php
      * Arr::firstIndex([1, 2, 3], fn($val) => $val > 1); // 1
      * Arr::firstIndex([1, 2, 3], fn($val) => $val > 3); // null
      * Arr::firstIndex(['a' => 1, 'b' => 2], fn($val, $key) => $key === 'b'); // 1
-     * Arr::firstIndex([1], fn($v, $k) => false); // InvalidOperationException
+     * Arr::firstIndex([1], fn($v, $k) => false); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -1178,7 +1182,7 @@ final class Arr
         $result = self::firstIndexOrNull($iterable, $condition);
 
         if ($result === null) {
-            throw new InvalidOperationException('Failed to find matching condition.', [
+            throw new InvalidArgumentException('Failed to find matching condition.', [
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -1229,13 +1233,13 @@ final class Arr
     /**
      * Returns the first key of the given iterable which meets the given condition.
      *
-     * Throws `InvalidOperationException` if no condition is met or if `$iterable` is empty.
+     * Throws `InvalidArgumentException` if no condition is met or if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::firstKey(['a' => 1, 'b' => 2], fn($v, $k) => $k === 'b'); // 'b'
      * Arr::firstKey([1, 2, 3], fn($val) => $val > 1); // 1
-     * Arr::firstKey([1, 2, 3], fn($val) => $val > 3); // InvalidOperationException
+     * Arr::firstKey([1, 2, 3], fn($val) => $val > 3); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -1258,7 +1262,7 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new InvalidOperationException($message, [
+            throw new InvalidArgumentException($message, [
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -1448,10 +1452,19 @@ final class Arr
     {
         $flipped = [];
         foreach ($iterable as $key => $val) {
-            Assert::validArrayKey($val);
+            if (is_not_array_key($val)) {
+                throw new InvalidArgumentException('Expected: array value of type int|string. Got: ' . gettype($val), [
+                    'iterable' => $iterable,
+                    'key' => $key,
+                    'value' => $val,
+                ]);
+            }
 
             if (!$overwrite && array_key_exists($val, $flipped)) {
-                throw new DuplicateKeyException($val, $iterable);
+                throw new InvalidArgumentException("Tried to overwrite existing key: {$val}", [
+                    'iterable' => $iterable,
+                    'key' => $val,
+                ]);
             }
 
             $flipped[$val] = $key;
@@ -1648,13 +1661,21 @@ final class Arr
         $reindex ??= array_is_list($array);
 
         $map = [];
-        foreach ($iterable as $_key => $val) {
-            $groupKey = $callback($val, $_key);
-            Assert::validArrayKey($groupKey);
+        foreach ($iterable as $key => $val) {
+            $groupKey = $callback($val, $key);
+            if (is_not_array_key($groupKey)) {
+                throw new InvalidArgumentException('Expected: Grouping key of type int|string. Got: ' . gettype($groupKey), [
+                    'iterable' => $iterable,
+                    'callback' => $callback,
+                    'key' => $key,
+                    'value' => $val,
+                    'groupKey' => $groupKey,
+                ]);
+            }
             $map[$groupKey] ??= [];
             $reindex
                 ? $map[$groupKey][] = $val
-                : $map[$groupKey][$_key] = $val;
+                : $map[$groupKey][$key] = $val;
         }
 
         return $map;
@@ -1722,7 +1743,11 @@ final class Arr
         if (!$reindex && !$overwrite) {
             $duplicates = self::keys(self::intersectKeys($array, $values));
             if (self::isNotEmpty($duplicates)) {
-                throw new DuplicateKeyException($duplicates[0], $values);
+                throw new InvalidArgumentException("Tried to overwrite existing key: {$duplicates[0]}", [
+                    'array' => $array,
+                    'values' => $values,
+                    'key' => $duplicates[0],
+                ]);
             }
         }
 
@@ -1982,7 +2007,10 @@ final class Arr
             $newKey = self::ensureKey($callback($val, $oldKey));
 
             if (!$overwrite && array_key_exists($newKey, $result)) {
-                throw new DuplicateKeyException($newKey, $iterable);
+                throw new InvalidArgumentException("Tried to overwrite existing key: {$newKey}", [
+                    'iterable' => $iterable,
+                    'newKey' => $newKey,
+                ]);
             }
 
             $result[$newKey] = $val;
@@ -2014,13 +2042,13 @@ final class Arr
     /**
      * Returns the last element in iterable.
      * If `$condition` is set, the last element which meets the condition is returned instead.
-     * Throws `InvalidOperationException` if condition is not met or if `$iterable` is empty.
+     * Throws `InvalidArgumentException` if condition is not met or if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::last([1, 2], fn($val) => true); // 2
-     * Arr::last([1, 2], fn($val) => false); // InvalidOperationException: Failed to find matching condition.
-     * Arr::last([], fn($val) => true); // InvalidOperationException: Iterable must contain at least one element.
+     * Arr::last([1, 2], fn($val) => false); // InvalidArgumentException: Failed to find matching condition.
+     * Arr::last([], fn($val) => true); // InvalidArgumentException: Iterable must contain at least one element.
      * ```
      *
      * @template TKey of array-key
@@ -2043,7 +2071,7 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new InvalidOperationException($message, [
+            throw new InvalidArgumentException($message, [
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -2055,13 +2083,13 @@ final class Arr
     /**
      * Returns the last index of `$iterable` which meets the given condition.
      *
-     * Throws `InvalidOperationException` if no condition is met or if `$iterable` is empty.
+     * Throws `InvalidArgumentException` if no condition is met or if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::lastIndex([1, 2, 3, 4], fn($v) => true); // 3
      * Arr::lastIndex(['a' => 1, 'b' => 2]); // 1
-     * Arr::lastIndex([1, 2], fn($v) => false); // InvalidOperationException
+     * Arr::lastIndex([1, 2], fn($v) => false); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -2084,7 +2112,7 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new InvalidOperationException($message, [
+            throw new InvalidArgumentException($message, [
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -2144,13 +2172,13 @@ final class Arr
 
     /**
      * Returns the last key of `$iterable` which meets the given condition.
-     * Throws `InvalidOperationException` if no condition is met or if `$iterable` is empty.
+     * Throws `InvalidArgumentException` if no condition is met or if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::lastKey(['a' => 1, 'b' => 2]); // 'b'
      * Arr::lastKey([1, 2], fn($val) => true); // 2
-     * Arr::lastKey([1, 2], fn($val) => false); // InvalidOperationException
+     * Arr::lastKey([1, 2], fn($val) => false); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -2173,7 +2201,7 @@ final class Arr
             $message = ($condition !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new InvalidOperationException($message, [
+            throw new InvalidArgumentException($message, [
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -2363,7 +2391,7 @@ final class Arr
         $maxVal = self::maxOrNull($iterable, $by);
 
         if ($maxVal === null) {
-            throw new InvalidOperationException('$iterable must contain at least one element.');
+            throw new InvalidArgumentException('$iterable must contain at least one element.');
         }
 
         return $maxVal;
@@ -2530,7 +2558,7 @@ final class Arr
      * Returns the smallest element from the given array.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
-     * Throws `InvalidOperationException` if no match is found or if `$iterable` is empty.
+     * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
      * Throws `RuntimeException` if `$iterable` contains NAN.
      *
      * Example:
@@ -2563,7 +2591,7 @@ final class Arr
             $message = ($by !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new InvalidOperationException($message, [
+            throw new InvalidArgumentException($message, [
                 'iterable' => $iterable,
                 'condition' => $by,
             ]);
@@ -2628,14 +2656,14 @@ final class Arr
      * Returns the smallest and largest element from `$iterable` as array{ min: , max: }.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
-     * Throws `InvalidOperationException` if no match is found or if `$iterable` is empty.
+     * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
      * Throws `RuntimeException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
      * Arr::minMax([-1, 0, 1]) // ['min' => -1, 'max' => 1]
      * Arr::minMax([1]) // ['min' => 1, 'max' => 1]
-     * Arr::minMax([]) // InvalidOperationException
+     * Arr::minMax([]) // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -2657,7 +2685,7 @@ final class Arr
             $message = ($by !== null)
                 ? 'Failed to find matching condition.'
                 : '$iterable must contain at least one element.';
-            throw new InvalidOperationException($message, [
+            throw new InvalidArgumentException($message, [
                 'iterable' => $iterable,
                 'condition' => $by,
             ]);
@@ -2829,7 +2857,7 @@ final class Arr
 
     /**
      * Pops the element off the end of the given array (reference).
-     * Throws `InvalidOperationException`, if `&$array` is empty.
+     * Throws `InvalidArgumentException`, if `&$array` is empty.
      *
      * Example:
      * ```php
@@ -2851,7 +2879,7 @@ final class Arr
         $popped = self::popOrNull($array);
 
         if ($popped === null) {
-            throw new InvalidOperationException('&$array must contain at least one element.');
+            throw new InvalidArgumentException('&$array must contain at least one element.');
         }
 
         return $popped;
@@ -2881,7 +2909,12 @@ final class Arr
         int $amount,
     ): array
     {
-        Assert::greaterThan($amount, 0);
+        if ($amount <= 0) {
+            throw new InvalidArgumentException("Expected: \$amount >= 1. Got: {$amount}", [
+                'array' => $array,
+                'amount' => $amount,
+            ]);
+        }
         return array_splice($array, -$amount);
     }
 
@@ -3196,7 +3229,7 @@ final class Arr
     /**
      * Iteratively reduce `$iterable` to a single value by invoking
      * `$callback($reduced, $val, $key)`.
-     * Throws `InvalidOperationException` if `$iterable` is empty.
+     * Throws `InvalidArgumentException` if `$iterable` is empty.
      *
      * TODO make a OrNull version.
      *
@@ -3232,7 +3265,7 @@ final class Arr
         }
 
         if (!$initialized) {
-            throw new InvalidOperationException('$iterable must contain at least one element.');
+            throw new InvalidArgumentException('$iterable must contain at least one element.');
         }
 
         return $result;
@@ -3545,7 +3578,6 @@ final class Arr
      * Order of elements that were sampled will be retained.
      * Ex: Arr::sampleMany([1, 2], 2); will always return [1, 2] and never [2, 1]
      * TODO add no duplicates examples
-     * TODO check for positive amount
      *
      * Example:
      * ```php
@@ -3844,7 +3876,9 @@ final class Arr
         $shifted = self::shiftOrNull($array);
 
         if ($shifted === null) {
-            throw new RuntimeException('&$array must contain at least one element.');
+            throw new InvalidArgumentException('&$array must contain at least one element.', [
+                'array' => $array,
+            ]);
         }
 
         return $shifted;
@@ -3875,7 +3909,12 @@ final class Arr
         int $amount,
     ): array
     {
-        Assert::greaterThan($amount, 0);
+        if ($amount <= 0) {
+            throw new InvalidArgumentException("Expected: \$amount >= 1. Got: {$amount}", [
+                'array' => $array,
+                'amount' => $amount,
+            ]);
+        }
         return array_splice($array, 0, $amount);
     }
 
@@ -4430,7 +4469,13 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        Assert::greaterThanEq($amount, 0);
+        if ($amount < 0) {
+            throw new InvalidArgumentException("Expected \$amount >= 0. Got: {$amount}", [
+                'iterable' => $iterable,
+                'amount' => $amount,
+            ]);
+        }
+
         $array = self::from($iterable);
         $length = count($array);
         $reindex ??= array_is_list($array);

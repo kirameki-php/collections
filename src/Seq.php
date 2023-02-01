@@ -7,8 +7,8 @@ use Countable;
 use JsonSerializable;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Utils\Iter;
+use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Json;
-use Webmozart\Assert\Assert;
 use function array_is_list;
 use function is_iterable;
 use const PHP_INT_MAX;
@@ -881,8 +881,8 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     protected function asArrayRecursive(iterable $items, int $depth, bool $validate = false): array
     {
-        if ($validate) {
-            Assert::positiveInteger($depth);
+        if ($validate && $depth < 1) {
+            throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}");
         }
 
         return Arr::map($items, function($item) use ($depth) {

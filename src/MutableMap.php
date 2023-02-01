@@ -2,9 +2,11 @@
 
 namespace SouthPointe\Collections;
 
-use Webmozart\Assert\Assert;
+use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use function assert;
+use function gettype;
 use function is_array;
+use function SouthPointe\Core\is_not_array_key;
 
 /**
  * @template TKey of array-key|class-string
@@ -27,7 +29,14 @@ class MutableMap extends Map
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        Assert::validArrayKey($offset);
+        if (is_not_array_key($offset)) {
+            throw new InvalidArgumentException('Expected: $offset\'s type to be int|string. Got: ' . gettype($offset), [
+                'this' => $this,
+                'offset' => $offset,
+                'value' => $value,
+            ]);
+        }
+
         $this->baseOffsetSet($offset, $value);
     }
 

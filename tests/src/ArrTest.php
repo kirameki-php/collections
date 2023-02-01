@@ -3,15 +3,13 @@
 namespace Tests\SouthPointe\Collections;
 
 use Exception;
-use InvalidArgumentException;
 use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use RuntimeException;
 use SouthPointe\Collections\Utils\Arr;
-use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Collections\Utils\Iter;
-use SouthPointe\Core\Exceptions\InvalidOperationException;
+use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use stdClass;
 use TypeError;
 use function array_keys;
@@ -180,7 +178,7 @@ class ArrTest extends TestCase
     public function test_chunk_invalid_size(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a positive integer. Got: 0');
+        $this->expectExceptionMessage('Expected: $size >= 1. Got: 0');
         Arr::chunk([1], 0);
     }
 
@@ -545,7 +543,7 @@ class ArrTest extends TestCase
     public function test_dropFirst_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than or equal to 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
         Arr::dropFirst(['a' => 1], -1);
     }
 
@@ -570,7 +568,7 @@ class ArrTest extends TestCase
     public function test_dropLast_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than or equal to 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
         Arr::dropFirst(['a' => 1], -1);
     }
 
@@ -824,14 +822,14 @@ class ArrTest extends TestCase
 
     public function test_first_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::first([]);
     }
 
     public function test_first_bad_condition(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::first([1, 2], static fn(int $i) => $i > 2);
     }
@@ -854,14 +852,14 @@ class ArrTest extends TestCase
 
     public function test_firstIndex_on_empty_with_scalar_lookup(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::firstIndex([], 2);
     }
 
     public function test_firstIndex_on_empty_with_condition(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::firstIndex([], static fn($v, $k) => true);
     }
@@ -900,14 +898,14 @@ class ArrTest extends TestCase
 
     public function test_firstKey_on_null(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::firstKey([]);
     }
 
     public function test_firstKey_on_no_match(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::firstKey([1, 2], static fn($v, $k) => false);
     }
@@ -1002,14 +1000,14 @@ class ArrTest extends TestCase
     public function test_flatten_zero_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a positive integer. Got: 0');
+        $this->expectExceptionMessage('Expected: $depth > 0. Got: 0');
         self::assertSame([1, 2], Arr::flatten([1, 2], 0));
     }
 
     public function test_flatten_negative_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a positive integer. Got: -1');
+        $this->expectExceptionMessage('Expected: $depth > 0. Got: -1');
         self::assertSame([1, 2], Arr::flatten([1, 2], -1));
     }
 
@@ -1024,13 +1022,13 @@ class ArrTest extends TestCase
     public function test_flip_invalid_key_type(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected string or integer. Got: boolean');
+        $this->expectExceptionMessage('Expected: array value of type int|string. Got: boolean');
         Arr::flip([true, false]);
     }
 
     public function test_flip_duplicate_key(): void
     {
-        $this->expectException(DuplicateKeyException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Tried to overwrite existing key: 1');
         Arr::flip([1, 1]);
     }
@@ -1101,7 +1099,7 @@ class ArrTest extends TestCase
     public function test_groupBy_missing_key(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected string or integer. Got: double');
+        $this->expectExceptionMessage('Expected: Grouping key of type int|string. Got: double');
         Arr::groupBy([['dummy' => 3]], fn() => 1.1);
     }
 
@@ -1178,7 +1176,7 @@ class ArrTest extends TestCase
 
     public function test_insert_with_duplicate_key(): void
     {
-        $this->expectException(DuplicateKeyException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Tried to overwrite existing key: a');
         $assoc = ['a' => 1];
         Arr::insert($assoc, 1, ['a' => 2]);
@@ -1297,7 +1295,7 @@ class ArrTest extends TestCase
 
     public function test_keyBy_with_duplicate_key(): void
     {
-        $this->expectException(DuplicateKeyException::class);
+        $this->expectException(InvalidArgumentException::class);
         Arr::keyBy([['id' => 'b'], ['id' => 'b']], static fn($v): string => $v['id']);
     }
 
@@ -1306,7 +1304,7 @@ class ArrTest extends TestCase
         $array = Arr::keyBy([['id' => 'b', 1], ['id' => 'b', 2]], static fn($v): string => $v['id'], true);
         self::assertSame(['b' => ['id' => 'b', 2]], $array);
 
-        $this->expectException(DuplicateKeyException::class);
+        $this->expectException(InvalidArgumentException::class);
         Arr::keyBy([['id' => 'b'], ['id' => 'b']], static fn(array $v): string => $v['id']);
     }
 
@@ -1330,14 +1328,14 @@ class ArrTest extends TestCase
 
     public function test_last_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::last([]);
     }
 
     public function test_last_bad_condition(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::last([1, 2], static fn(int $i) => $i > 2);
     }
@@ -1358,14 +1356,14 @@ class ArrTest extends TestCase
 
     public function test_lastIndex_on_empty(): void
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Failed to find matching condition.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::lastIndex([]);
     }
 
     public function test_lastIndex_on_no_match(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::lastIndex([1, 2], fn() => false);
     }
@@ -1407,14 +1405,14 @@ class ArrTest extends TestCase
 
     public function test_lastKey_on_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::lastKey([]);
     }
 
     public function test_lastKey_with_no_matches(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::lastKey([1, 2, 3], static fn() => false);
     }
@@ -1505,7 +1503,7 @@ class ArrTest extends TestCase
 
     public function test_max_with_empty(): void
     {
-        $this->expectException(InvalidOperationException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::max([]);
     }
@@ -1609,7 +1607,7 @@ class ArrTest extends TestCase
 
     public function test_min_with_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::min([]);
     }
@@ -1654,7 +1652,7 @@ class ArrTest extends TestCase
 
     public function test_minMax_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::minMax([]);
     }
@@ -1769,7 +1767,7 @@ class ArrTest extends TestCase
 
     public function test_pop_on_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('&$array must contain at least one element.');
         $list = [];
         Arr::pop($list);
@@ -1806,7 +1804,7 @@ class ArrTest extends TestCase
     public function test_popMany_zero_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than 0. Got: 0');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0');
         $list = [1, 2];
         self::assertSame([], Arr::popMany($list, 0));
     }
@@ -1814,7 +1812,7 @@ class ArrTest extends TestCase
     public function test_popMany_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1');
         $list = [1, 2];
         self::assertSame([], Arr::popMany($list, -1));
     }
@@ -2052,7 +2050,7 @@ class ArrTest extends TestCase
     public function test_reduce_unable_to_guess_initial(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Iterable must contain at least one element.');
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::reduce([], static fn($c, $i, $k) => $k);
     }
 
@@ -2172,7 +2170,7 @@ class ArrTest extends TestCase
     public function test_repeat_negative_times(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than or equal to 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $times >= 0. Got: -1');
         self::assertSame([], Arr::repeat([1], -1));
     }
 
@@ -2280,7 +2278,7 @@ class ArrTest extends TestCase
 
     public function test_sample_Empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::sample([]);
     }
@@ -2463,7 +2461,7 @@ class ArrTest extends TestCase
 
     public function test_shift_on_empty(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('&$array must contain at least one element.');
         $list = [];
         Arr::shift($list);
@@ -2500,7 +2498,7 @@ class ArrTest extends TestCase
     public function test_shiftMany_zero_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than 0. Got: 0');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0');
         $list = [1, 2];
         self::assertSame([], Arr::shiftMany($list, 0));
     }
@@ -2508,7 +2506,7 @@ class ArrTest extends TestCase
     public function test_shiftMany_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1');
         $list = [1, 2];
         self::assertSame([], Arr::shiftMany($list, -1));
     }
@@ -2601,14 +2599,14 @@ class ArrTest extends TestCase
 
     public function test_sole_zero_item(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected only one element in result. 0 given.');
         Arr::sole([]);
     }
 
     public function test_sole_more_than_one_item(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected only one element in result. 2 given.');
         Arr::sole([1, 2]);
     }
@@ -2808,7 +2806,7 @@ class ArrTest extends TestCase
     public function test_takeFirst_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than or equal to 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
         Arr::takeFirst(['a' => 1], -1);
     }
 
@@ -2833,7 +2831,7 @@ class ArrTest extends TestCase
     public function test_takeLast_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected a value greater than or equal to 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
         Arr::takeFirst(['a' => 1], -1);
     }
 
