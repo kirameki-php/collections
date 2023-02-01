@@ -6,7 +6,6 @@ use Closure;
 use JsonException;
 use LogicException;
 use Random\Randomizer;
-use RuntimeException;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
 use Traversable;
