@@ -289,11 +289,12 @@ class Seq extends Iterator implements Countable, JsonSerializable
 
     /**
      * @param array<TKey> $keys
+     * @param bool $safe
      * @return static
      */
-    public function except(iterable $keys): static
+    public function except(iterable $keys, bool $safe = true): static
     {
-        return $this->newInstance(Arr::except($this, $keys, $this->isList));
+        return $this->newInstance(Arr::except($this, $keys, $safe, $this->isList));
     }
 
     /**
@@ -544,11 +545,12 @@ class Seq extends Iterator implements Countable, JsonSerializable
 
     /**
      * @param iterable<TKey> $keys
+     * @param bool $safe
      * @return static
      */
-    public function only(iterable $keys): static
+    public function only(iterable $keys, bool $safe = true): static
     {
-        return $this->newInstance(Arr::only($this, $keys, $this->isList));
+        return $this->newInstance(Arr::only($this, $keys, $safe, $this->isList));
     }
 
     /**

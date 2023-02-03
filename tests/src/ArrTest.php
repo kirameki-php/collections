@@ -2,15 +2,16 @@
 
 namespace Tests\SouthPointe\Collections;
 
-use Exception;
 use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
+use SouthPointe\Core\Exceptions\UnreachableException;
 use stdClass;
 use TypeError;
+use ValueError;
 use function array_keys;
 use function array_values;
 use function in_array;
@@ -704,14 +705,14 @@ class ArrTest extends TestCase
     public function test_each(): void
     {
         // empty
-        Arr::each([], static fn() => throw new Exception());
+        Arr::each([], static fn() => throw new UnreachableException());
 
         // list
         Arr::each(['a', 'b'], static function(string $v, int $k) {
             match ($k) {
                 0 => self::assertSame('a', $v),
                 1 => self::assertSame('b', $v),
-                default => throw new Exception(''),
+                default => throw new UnreachableException(),
             };
         });
 
@@ -720,7 +721,7 @@ class ArrTest extends TestCase
             match ($k) {
                 'a' => self::assertSame(['a' => 1], [$k => $v]),
                 'b' => self::assertSame(['b' => 2], [$k => $v]),
-                default => throw new Exception(''),
+                default => throw new UnreachableException(),
             };
         });
     }
@@ -764,7 +765,7 @@ class ArrTest extends TestCase
     public function test_except(): void
     {
         // empty array
-        self::assertSame([], Arr::except([], ['a']));
+        self::assertSame([], Arr::except([], []));
 
         // empty except
         self::assertSame(['a' => 1], Arr::except(['a' => 1], []));
@@ -774,9 +775,6 @@ class ArrTest extends TestCase
 
         // expect key (string)
         self::assertSame(['b' => 2], Arr::except(['a' => 1, 'b' => 2], ['a']));
-
-        // $keys contains non-existing key
-        self::assertSame(['b' => 2], Arr::except(['a' => 1, 'b' => 2], ['a', 'c']));
 
         // reindex: true on list
         self::assertSame([2], Arr::except([1, 2, 3], [0, 2], reindex: true));
@@ -789,6 +787,16 @@ class ArrTest extends TestCase
 
         // reindex: false on assoc
         self::assertSame(['b' => 2], Arr::except(['a' => 1, 'b' => 2], ['a'], reindex: false));
+
+        // safe: false
+        self::assertSame(['b' => 2], Arr::except(['a' => 1, 'b' => 2], ['a', 'c'], false));
+    }
+
+    public function test_except_safe_on_non_existing_keys(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Undefined array keys: [1, 2, 'b']");
+        self::assertSame([], Arr::except([], [1, 2, 'b']));
     }
 
     public function test_filter(): void
@@ -1708,8 +1716,7 @@ class ArrTest extends TestCase
     public function test_only(): void
     {
         // empty
-        self::assertSame([], Arr::only([], [1, 2]));
-        self::assertSame([], Arr::only([], ['a', 'b']));
+        self::assertSame([], Arr::only([], []));
 
         // with list array
         self::assertSame([2], Arr::only([1, 2, 3], [1]));
@@ -1722,6 +1729,19 @@ class ArrTest extends TestCase
 
         // different order of keys
         self::assertSame(['c' => 3, 'b' => 2], Arr::only(['a' => 1, 'b' => 2, 'c' => 3], ['x' => 'c', 'b']));
+
+        // safe: false with list
+        self::assertSame([1], Arr::only([1, 2, 3], [0, 300], false));
+
+        // safe: false with map
+        self::assertSame(['a' => 1], Arr::only(['a' => 1, 'b' => 2], ['a', 'z'], false));
+    }
+
+    public function test_only_safe_on_non_existing_keys(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Undefined array keys: [1, 2, 'b']");
+        self::assertSame([], Arr::only([], [1, 2, 'b']));
     }
 
     public function test_pad(): void
@@ -2309,8 +2329,8 @@ class ArrTest extends TestCase
 
     public function test_sampleMany_amount_bigger_than_array(): void
     {
-        $this->expectError();
-        $this->expectErrorMessage('Argument #2 ($num) must be between 1 and the number of elements in argument #1 ($array)');
+        $this->expectException(ValueError::class);
+        $this->expectExceptionMessage('Argument #2 ($num) must be between 1 and the number of elements in argument #1 ($array)');
         Arr::sampleMany(['a'], 2);
     }
 
@@ -2739,8 +2759,8 @@ class ArrTest extends TestCase
 
     public function test_sum_throw_on_sum_of_string(): void
     {
-        $this->expectError();
-        $this->expectErrorMessage('Unsupported operand types: int + string');
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('Unsupported operand types: int + string');
         Arr::sum(['a', 'b']);
     }
 

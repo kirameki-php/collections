@@ -1,16 +1,19 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="vendor/autoload.php"
-         executionOrder="depends,defects"
-         verbose="true"
-         colors="true">
-    <coverage>
-        <include>
-            <directory suffix=".php">./src</directory>
-        </include>
-    </coverage>
-    <testsuites>
-        <testsuite name="default">
-            <directory>./tests</directory>
-        </testsuite>
-    </testsuites>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        bootstrap="vendor/autoload.php"
+        executionOrder="depends,defects"
+        colors="true"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+        cacheDirectory="/tmp/.phpunit.cache">
+  <coverage>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="default">
+      <directory>./tests</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>

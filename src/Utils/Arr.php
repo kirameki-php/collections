@@ -1040,7 +1040,8 @@ final class Arr
     /**
      * Returns a new array with the given keys removed from `$iterable`.
      * Non-existent keys will be ignored.
-     * TODO option to not ignore key.
+     * If `$safe` is set to **true**, `InvalidArgumentException` will be thrown
+     * if a key does not exist in `$iterable`.
      *
      * Example:
      * ```php
@@ -1054,22 +1055,44 @@ final class Arr
      * Iterable to be traversed.
      * @param list<array-key> $keys
      * Keys to be excluded.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `InvalidArgumentException` will be
+     * thrown if key does not exist in `$iterable`.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
      * @return array<TKey, TValue>
      */
     public static function except(
         iterable $iterable,
         iterable $keys,
+        bool $safe = true,
         ?bool $reindex = null,
     ): array
     {
         $copy = self::from($iterable);
         $reindex ??= array_is_list($copy);
 
+        $missingKeys = [];
         foreach ($keys as $key) {
-            unset($copy[$key]);
+            if (array_key_exists($key, $copy)) {
+                unset($copy[$key]);
+            } elseif ($safe) {
+                $missingKeys[] = $key;
+            }
+        }
+
+        if ($safe && self::isNotEmpty($missingKeys)) {
+            $missingFormatted = self::map($missingKeys, fn($k) => is_string($k) ? "'{$k}'" : $k);
+            $missingJoined = self::join($missingFormatted, ', ', '[', ']');
+            throw new InvalidArgumentException("Undefined array keys: {$missingJoined}", [
+                'iterable' => $iterable,
+                'givenKeys' => $keys,
+                'missingKeys' => $missingKeys,
+            ]);
         }
 
         return $reindex
@@ -2766,7 +2789,8 @@ final class Arr
     /**
      * Returns a new array which only contain the elements that has matching
      * keys in the given iterable. Non-existent keys will be ignored.
-     * TODO option to not ignore key.
+     * If `$safe` is set to **true**, `InvalidArgumentException` will be thrown
+     * if a key does not exist in `$iterable`.
      *
      * Example:
      * ```php
@@ -2779,6 +2803,12 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param iterable<int, TKey> $keys
+     * Keys to be included.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `InvalidArgumentException` will be
+     * thrown if key does not exist in `$iterable`.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
@@ -2788,19 +2818,33 @@ final class Arr
     public static function only(
         iterable $iterable,
         iterable $keys,
+        bool $safe = true,
         ?bool $reindex = null,
     ): array
     {
         $array = self::from($iterable);
         $reindex ??= array_is_list($array);
 
+        $missingKeys = [];
         $result = [];
         foreach ($keys as $key) {
             if (array_key_exists($key, $array)) {
                 $reindex
                     ? $result[] = $array[$key]
                     : $result[$key] = $array[$key];
+            } elseif ($safe) {
+                $missingKeys[] = $key;
             }
+        }
+
+        if ($safe && self::isNotEmpty($missingKeys)) {
+            $missingFormatted = self::map($missingKeys, static fn($k) => is_string($k) ? "'{$k}'" : $k);
+            $missingJoined = self::join($missingFormatted, ', ', '[', ']');
+            throw new InvalidArgumentException("Undefined array keys: {$missingJoined}", [
+                'iterable' => $iterable,
+                'givenKeys' => $keys,
+                'missingKeys' => $missingKeys,
+            ]);
         }
 
         return $result;
@@ -3612,7 +3656,7 @@ final class Arr
         $array = self::from($iterable);
 
         $sampledKeys = $randomizer->pickArrayKeys($array, $amount);
-        return self::only($array, $sampledKeys, $reindex);
+        return self::only($array, $sampledKeys, false, $reindex);
     }
 
     /**
