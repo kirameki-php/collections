@@ -195,11 +195,11 @@ class Map extends Seq implements ArrayAccess
     }
 
     /**
-     * @return MutableMap<TKey, TValue>
+     * @return MapMutable<TKey, TValue>
      */
-    public function mutable(): MutableMap
+    public function mutable(): MapMutable
     {
-        return new MutableMap($this->items);
+        return new MapMutable($this->items);
     }
 
     /**

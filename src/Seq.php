@@ -474,11 +474,11 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
-     * @return LazySeq<TKey, TValue>
+     * @return SeqLazy<TKey, TValue>
      */
-    public function lazy(): LazySeq
+    public function lazy(): SeqLazy
     {
-        return new LazySeq($this->items);
+        return new SeqLazy($this->items);
     }
 
     /**

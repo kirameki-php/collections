@@ -145,11 +145,11 @@ class Vec extends Seq implements ArrayAccess
     }
 
     /**
-     * @return MutableVec<TValue>
+     * @return VecMutable<TValue>
      */
-    public function mutable(): MutableVec
+    public function mutable(): VecMutable
     {
-        return new MutableVec($this->items);
+        return new VecMutable($this->items);
     }
 
     /**

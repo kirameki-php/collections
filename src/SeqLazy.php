@@ -11,7 +11,7 @@ use SouthPointe\Collections\Utils\Iter;
  * @template TValue
  * @extends Seq<TKey, TValue>
  */
-class LazySeq extends Seq
+class SeqLazy extends Seq
 {
     /**
      * @template TNewKey as array-key
@@ -92,7 +92,7 @@ class LazySeq extends Seq
     }
 
     /**
-     * @return LazySeq<int, TKey>
+     * @return SeqLazy<int, TKey>
      */
     public function keys(): self
     {
@@ -102,7 +102,7 @@ class LazySeq extends Seq
     /**
      * @template TMapValue
      * @param Closure(TValue, TKey): TMapValue $callback
-     * @return LazySeq<TKey, TMapValue>
+     * @return SeqLazy<TKey, TMapValue>
      */
     public function map(Closure $callback): self
     {

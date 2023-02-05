@@ -13,7 +13,7 @@ use function SouthPointe\Core\is_not_array_key;
  * @template TValue
  * @extends Map<TKey, TValue>
  */
-class MutableMap extends Map
+class MapMutable extends Map
 {
     /**
      * @use MutatesSelf<TKey, TValue>

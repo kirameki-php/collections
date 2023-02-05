@@ -9,7 +9,7 @@ use function is_array;
  * @template TValue
  * @extends Vec<TValue>
  */
-class MutableVec extends Vec
+class VecMutable extends Vec
 {
     /**
      * @use MutatesSelf<int, TValue>
