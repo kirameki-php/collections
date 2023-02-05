@@ -46,9 +46,9 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
-     * @return array<TKey, mixed>
+     * @return array<TKey, mixed>|object
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): array|object
     {
         $values = [];
         foreach ($this as $key => $item) {
@@ -56,7 +56,9 @@ class Seq extends Iterator implements Countable, JsonSerializable
                 ? $item->jsonSerialize()
                 : $item;
         }
-        return $values;
+        return array_is_list($values)
+            ? $values
+            : (object) $values;
     }
 
     /**
