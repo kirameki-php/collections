@@ -50,12 +50,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function jsonSerialize(): array|object
     {
-        $values = [];
-        foreach ($this as $key => $item) {
-            $values[$key] = ($item instanceof JsonSerializable)
-                ? $item->jsonSerialize()
-                : $item;
-        }
+        $values = Arr::from($this);
         return array_is_list($values)
             ? $values
             : (object) $values;

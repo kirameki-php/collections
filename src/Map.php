@@ -33,11 +33,9 @@ class Map extends Seq implements ArrayAccess
      */
     public static function of(mixed ...$values): self
     {
-        assert(!array_is_list($values));
         /** @var array<string, TNewValue> $values */
         return new self($values);
     }
-
 
     /**
      * @param TKey $offset
@@ -82,6 +80,14 @@ class Map extends Seq implements ArrayAccess
             'this' => $this,
             'offset' => $offset,
         ]);
+    }
+
+    /**
+     * @return object
+     */
+    public function jsonSerialize(): object
+    {
+        return (object) Arr::from($this);
     }
 
     /**
