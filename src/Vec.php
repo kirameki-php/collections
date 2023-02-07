@@ -5,6 +5,7 @@ namespace SouthPointe\Collections;
 use ArrayAccess;
 use Closure;
 use SouthPointe\Collections\Utils\Arr;
+use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\NotSupportedException;
 use function assert;
 use function is_array;
@@ -131,17 +132,27 @@ class Vec extends Seq implements ArrayAccess
      */
     public function indices(): self
     {
-        return $this->newVec(Arr::keys($this));
+        return $this->newVec(Iter::keys($this));
     }
 
     /**
+     * @inheritDoc
+     * @return self<int>
+     */
+    public function keys(): self
+    {
+        return $this->indices();
+    }
+
+    /**
+     * @inheritDoc
      * @template TMapValue
      * @param Closure(TValue, int): TMapValue $callback
-     * @return Vec<TMapValue>
+     * @return self<TMapValue>
      */
     public function map(Closure $callback): self
     {
-        return $this->newVec(Arr::map($this, $callback));
+        return $this->newVec(Iter::map($this, $callback));
     }
 
     /**

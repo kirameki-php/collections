@@ -5,8 +5,8 @@ namespace SouthPointe\Collections;
 use ArrayAccess;
 use Closure;
 use SouthPointe\Collections\Utils\Arr;
+use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\NotSupportedException;
-use function array_is_list;
 use function assert;
 use function is_array;
 
@@ -174,11 +174,12 @@ class Map extends Seq implements ArrayAccess
     }
 
     /**
+     * @inheritDoc
      * @return Vec<TKey>
      */
     public function keys(): Vec
     {
-        return $this->newVec(Arr::keys($this));
+        return $this->newVec(Iter::keys($this));
     }
 
     /**
@@ -191,13 +192,14 @@ class Map extends Seq implements ArrayAccess
     }
 
     /**
+     * @inheritDoc
      * @template TMapValue
      * @param Closure(TValue, TKey): TMapValue $callback
-     * @return Map<TKey, TMapValue>
+     * @return self<TKey, TMapValue>
      */
     public function map(Closure $callback): self
     {
-        return $this->newMap(Arr::map($this, $callback));
+        return $this->newMap(Iter::map($this, $callback));
     }
 
     /**

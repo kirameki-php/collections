@@ -76,11 +76,11 @@ class SeqLazy extends Seq
     }
 
     /**
-     * @return Vec<TValue>
+     * @return Seq<TKey, TValue>
      */
-    public function eager(): Vec
+    public function eager(): Seq
     {
-        return new Vec($this->values()->toArray());
+        return new Seq($this);
     }
 
     /**
@@ -92,21 +92,22 @@ class SeqLazy extends Seq
     }
 
     /**
-     * @return SeqLazy<int, TKey>
+     * @inheritDoc
+     * @return self<int, TKey>
      */
     public function keys(): self
     {
-        return new static(Iter::keys($this));
+        return $this->newSeqLazy(Iter::keys($this));
     }
 
     /**
      * @template TMapValue
      * @param Closure(TValue, TKey): TMapValue $callback
-     * @return SeqLazy<TKey, TMapValue>
+     * @return self<TKey, TMapValue>
      */
     public function map(Closure $callback): self
     {
-        return new static(Iter::map($this, $callback));
+        return $this->newSeqLazy(Iter::map($this, $callback));
     }
 
     /**
@@ -148,5 +149,16 @@ class SeqLazy extends Seq
     public function values(): self
     {
         return new static(Iter::values($this));
+    }
+
+    /**
+     * @template TNewKey of array-key|class-string
+     * @template TNewValue
+     * @param iterable<TNewKey, TNewValue> $iterable
+     * @return self<TNewKey, TNewValue>
+     */
+    public function newSeqLazy(iterable $iterable): self
+    {
+        return new self($iterable);
     }
 }

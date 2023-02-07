@@ -431,6 +431,24 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @return self<int, TKey>
+     */
+    public function keys(): self
+    {
+        return new self(Iter::keys($this));
+    }
+
+    /**
+     * @template TMapValue
+     * @param Closure(TValue, TKey): TMapValue $callback
+     * @return self<TKey, TMapValue>
+     */
+    public function map(Closure $callback): self
+    {
+        return new self(Iter::map($this, $callback));
+    }
+
+    /**
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TValue
      */
