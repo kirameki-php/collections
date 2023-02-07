@@ -170,7 +170,7 @@ class Vec extends Seq implements ArrayAccess
      */
     public function pad(int $size, mixed $value): static
     {
-        return $this->newInstance(Arr::pad($this, $size, $value));
+        return $this->instantiate(Arr::pad($this, $size, $value));
     }
 
     /**
@@ -179,7 +179,7 @@ class Vec extends Seq implements ArrayAccess
      */
     public function repeat(int $times): static
     {
-        return $this->newInstance(Arr::repeat($this, $times));
+        return $this->instantiate(Arr::repeat($this, $times));
     }
 
     /**

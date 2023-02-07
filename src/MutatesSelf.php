@@ -27,7 +27,7 @@ trait MutatesSelf
      * @param iterable<TKey, TValue> $iterable
      * @return static
      */
-    abstract public function newInstance(iterable $iterable): static;
+    abstract public function instantiate(iterable $iterable): static;
 
     /**
      * @param int|null $offset
@@ -89,7 +89,7 @@ trait MutatesSelf
     public function popMany(int $amount): static
     {
         $ref = &$this->getItemsAsRef();
-        return $this->newInstance(Arr::popMany($ref, $amount));
+        return $this->instantiate(Arr::popMany($ref, $amount));
     }
 
     /**
@@ -131,7 +131,7 @@ trait MutatesSelf
     public function pullMany(iterable $keys): static
     {
         $ref = &$this->getItemsAsRef();
-        return $this->newInstance(Arr::pullMany($ref, $keys, $this->isList));
+        return $this->instantiate(Arr::pullMany($ref, $keys, $this->isList));
     }
 
     /**
@@ -170,6 +170,6 @@ trait MutatesSelf
     public function shiftMany(int $amount): static
     {
         $ref = &$this->getItemsAsRef();
-        return $this->newInstance(Arr::shiftMany($ref, $amount));
+        return $this->instantiate(Arr::shiftMany($ref, $amount));
     }
 }

@@ -105,7 +105,7 @@ class Map extends Seq implements ArrayAccess
      */
     public function diffKeys(iterable $items): static
     {
-        return $this->newInstance(Arr::diffKeys($this, $items));
+        return $this->instantiate(Arr::diffKeys($this, $items));
     }
 
     /**
@@ -170,7 +170,7 @@ class Map extends Seq implements ArrayAccess
      */
     public function intersectKeys(iterable $items): static
     {
-        return $this->newInstance(Arr::intersectKeys($this, $items));
+        return $this->instantiate(Arr::intersectKeys($this, $items));
     }
 
     /**

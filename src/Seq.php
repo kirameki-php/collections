@@ -40,7 +40,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      * @param iterable<TKey, TValue> $items
      * @return static
      */
-    public function newInstance(mixed $items): static
+    public function instantiate(mixed $items): static
     {
         return new static($items);
     }
@@ -116,7 +116,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function compact(int $depth = 1): static
     {
-        return $this->newInstance(Arr::compact($this, $depth, $this->isList));
+        return $this->instantiate(Arr::compact($this, $depth, $this->isList));
     }
 
     /**
@@ -196,7 +196,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function diff(iterable $items): static
     {
-        return $this->newInstance(Arr::diff($this, $items, null, $this->isList));
+        return $this->instantiate(Arr::diff($this, $items, null, $this->isList));
     }
 
     /**
@@ -223,7 +223,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function dropFirst(int $amount): static
     {
-        return $this->newInstance(Iter::dropFirst($this, $amount, $this->isList));
+        return $this->instantiate(Iter::dropFirst($this, $amount, $this->isList));
     }
 
     /**
@@ -232,7 +232,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function dropLast(int $amount): static
     {
-        return $this->newInstance(Arr::dropLast($this, $amount, $this->isList));
+        return $this->instantiate(Arr::dropLast($this, $amount, $this->isList));
     }
 
     /**
@@ -241,7 +241,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function dropUntil(Closure $condition): static
     {
-        return $this->newInstance(Iter::dropUntil($this, $condition, $this->isList));
+        return $this->instantiate(Iter::dropUntil($this, $condition, $this->isList));
     }
 
     /**
@@ -250,7 +250,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function dropWhile(Closure $condition): static
     {
-        return $this->newInstance(Iter::dropWhile($this, $condition, $this->isList));
+        return $this->instantiate(Iter::dropWhile($this, $condition, $this->isList));
     }
 
     /**
@@ -258,7 +258,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function duplicates(): static
     {
-        return $this->newInstance(Arr::duplicates($this));
+        return $this->instantiate(Arr::duplicates($this));
     }
 
     /**
@@ -291,7 +291,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function except(iterable $keys, bool $safe = true): static
     {
-        return $this->newInstance(Arr::except($this, $keys, $safe, $this->isList));
+        return $this->instantiate(Arr::except($this, $keys, $safe, $this->isList));
     }
 
     /**
@@ -300,7 +300,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function filter(Closure $condition): static
     {
-        return $this->newInstance(Arr::filter($this, $condition, $this->isList));
+        return $this->instantiate(Arr::filter($this, $condition, $this->isList));
     }
 
     /**
@@ -369,7 +369,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
     public function groupBy(Closure $callback): Map
     {
         $grouped = Arr::groupBy($this, $callback, $this->isList);
-        return $this->newMap($grouped)->map(fn($group) => $this->newInstance($group));
+        return $this->newMap($grouped)->map(fn($group) => $this->instantiate($group));
     }
 
     /**
@@ -389,7 +389,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function intersect(iterable $items): static
     {
-        return $this->newInstance(Arr::intersect($this, $items, $this->isList));
+        return $this->instantiate(Arr::intersect($this, $items, $this->isList));
     }
 
     /**
@@ -518,7 +518,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function merge(iterable $iterable): static
     {
-        return $this->newInstance(Arr::merge($this, $iterable));
+        return $this->instantiate(Arr::merge($this, $iterable));
     }
 
     /**
@@ -528,7 +528,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function mergeRecursive(iterable $iterable, int $depth = PHP_INT_MAX): static
     {
-        return $this->newInstance(Arr::mergeRecursive($this, $iterable, $depth));
+        return $this->instantiate(Arr::mergeRecursive($this, $iterable, $depth));
     }
 
     /**
@@ -565,7 +565,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function only(iterable $keys, bool $safe = true): static
     {
-        return $this->newInstance(Arr::only($this, $keys, $safe, $this->isList));
+        return $this->instantiate(Arr::only($this, $keys, $safe, $this->isList));
     }
 
     /**
@@ -588,7 +588,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function prioritize(Closure $condition): static
     {
-        return $this->newInstance(Arr::prioritize($this, $condition, $this->isList));
+        return $this->instantiate(Arr::prioritize($this, $condition, $this->isList));
     }
 
     /**
@@ -624,7 +624,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function reverse(): static
     {
-        return $this->newInstance(Arr::reverse($this, $this->isList));
+        return $this->instantiate(Arr::reverse($this, $this->isList));
     }
 
     /**
@@ -633,7 +633,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function rotate(int $count): static
     {
-        return $this->newInstance(Arr::rotate($this, $count, $this->isList));
+        return $this->instantiate(Arr::rotate($this, $count, $this->isList));
     }
 
     /**
@@ -650,7 +650,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sampleMany(int $amount): static
     {
-        return $this->newInstance(Arr::sampleMany($this, $amount, $this->isList));
+        return $this->instantiate(Arr::sampleMany($this, $amount, $this->isList));
     }
 
     /**
@@ -694,7 +694,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function shuffle(): static
     {
-        return $this->newInstance(Arr::shuffle($this, $this->isList));
+        return $this->instantiate(Arr::shuffle($this, $this->isList));
     }
 
     /**
@@ -704,7 +704,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function slice(int $offset, int $length = PHP_INT_MAX): static
     {
-        return $this->newInstance(Iter::slice($this, $offset, $length, $this->isList));
+        return $this->instantiate(Iter::slice($this, $offset, $length, $this->isList));
     }
 
     /**
@@ -724,7 +724,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sort(bool $ascending, ?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sort($this, $ascending, $by, $flag, $this->isList));
+        return $this->instantiate(Arr::sort($this, $ascending, $by, $flag, $this->isList));
     }
 
     /**
@@ -734,7 +734,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sortAsc(?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortAsc($this, $by, $flag, $this->isList));
+        return $this->instantiate(Arr::sortAsc($this, $by, $flag, $this->isList));
     }
 
     /**
@@ -744,7 +744,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sortByKey(bool $ascending, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortByKey($this, $ascending, $flag));
+        return $this->instantiate(Arr::sortByKey($this, $ascending, $flag));
     }
 
     /**
@@ -753,7 +753,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sortByKeyAsc(int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortByKeyAsc($this, $flag));
+        return $this->instantiate(Arr::sortByKeyAsc($this, $flag));
     }
 
     /**
@@ -762,7 +762,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sortByKeyDesc(int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortByKeyDesc($this, $flag));
+        return $this->instantiate(Arr::sortByKeyDesc($this, $flag));
     }
 
     /**
@@ -772,7 +772,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sortDesc(?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->newInstance(Arr::sortDesc($this, $by, $flag, $this->isList));
+        return $this->instantiate(Arr::sortDesc($this, $by, $flag, $this->isList));
     }
 
     /**
@@ -781,7 +781,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sortWith(Closure $comparison): static
     {
-        return $this->newInstance(Arr::sortWith($this, $comparison, $this->isList));
+        return $this->instantiate(Arr::sortWith($this, $comparison, $this->isList));
     }
 
     /**
@@ -790,7 +790,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function sortWithKey(Closure $comparison): static
     {
-        return $this->newInstance(Arr::sortWithKey($this, $comparison));
+        return $this->instantiate(Arr::sortWithKey($this, $comparison));
     }
 
     /**
@@ -801,7 +801,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
     {
         $chunks = [];
         foreach (Iter::chunk($this, $size, $this->isList) as $chunk) {
-            $converted = $this->newInstance($chunk);
+            $converted = $this->instantiate($chunk);
             $chunks[] = $converted;
         }
         return $this->newVec($chunks);
@@ -814,7 +814,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function symDiff(iterable $items, Closure $by = null): static
     {
-        return $this->newInstance(Arr::symDiff($this, $items, $by, $this->isList));
+        return $this->instantiate(Arr::symDiff($this, $items, $by, $this->isList));
     }
 
     /**
@@ -823,7 +823,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function takeFirst(int $amount): static
     {
-        return $this->newInstance(Iter::takeFirst($this, $amount));
+        return $this->instantiate(Iter::takeFirst($this, $amount));
     }
 
     /**
@@ -832,7 +832,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function takeLast(int $amount): static
     {
-        return $this->newInstance(Arr::takeLast($this, $amount));
+        return $this->instantiate(Arr::takeLast($this, $amount));
     }
 
     /**
@@ -841,7 +841,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function takeUntil(Closure $condition): static
     {
-        return $this->newInstance(Iter::takeUntil($this, $condition));
+        return $this->instantiate(Iter::takeUntil($this, $condition));
     }
 
     /**
@@ -850,7 +850,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function takeWhile(Closure $condition): static
     {
-        return $this->newInstance(Iter::takeWhile($this, $condition));
+        return $this->instantiate(Iter::takeWhile($this, $condition));
     }
 
     /**
@@ -887,7 +887,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
      */
     public function unique(?Closure $by = null): static
     {
-        return $this->newInstance(Arr::unique($this, $by, $this->isList));
+        return $this->instantiate(Arr::unique($this, $by, $this->isList));
     }
 
     /**

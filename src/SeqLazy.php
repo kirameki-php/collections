@@ -33,7 +33,7 @@ class SeqLazy extends Seq
     {
         return self::fromClosure(function() use ($size) {
             foreach (Iter::chunk($this, $size) as $key => $chunk) {
-                yield $key => $this->newInstance($chunk);
+                yield $key => $this->instantiate($chunk);
             }
         });
     }
@@ -43,7 +43,7 @@ class SeqLazy extends Seq
      */
     public function dropFirst(int $amount): static
     {
-        return $this->newInstance(Iter::dropFirst($this, $amount));
+        return $this->instantiate(Iter::dropFirst($this, $amount));
     }
 
     /**
@@ -51,7 +51,7 @@ class SeqLazy extends Seq
      */
     public function dropUntil(Closure $condition): static
     {
-        return $this->newInstance(Iter::dropUntil($this, $condition));
+        return $this->instantiate(Iter::dropUntil($this, $condition));
     }
 
     /**
@@ -59,7 +59,7 @@ class SeqLazy extends Seq
      */
     public function dropWhile(Closure $condition): static
     {
-        return $this->newInstance(Iter::dropWhile($this, $condition));
+        return $this->instantiate(Iter::dropWhile($this, $condition));
     }
 
     /**
@@ -88,7 +88,7 @@ class SeqLazy extends Seq
      */
     public function filter(Closure $condition): static
     {
-        return $this->newInstance(Iter::filter($this, $condition));
+        return $this->instantiate(Iter::filter($this, $condition));
     }
 
     /**
@@ -116,7 +116,7 @@ class SeqLazy extends Seq
      */
     public function repeat(int $times): static
     {
-        return $this->newInstance(Iter::repeat($this, $times));
+        return $this->instantiate(Iter::repeat($this, $times));
     }
 
     /**
@@ -124,7 +124,7 @@ class SeqLazy extends Seq
      */
     public function takeFirst(int $amount): static
     {
-        return $this->newInstance(Iter::takeFirst($this, $amount));
+        return $this->instantiate(Iter::takeFirst($this, $amount));
     }
 
     /**
@@ -132,7 +132,7 @@ class SeqLazy extends Seq
      */
     public function takeUntil(Closure $condition): static
     {
-        return $this->newInstance(Iter::takeUntil($this, $condition));
+        return $this->instantiate(Iter::takeUntil($this, $condition));
     }
 
     /**
@@ -140,7 +140,7 @@ class SeqLazy extends Seq
      */
     public function takeWhile(Closure $condition): static
     {
-        return $this->newInstance(Iter::takeWhile($this, $condition));
+        return $this->instantiate(Iter::takeWhile($this, $condition));
     }
 
     /**
