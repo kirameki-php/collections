@@ -1771,6 +1771,15 @@ class ArrTest extends TestCase
         Arr::pad(['a' => 1], 1, 2);
     }
 
+    public function test_partition(): void
+    {
+        self::assertSame([[], []], Arr::partition([], fn($v) => (bool) ($v % 2)), 'empty');
+        self::assertSame([[1, 2, 3], []], Arr::partition([1, 2, 3], fn($v) => is_int($v)), ' all true');
+        self::assertSame([[], [1, 2, 3]], Arr::partition([1, 2, 3], fn($v) => $v === 0), ' all false');
+        self::assertSame([[1, 3], [2]], Arr::partition([1, 2, 3], fn($v) => (bool) ($v % 2)), 'list');
+        self::assertSame([['a' => 1], ['b' => 2]], Arr::partition(['a' => 1, 'b' => 2], fn($v) => $v === 1), 'map');
+    }
+
     public function test_pop(): void
     {
         // list

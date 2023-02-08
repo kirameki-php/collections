@@ -2899,6 +2899,46 @@ final class Arr
     }
 
     /**
+     * Returns list with two array elements.
+     * All elements in `$iterable` evaluated to be **true** will be pushed to
+     * the first array and all elements in that were evaluated as **false**.
+     *
+     * Example:
+     * ```php
+     * Arr::partition([1, 2, 3], fn($v) => (bool) ($v % 2)); // [[1, 3], [2]]
+     * Arr::partition(['a' => 1, 'b' => 2], fn($v) => $v === 1); // [['a' => 1], ['b' => 2]]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param Closure(TValue, TKey): bool $condition
+     * @return array{ array<TKey, TValue>, array<TKey, TValue> }
+     */
+    public static function partition(
+        iterable $iterable,
+        Closure $condition,
+    ): array
+    {
+        $arr = self::from($iterable);
+        $isList = array_is_list($arr);
+        $truthy = [];
+        $falsy = [];
+        foreach ($arr as $key => $value) {
+            if (self::verify($condition, $key, $value)) {
+                $isList
+                    ? $truthy[] = $value
+                    : $truthy[$key] = $value;
+            } else {
+                $isList
+                    ? $falsy[] = $value
+                    : $falsy[$key] = $value;
+            }
+        }
+        return [$truthy, $falsy];
+    }
+
+    /**
      * Pops the element off the end of the given array (reference).
      * Throws `InvalidArgumentException`, if `&$array` is empty.
      *

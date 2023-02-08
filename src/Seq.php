@@ -569,6 +569,19 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Closure(TValue, TKey): bool $condition
+     * @return array{ static, static }
+     */
+    public function partition(Closure $condition): array
+    {
+        [$true, $false] = Arr::partition($this, $condition);
+        return [
+            $this->instantiate($true),
+            $this->instantiate($false),
+        ];
+    }
+
+    /**
      * Passes $this to the given callback and returns the result.
      *
      * @template TPipe
