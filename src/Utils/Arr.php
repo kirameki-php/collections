@@ -9,6 +9,7 @@ use Random\Randomizer;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
 use Traversable;
+use ValueError;
 use function abs;
 use function array_diff;
 use function array_diff_ukey;
@@ -3659,10 +3660,11 @@ final class Arr
     }
 
     /**
-     * Returns a list of `$amount` random elements from `$iterable`.
-     * Order of elements that were sampled will be retained.
-     * Ex: Arr::sampleMany([1, 2], 2); will always return [1, 2] and never [2, 1]
-     * TODO add no duplicates examples
+     * Returns a list of random elements picked from `$iterable`.
+     * Note: Each element will be chosen only once.
+     * Note: Order of elements that were sampled will be retained.
+     *  Ex: `Arr::sampleMany([1, 2], 2)` will always return `[1, 2]` and never `[2, 1]`.
+     * Throws `ValueError` if `$amount` is larger than `$iterable`'s size.
      *
      * Example:
      * ```php

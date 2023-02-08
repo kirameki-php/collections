@@ -5,6 +5,7 @@ namespace SouthPointe\Collections;
 use Closure;
 use Countable;
 use JsonSerializable;
+use Random\Randomizer;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
@@ -650,20 +651,22 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Randomizer|null $randomizer
      * @return TValue|null
      */
-    public function sample(): mixed
+    public function sample(?Randomizer $randomizer = null): mixed
     {
-        return Arr::sample($this);
+        return Arr::sample($this, $randomizer);
     }
 
     /**
      * @param int $amount
+     * @param Randomizer|null $randomizer
      * @return static
      */
-    public function sampleMany(int $amount): static
+    public function sampleMany(int $amount, ?Randomizer $randomizer = null): static
     {
-        return $this->instantiate(Arr::sampleMany($this, $amount, $this->isList));
+        return $this->instantiate(Arr::sampleMany($this, $amount, $this->isList, $randomizer));
     }
 
     /**
@@ -703,11 +706,12 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Randomizer|null $randomizer
      * @return static
      */
-    public function shuffle(): static
+    public function shuffle(?Randomizer $randomizer = null): static
     {
-        return $this->instantiate(Arr::shuffle($this, $this->isList));
+        return $this->instantiate(Arr::shuffle($this, $this->isList, $randomizer));
     }
 
     /**
