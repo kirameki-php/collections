@@ -904,6 +904,55 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param bool|Closure($this): bool $bool
+     * @param Closure($this): static $callback
+     * @param Closure($this): static|null $fallback
+     * @return static
+     */
+    public function when(
+        bool|Closure $bool,
+        Closure $callback,
+        ?Closure $fallback = null,
+    ): static
+    {
+        $fallback ??= static fn($self) => $self;
+
+        if ($bool instanceof Closure) {
+            $bool = $bool($this);
+        }
+
+        return $bool
+            ? $callback($this)
+            : $fallback($this);
+    }
+
+    /**
+     * @param Closure($this): static $callback
+     * @param Closure($this): static|null $fallback
+     * @return static
+     */
+    public function whenEmpty(
+        Closure $callback,
+        ?Closure $fallback = null,
+    ): static
+    {
+        return static::when($this->isEmpty(), $callback, $fallback);
+    }
+
+    /**
+     * @param Closure($this): static $callback
+     * @param Closure($this): static|null $fallback
+     * @return static
+     */
+    public function whenNotEmpty(
+        Closure $callback,
+        ?Closure $fallback = null,
+    ): static
+    {
+        return static::when($this->isNotEmpty(), $callback, $fallback);
+    }
+
+    /**
      * @param iterable<TKey, TValue> $items
      * @param int $depth
      * @param bool $validate
