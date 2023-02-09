@@ -2365,16 +2365,29 @@ class ArrTest extends TestCase
 
         $randomizer = new Randomizer(new Xoshiro256StarStar(100));
 
-        self::assertSame([0, 4], Arr::sampleMany(range(0, 10), 2, null, $randomizer));
-        self::assertSame(['b' => 1, 'd' => 3], Arr::sampleMany(['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3], 2, null, $randomizer));
+        self::assertSame(
+            [0, 4],
+            Arr::sampleMany(range(0, 10), 2, false, $randomizer),
+            'list without replacement',
+        );
 
-        // reindex: true
-        self::assertSame([3, 5], Arr::sampleMany(range(0, 10), 2, true, $randomizer));
-        self::assertSame([1, 3], Arr::sampleMany(['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3], 2, true, $randomizer));
+        self::assertSame(
+            [1, 3],
+            Arr::sampleMany(['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3], 2, false, $randomizer),
+            'map without replacement',
+        );
 
-        // reindex: false
-        self::assertSame([1 => 1, 3 => 3], Arr::sampleMany(range(0, 10), 2, false, $randomizer));
-        self::assertSame(['b' => 1, 'c' => 2], Arr::sampleMany(['a' => 0, 'b' => 1, 'c' => 2], 2, false, $randomizer));
+        self::assertSame(
+            [6, 1, 7, 7],
+            Arr::sampleMany(range(0, 10), 4, true, $randomizer),
+            'list with replacement',
+        );
+
+        self::assertSame(
+            [1, 3, 2, 3],
+            Arr::sampleMany(['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3], 4, true, $randomizer),
+            'map with replacement',
+        );
     }
 
     public function test_sampleMany_amount_bigger_than_array(): void

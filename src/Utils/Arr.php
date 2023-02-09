@@ -3711,14 +3711,14 @@ final class Arr
 
     /**
      * Returns a list of random elements picked from `$iterable`.
-     * Note: Each element will be chosen only once.
-     * Note: Order of elements that were sampled will be retained.
-     *  Ex: `Arr::sampleMany([1, 2], 2)` will always return `[1, 2]` and never `[2, 1]`.
+     * If `$replace` is set to **false**, each key will be chosen only once.
+     * Ex: `Arr::sampleMany([1, 2], 2)` will always return `[1, 2]` and never `[2, 1]`.
      * Throws `ValueError` if `$amount` is larger than `$iterable`'s size.
      *
      * Example:
      * ```php
-     * Arr::sampleMany(['a', 'b', 'c']); // ['a', 'b']
+     * Arr::sampleMany(['a', 'b', 'c'], 2, false); // ['a', 'b'] <- without replacement
+     * Arr::sampleMany(['a', 'b', 'c'], 2, true); // ['c', 'c'] <- with replacement
      * ```
      *
      * @template TKey of array-key
@@ -3727,28 +3727,40 @@ final class Arr
      * Iterable to be traversed.
      * @param int $amount
      * Amount of items to sample.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
+     * @param bool $replace
+     * If **true**, same elements can be chosen more than once.
+     * Defaults to **false**.
      * @param Randomizer|null $randomizer
      * [Optional] Randomizer to be used.
      * Default randomizer (Secure) will be used if **null**.
      * Defaults to **null**.
-     * @return array<TKey, TValue>
+     * @return array<int, TValue>
      */
     public static function sampleMany(
         iterable $iterable,
         int $amount,
-        ?bool $reindex = null,
+        bool $replace = false,
         ?Randomizer $randomizer = null,
     ): array
     {
         $randomizer ??= self::getDefaultRandomizer();
         $array = self::from($iterable);
 
-        $sampledKeys = $randomizer->pickArrayKeys($array, $amount);
-        return self::only($array, $sampledKeys, false, $reindex);
+        if (!$replace) {
+            $sampledKeys = $randomizer->pickArrayKeys($array, $amount);
+        } else {
+            $keys = array_keys($array);
+            $max = count($keys);
+            $sampledKeys = array_map(
+                static fn() => $keys[$randomizer->getInt(0, $max)],
+                range(0, $amount - 1),
+            );
+        }
+
+        return array_map(
+            static fn($key) => $array[$key],
+            $sampledKeys,
+        );
     }
 
     /**
