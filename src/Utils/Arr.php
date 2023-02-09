@@ -3696,15 +3696,27 @@ final class Arr
     {
         $randomizer ??= self::getDefaultRandomizer();
         $array = self::from($iterable);
+        $max = count($array);
+
+        if ($amount < 1 || $amount > $max) {
+            throw new InvalidArgumentException('$amount must be between 1 and size of $iterable', [
+                'iterable' => $iterable,
+                'amount' => $amount,
+                'replace' => $replace,
+            ]);
+        }
 
         if (!$replace) {
-            return $randomizer->pickArrayKeys($array, $amount);
+            // Randomizer::pickArrayKeys() returns keys in order, so we
+            // shuffle the result to randomize the order as well.
+            $keys = $randomizer->pickArrayKeys($array, $amount);
+            return $randomizer->shuffleArray($keys);
         }
 
         $keys = array_keys($array);
-        $max = count($keys);
+        $max = count($keys) - 1;
         return array_map(
-            fn() => $keys[$randomizer->getInt(0, $max)],
+            static fn() => $keys[$randomizer->getInt(0, $max)],
             range(0, $amount - 1),
         );
     }
@@ -3743,23 +3755,10 @@ final class Arr
         ?Randomizer $randomizer = null,
     ): array
     {
-        $randomizer ??= self::getDefaultRandomizer();
         $array = self::from($iterable);
-
-        if (!$replace) {
-            $sampledKeys = $randomizer->pickArrayKeys($array, $amount);
-        } else {
-            $keys = array_keys($array);
-            $max = count($keys);
-            $sampledKeys = array_map(
-                static fn() => $keys[$randomizer->getInt(0, $max)],
-                range(0, $amount - 1),
-            );
-        }
-
         return array_map(
             static fn($key) => $array[$key],
-            $sampledKeys,
+            self::sampleKeys($array, $amount, $replace, $randomizer),
         );
     }
 
