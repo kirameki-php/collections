@@ -55,6 +55,7 @@ use function krsort;
 use function ksort;
 use function max;
 use function prev;
+use function range;
 use function SouthPointe\Core\is_not_array_key;
 use function spl_object_id;
 use function uasort;
@@ -3657,6 +3658,55 @@ final class Arr
 
         $key = $randomizer->pickArrayKeys($array, 1)[0];
         return $array[$key];
+    }
+
+    /**
+     * Returns a list of random elements picked from `$iterable`.
+     * If `$replace` is set to **false**, each key will be chosen only once.
+     * Throws `ValueError` if `$amount` is larger than `$iterable`'s size.
+     *
+     * Example:
+     * ```php
+     * Arr::sampleKeys(['a', 'b', 'c'], 2); // [0, 2]
+     * Arr::sampleKeys(['a' => 1, 'b' => 2, 'c' => 3], 2); // ['a', 'c'] <- without replacement
+     * Arr::sampleKeys(['a' => 1, 'b' => 2, 'c' => 3], 2, true); // ['b', 'b'] <- with replacement
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $amount
+     * Amount of items to sample.
+     * @param bool $replace
+     * If **true**, same elements can be chosen more than once.
+     * Defaults to **false**.
+     * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
+     * @return array<int, TKey>
+     */
+    public static function sampleKeys(
+        iterable $iterable,
+        int $amount,
+        bool $replace = false,
+        ?Randomizer $randomizer = null,
+    ): array
+    {
+        $randomizer ??= self::getDefaultRandomizer();
+        $array = self::from($iterable);
+
+        if (!$replace) {
+            return $randomizer->pickArrayKeys($array, $amount);
+        }
+
+        $keys = array_keys($array);
+        $max = count($keys);
+        return array_map(
+            fn() => $keys[$randomizer->getInt(0, $max)],
+            range(0, $amount - 1),
+        );
     }
 
     /**

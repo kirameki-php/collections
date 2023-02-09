@@ -2311,6 +2311,47 @@ class ArrTest extends TestCase
         Arr::sample([]);
     }
 
+    public function test_sampleKeys(): void
+    {
+        $list_10 = range(0, 10);
+        $map_abcd = ['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3];
+
+        self::assertThat(
+            Arr::sampleKeys($list_10, 1)[0],
+            $this->logicalAnd(
+                $this->greaterThanOrEqual(0),
+                $this->lessThanOrEqual(10),
+            ),
+            'secure randomizer'
+        );
+
+        $randomizer = new Randomizer(new Xoshiro256StarStar(100));
+
+        self::assertSame(
+            [0, 4],
+            Arr::sampleKeys($list_10, 2, false, $randomizer),
+            'list without replacement',
+        );
+
+        self::assertSame(
+            ['b', 'd'],
+            Arr::sampleKeys($map_abcd, 2, false, $randomizer),
+            'map without replacement',
+        );
+
+        self::assertSame(
+            [6, 1, 7, 7],
+            Arr::sampleKeys($list_10, 4, true, $randomizer),
+            'list with replacement',
+        );
+
+        self::assertSame(
+            ['b', 'd', 'c', 'd'],
+            Arr::sampleKeys($map_abcd, 4, true, $randomizer),
+            'map with replacement',
+        );
+    }
+
     public function test_sampleMany(): void
     {
         self::assertThat(

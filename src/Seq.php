@@ -662,6 +662,16 @@ class Seq extends Iterator implements Countable, JsonSerializable
     /**
      * @param int $amount
      * @param Randomizer|null $randomizer
+     * @return Vec<TKey>
+     */
+    public function sampleKeys(int $amount, ?Randomizer $randomizer = null): Vec
+    {
+        return $this->newVec(Arr::sampleKeys($this, $amount, $this->isList, $randomizer));
+    }
+
+    /**
+     * @param int $amount
+     * @param Randomizer|null $randomizer
      * @return static
      */
     public function sampleMany(int $amount, ?Randomizer $randomizer = null): static
