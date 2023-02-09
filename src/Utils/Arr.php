@@ -92,7 +92,7 @@ final class Arr
      * Iterable which the value is getting appended.
      * @param T ...$value
      * Value(s) to be appended to the array.
-     * @return list<T>
+     * @return array<int, T>
      */
     public static function append(
         iterable $iterable,
@@ -1055,7 +1055,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param list<array-key> $keys
+     * @param array<int, array-key> $keys
      * Keys to be excluded.
      * @param bool $safe
      * [Optional] If this is set to **true**, `InvalidArgumentException` will be
