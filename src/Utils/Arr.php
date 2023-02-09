@@ -3661,9 +3661,41 @@ final class Arr
     }
 
     /**
+     * Returns a random key picked from `$iterable`.
+     * Throws `InvalidArgumentException` if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::sampleKey(['a', 'b', 'c']); // 1
+     * Arr::sampleKey(['a' => 1, 'b' => 2, 'c' => 3]); // 'c'
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
+     * @return TKey
+     */
+    public static function sampleKey(
+        iterable $iterable,
+        ?Randomizer $randomizer = null,
+    ): mixed
+    {
+        if (self::isEmpty($iterable)) {
+            throw new InvalidArgumentException('$iterable must contain at least one element.');
+        }
+
+        return self::sampleKeys($iterable, 1, false, $randomizer)[0];
+    }
+
+    /**
      * Returns a list of random elements picked from `$iterable`.
      * If `$replace` is set to **false**, each key will be chosen only once.
-     * Throws `ValueError` if `$amount` is larger than `$iterable`'s size.
+     * Throws `InvalidArgumentException` if `$amount` is larger than `$iterable`'s size.
      *
      * Example:
      * ```php
@@ -3698,12 +3730,16 @@ final class Arr
         $array = self::from($iterable);
         $max = count($array);
 
-        if ($amount < 1 || $amount > $max) {
-            throw new InvalidArgumentException('$amount must be between 1 and size of $iterable', [
+        if ($amount < 0 || $amount > $max) {
+            throw new InvalidArgumentException('$amount must be between 0 and size of $iterable', [
                 'iterable' => $iterable,
                 'amount' => $amount,
                 'replace' => $replace,
             ]);
+        }
+
+        if ($amount === 0) {
+            return [];
         }
 
         if (!$replace) {
@@ -3724,13 +3760,13 @@ final class Arr
     /**
      * Returns a list of random elements picked from `$iterable`.
      * If `$replace` is set to **false**, each key will be chosen only once.
-     * Ex: `Arr::sampleMany([1, 2], 2)` will always return `[1, 2]` and never `[2, 1]`.
-     * Throws `ValueError` if `$amount` is larger than `$iterable`'s size.
+     * Throws `InvalidArgumentException` if `$amount` is larger than `$iterable`'s size.
      *
      * Example:
      * ```php
      * Arr::sampleMany(['a', 'b', 'c'], 2, false); // ['a', 'b'] <- without replacement
      * Arr::sampleMany(['a', 'b', 'c'], 2, true); // ['c', 'c'] <- with replacement
+     * Arr::sampleMany(['a' => 1], 1); // [1] <- map will be converted to list
      * ```
      *
      * @template TKey of array-key
