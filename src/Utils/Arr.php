@@ -3338,6 +3338,45 @@ final class Arr
         Closure $callback,
     ): mixed
     {
+        $result = self::reduceOr($iterable, $callback, self::miss());
+
+        if ($result instanceof self) {
+            throw new InvalidArgumentException('$iterable must contain at least one element.');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Iteratively reduce `$iterable` to a single value by invoking
+     * `$callback($reduced, $val, $key)`.
+     * Returns `$default` if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::reduceOr([1, 2, 3], fn($r, $v) => $r + $v); // 6
+     * Arr::reduceOr([], fn($r, $v) => $r + $v, 'z'); // 'z'
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @template TDefault
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TValue, TKey): TValue $callback
+     * First argument contains the reduced value.
+     * Second argument contains the current value.
+     * Third argument contains the current key.
+     * @param TDefault $default
+     * Value that is used when iterable is empty.
+     * @return TValue|TDefault
+     */
+    public static function reduceOr(
+        iterable $iterable,
+        Closure $callback,
+        mixed $default,
+    ): mixed
+    {
         $result = null;
         $initialized = false;
         foreach ($iterable as $key => $val) {
@@ -3349,11 +3388,42 @@ final class Arr
             }
         }
 
-        if (!$initialized) {
-            throw new InvalidArgumentException('$iterable must contain at least one element.');
-        }
+        return $initialized
+            ? $result
+            : $default;
+    }
 
-        return $result;
+    /**
+     * Iteratively reduce `$iterable` to a single value by invoking
+     * `$callback($reduced, $val, $key)`.
+     * Returns **null** if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::reduceOrNull([1, 2, 3], fn($r, $v) => $r + $v); // 6
+     * Arr::reduceOrNull([], fn($r, $v) => $r + $v, 'z'); // null
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TValue, TKey): TValue $callback
+     * First argument contains the reduced value.
+     * Second argument contains the current value.
+     * Third argument contains the current key.
+     * @return TValue|null
+     */
+    public static function reduceOrNull(
+        iterable $iterable,
+        Closure $callback,
+    ): mixed
+    {
+        $result = self::reduceOr($iterable, $callback, self::miss());
+
+        return ($result instanceof self)
+            ? null
+            : $result;
     }
 
     /**
@@ -3627,11 +3697,11 @@ final class Arr
     /**
      * Returns a random element from `$iterable`.
      * Throws `InvalidArgumentException` if `$iterable` is empty.
-     * TODO add Or and OrNull version
      *
      * Example:
      * ```php
      * Arr::sample(['a', 'b', 'c']); // 'b'
+     * Arr::sample([]); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -3870,7 +3940,7 @@ final class Arr
 
     /**
      * Returns a random element from `$iterable`.
-     * Returns `$default` if `$iterable` is empty.
+     * Returns **null** if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -4963,7 +5033,7 @@ final class Arr
                 is_array($val) => 'a:' . json_encode(array_map(self::valueToKeyString(...), $val), JSON_THROW_ON_ERROR),
                 is_object($val) => 'o:' . spl_object_id($val),
                 is_resource($val) => 'r:' . get_resource_id($val),
-                default => throw new LogicException('Invalid Type: ' . gettype($val)),
+                default => throw new UnreachableException('Invalid Type: ' . gettype($val)),
             };
         } catch (JsonException $e) {
             throw new UnreachableException(

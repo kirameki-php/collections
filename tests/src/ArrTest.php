@@ -2075,6 +2075,16 @@ class ArrTest extends TestCase
         self::assertSame(4, $reduced);
     }
 
+    public function test_reduceOr(): void
+    {
+
+    }
+
+    public function test_reduceOrNull(): void
+    {
+
+    }
+
     public function test_reduce_unable_to_guess_initial(): void
     {
         $this->expectException(InvalidArgumentException::class);

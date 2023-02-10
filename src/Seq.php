@@ -615,6 +615,26 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @template TDefault
+     * @param Closure(TValue, TValue, TKey): TValue $callback
+     * @param TDefault $default
+     * @return TValue
+     */
+    public function reduceOr(Closure $callback, mixed $default): mixed
+    {
+        return Arr::reduceOr($this, $callback, $default);
+    }
+
+    /**
+     * @param Closure(TValue, TValue, TKey): TValue $callback
+     * @return TValue|null
+     */
+    public function reduceOrNull(Closure $callback): mixed
+    {
+        return Arr::reduceOrNull($this, $callback);
+    }
+
+    /**
      * @param TValue $search
      * The value to replace.
      * @param TValue $replacement
