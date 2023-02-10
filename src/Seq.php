@@ -622,15 +622,15 @@ class Seq extends Iterator implements Countable, JsonSerializable
      * @param int &$count
      * [Optional][Reference] Sets the number of times replacements occurred.
      * Any value previously set will be reset.
-     * @return array<TKey, TValue>
+     * @return static
      */
     public function replace(
         mixed $search,
         mixed $replacement,
         int &$count = 0,
-    ): array
+    ): static
     {
-        return Arr::replace($this, $search, $replacement, $count);
+        return $this->instantiate(Arr::replace($this, $search, $replacement, $count));
     }
 
     /**
