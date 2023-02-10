@@ -652,7 +652,7 @@ class Seq extends Iterator implements Countable, JsonSerializable
 
     /**
      * @param Randomizer|null $randomizer
-     * @return TValue|null
+     * @return TValue
      */
     public function sample(?Randomizer $randomizer = null): mixed
     {
@@ -661,11 +661,20 @@ class Seq extends Iterator implements Countable, JsonSerializable
 
     /**
      * @param Randomizer|null $randomizer
-     * @return TKey|null
+     * @return TKey
      */
     public function sampleKey(?Randomizer $randomizer = null): mixed
     {
         return Arr::sampleKey($this, $randomizer);
+    }
+
+    /**
+     * @param Randomizer|null $randomizer
+     * @return TKey|null
+     */
+    public function sampleKeyOrNull(?Randomizer $randomizer = null): mixed
+    {
+        return Arr::sampleKeyOrNull($this, $randomizer);
     }
 
     /**
@@ -686,6 +695,26 @@ class Seq extends Iterator implements Countable, JsonSerializable
     public function sampleMany(int $amount, ?Randomizer $randomizer = null): Vec
     {
         return $this->newVec(Arr::sampleMany($this, $amount, $this->isList, $randomizer));
+    }
+
+    /**
+     * @template TDefault
+     * @param TDefault $default
+     * @param Randomizer|null $randomizer
+     * @return TValue|TDefault
+     */
+    public function sampleOr(mixed $default, ?Randomizer $randomizer = null): mixed
+    {
+        return Arr::sampleOr($this, $default, $randomizer);
+    }
+
+    /**
+     * @param Randomizer|null $randomizer
+     * @return TValue|null
+     */
+    public function sampleOrNull(?Randomizer $randomizer = null): mixed
+    {
+        return Arr::sampleOrNull($this, $randomizer);
     }
 
     /**

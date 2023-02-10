@@ -3679,11 +3679,48 @@ final class Arr
         ?Randomizer $randomizer = null,
     ): mixed
     {
-        if (self::isEmpty($iterable)) {
+        $key = self::sampleKeyOrNull($iterable, $randomizer);
+
+        if ($key === null) {
             throw new InvalidArgumentException('$iterable must contain at least one element.');
         }
 
-        return self::sampleKeys($iterable, 1, false, $randomizer)[0];
+        /** @var TKey $key */
+        return $key;
+    }
+
+    /**
+     * Returns a random key picked from `$iterable`.
+     * Throws `InvalidArgumentException` if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::sampleKey(['a', 'b', 'c']); // 1
+     * Arr::sampleKey(['a' => 1, 'b' => 2, 'c' => 3]); // 'c'
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
+     * @return TKey|null
+     */
+    public static function sampleKeyOrNull(
+        iterable $iterable,
+        ?Randomizer $randomizer = null,
+    ): mixed
+    {
+        $array = self::from($iterable);
+
+        if (count($array) === 0) {
+            return null;
+        }
+
+        return self::sampleKeys($array, 1, false, $randomizer)[0];
     }
 
     /**
@@ -3790,6 +3827,73 @@ final class Arr
             static fn($key) => $array[$key],
             self::sampleKeys($array, $amount, $replace, $randomizer),
         );
+    }
+
+    /**
+     * Returns a random element from `$iterable`.
+     * Returns `$default` if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::sampleOr(['a', 'b', 'c'], 'z'); // 'b'
+     * Arr::sampleOr([], 'z'); // 'z'
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @template TDefault
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be sampled.
+     * @param TDefault $default
+     * Value that is used when iterable is empty.
+     * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Secure randomizer will be used if **null**.
+     * Defaults to **null**.
+     * @return TValue|TDefault
+     */
+    public static function sampleOr(
+        iterable $iterable,
+        mixed $default,
+        ?Randomizer $randomizer = null,
+    ): mixed
+    {
+        $array = self::from($iterable);
+        $key = self::sampleKeyOrNull($array, $randomizer);
+
+        if ($key === null) {
+            return $default;
+        }
+
+        return $array[$key];
+    }
+
+    /**
+     * Returns a random element from `$iterable`.
+     * Returns `$default` if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::sampleOrNull(['a', 'b', 'c'], 'z'); // 'b'
+     * Arr::sampleOrNull([]); // null
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be sampled.
+     * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Secure randomizer will be used if **null**.
+     * Defaults to **null**.
+     * @return TValue|null
+     */
+    public static function sampleOrNull(
+        iterable $iterable,
+        ?Randomizer $randomizer = null,
+    ): mixed
+    {
+        return self::sampleOr($iterable, null, $randomizer);
     }
 
     /**

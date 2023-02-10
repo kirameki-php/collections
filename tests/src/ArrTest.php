@@ -2319,7 +2319,7 @@ class ArrTest extends TestCase
                 $this->greaterThanOrEqual(0),
                 $this->lessThanOrEqual(10),
             ),
-            'secure randomizer'
+            'default randomizer'
         );
 
         $randomizer = new Randomizer(new Xoshiro256StarStar(5));
@@ -2350,6 +2350,44 @@ class ArrTest extends TestCase
         Arr::sampleKey([]);
     }
 
+    public function test_sampleKeyOrNull(): void
+    {
+        self::assertThat(
+            Arr::sampleKeyOrNull(range(0, 10)),
+            $this->logicalAnd(
+                $this->greaterThanOrEqual(0),
+                $this->lessThanOrEqual(10),
+            ),
+            'default randomizer'
+        );
+
+        $randomizer = new Randomizer(new Xoshiro256StarStar(5));
+
+        self::assertSame(
+            6,
+            Arr::sampleKeyOrNull(range(0, 10), $randomizer),
+            'with randomizer',
+        );
+
+        self::assertSame(
+            2,
+            Arr::sampleKeyOrNull([10, 11, 12], $randomizer),
+            'list',
+        );
+
+        self::assertSame(
+            'a',
+            Arr::sampleKeyOrNull(['a' => 1, 'b' => 2], $randomizer),
+            'map',
+        );
+
+        self::assertSame(
+            null,
+            Arr::sampleKeyOrNull([], $randomizer),
+            'empty',
+        );
+    }
+
     public function test_sampleKeys(): void
     {
         $list_10 = range(0, 10);
@@ -2362,7 +2400,7 @@ class ArrTest extends TestCase
                 $this->greaterThanOrEqual(0),
                 $this->lessThanOrEqual(10),
             ),
-            'secure randomizer'
+            'default randomizer'
         );
 
         self::assertSame(
@@ -2462,7 +2500,7 @@ class ArrTest extends TestCase
                 $this->greaterThanOrEqual(0),
                 $this->lessThanOrEqual(10),
             ),
-            'secure randomizer'
+            'default randomizer'
         );
 
         $randomizer = new Randomizer(new Xoshiro256StarStar(100));
@@ -2540,6 +2578,53 @@ class ArrTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$amount must be between 0 and size of $iterable');
         Arr::sampleMany(['a'], 2, true);
+    }
+
+    public function test_sampleOr(): void
+    {
+        self::assertThat(
+            Arr::sampleOr(range(0, 10), 'fallback'),
+            $this->logicalAnd(
+                $this->greaterThanOrEqual(0),
+                $this->lessThanOrEqual(10),
+            ),
+            'default randomizer'
+        );
+
+        self::assertSame(
+            1,
+            Arr::sampleOr([1], new Randomizer(new Xoshiro256StarStar())),
+            'with randomizer',
+        );
+
+        self::assertSame(
+            'fallback',
+            Arr::sampleOr([], 'fallback'),
+            'use fallback',
+        );
+    }
+
+    public function test_sampleOrNull(): void
+    {
+        self::assertThat(
+            Arr::sampleOrNull(range(0, 10)),
+            $this->logicalAnd(
+                $this->greaterThanOrEqual(0),
+                $this->lessThanOrEqual(10),
+            ),
+            'default randomizer'
+        );
+
+        self::assertSame(
+            1,
+            Arr::sampleOrNull([1], new Randomizer(new Xoshiro256StarStar())),
+            'with randomizer',
+        );
+
+        self::assertNull(
+            Arr::sampleOrNull([]),
+            'use fallback',
+        );
     }
 
     public function test_satisfyAll(): void
@@ -3166,6 +3251,8 @@ class ArrTest extends TestCase
         $randomizer = new Randomizer(new Xoshiro256StarStar());
         Arr::setDefaultRandomizer($randomizer);
         self::assertSame($randomizer, Arr::getDefaultRandomizer());
+
+        // TODO try using it in various methods
     }
 
     public function test_getDefaultRandomizer(): void
