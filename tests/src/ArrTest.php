@@ -2311,6 +2311,45 @@ class ArrTest extends TestCase
         Arr::sample([]);
     }
 
+    public function test_sampleKey(): void
+    {
+        self::assertThat(
+            Arr::sampleKey(range(0, 10)),
+            $this->logicalAnd(
+                $this->greaterThanOrEqual(0),
+                $this->lessThanOrEqual(10),
+            ),
+            'secure randomizer'
+        );
+
+        $randomizer = new Randomizer(new Xoshiro256StarStar(5));
+
+        self::assertSame(
+            6,
+            Arr::sampleKey(range(0, 10), $randomizer),
+            'with randomizer',
+        );
+
+        self::assertSame(
+            2,
+            Arr::sampleKey([10, 11, 12], $randomizer),
+            'list',
+        );
+
+        self::assertSame(
+            'a',
+            Arr::sampleKey(['a' => 1, 'b' => 2], $randomizer),
+            'map',
+        );
+    }
+
+    public function test_sampleKey_Empty(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        Arr::sampleKey([]);
+    }
+
     public function test_sampleKeys(): void
     {
         $list_10 = range(0, 10);

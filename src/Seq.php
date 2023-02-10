@@ -660,6 +660,15 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
+     * @param Randomizer|null $randomizer
+     * @return TKey|null
+     */
+    public function sampleKey(?Randomizer $randomizer = null): mixed
+    {
+        return Arr::sampleKey($this, $randomizer);
+    }
+
+    /**
      * @param int $amount
      * @param Randomizer|null $randomizer
      * @return Vec<TKey>

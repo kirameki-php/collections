@@ -3649,15 +3649,9 @@ final class Arr
         ?Randomizer $randomizer = null,
     ): mixed
     {
-        $randomizer ??= self::getDefaultRandomizer();
         $array = self::from($iterable);
 
-        if (self::isEmpty($array)) {
-            throw new InvalidArgumentException('$iterable must contain at least one element.');
-        }
-
-        $key = $randomizer->pickArrayKeys($array, 1)[0];
-        return $array[$key];
+        return $array[self::sampleKey($array, $randomizer)];
     }
 
     /**
