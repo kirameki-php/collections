@@ -72,12 +72,11 @@ class Vec extends Seq implements ArrayAccess
 
     /**
      * @param TValue ...$value
-     * @return $this
+     * @return static
      */
     public function append(mixed ...$value): static
     {
-        Arr::append($this->items, ...$value);
-        return $this;
+        return $this->instantiate(Arr::append($this->items, ...$value));
     }
 
     /**
@@ -184,11 +183,10 @@ class Vec extends Seq implements ArrayAccess
 
     /**
      * @param mixed ...$value
-     * @return $this
+     * @return static
      */
     public function prepend(mixed ...$value): static
     {
-        Arr::prepend($this->items, ...$value);
-        return $this;
+        return $this->instantiate(Arr::prepend($this->items, ...$value));
     }
 }
