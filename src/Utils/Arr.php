@@ -8,6 +8,7 @@ use LogicException;
 use Random\Randomizer;
 use SouthPointe\Collections\Exceptions\EmptyNotAllowedException;
 use SouthPointe\Collections\Exceptions\InvalidElementException;
+use SouthPointe\Collections\Exceptions\NoMatchFoundException;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
 use Traversable;
@@ -1141,13 +1142,14 @@ final class Arr
     /**
      * Returns the first element in iterable.
      * If `$condition` is set, the first element which meets the condition is returned instead.
-     * Throws `InvalidArgumentException` if condition has no matches.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::first([1, 2], fn($val) => $val > 1); // 2
-     * Arr::first([1, 2], fn($val) => $val > 2); // InvalidArgumentException: Failed to find matching condition.
-     * Arr::first([], fn($val) => $val > 2); // InvalidArgumentException: $iterable must contain at least one element.
+     * Arr::first([1, 2], fn($val) => $val > 2); // NoMatchFoundException: Failed to find matching condition.
+     * Arr::first([], fn($val) => $val > 2); // EmptyNotAllowedException: $iterable must contain at least one element.
      * ```
      *
      * @template TKey of array-key
@@ -1167,10 +1169,10 @@ final class Arr
         $result = self::firstOr($iterable, self::miss(), $condition);
 
         if ($result instanceof self) {
-            $message = ($condition !== null)
-                ? 'Failed to find matching condition.'
-                : '$iterable must contain at least one element.';
-            throw new InvalidArgumentException($message, [
+            $exception = ($condition !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -1181,8 +1183,7 @@ final class Arr
 
     /**
      * Returns the first index of iterable which meets the given condition.
-     *
-     * Throws `InvalidArgumentException` if `$condition` has no matches.
+     * Throws `NoMatchFoundException` if no condition is met.
      *
      * Example:
      * ```php
@@ -1208,7 +1209,7 @@ final class Arr
         $result = self::firstIndexOrNull($iterable, $condition);
 
         if ($result === null) {
-            throw new InvalidArgumentException('Failed to find matching condition.', [
+            throw new NoMatchFoundException('Failed to find matching condition.', [
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -1258,14 +1259,14 @@ final class Arr
 
     /**
      * Returns the first key of the given iterable which meets the given condition.
-     *
-     * Throws `InvalidArgumentException` if no condition is met or if `$iterable` is empty.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::firstKey(['a' => 1, 'b' => 2], fn($v, $k) => $k === 'b'); // 'b'
      * Arr::firstKey([1, 2, 3], fn($val) => $val > 1); // 1
-     * Arr::firstKey([1, 2, 3], fn($val) => $val > 3); // InvalidArgumentException
+     * Arr::firstKey([1, 2, 3], fn($val) => $val > 3); // NoMatchFoundException
      * ```
      *
      * @template TKey of array-key
@@ -1285,10 +1286,10 @@ final class Arr
         $result = self::firstKeyOrNull($iterable, $condition);
 
         if ($result === null) {
-            $message = ($condition !== null)
-                ? 'Failed to find matching condition.'
-                : '$iterable must contain at least one element.';
-            throw new InvalidArgumentException($message, [
+            $exception = ($condition !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -2068,13 +2069,14 @@ final class Arr
     /**
      * Returns the last element in iterable.
      * If `$condition` is set, the last element which meets the condition is returned instead.
-     * Throws `InvalidArgumentException` if condition is not met or if `$iterable` is empty.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
      * Arr::last([1, 2], fn($val) => true); // 2
-     * Arr::last([1, 2], fn($val) => false); // InvalidArgumentException: Failed to find matching condition.
-     * Arr::last([], fn($val) => true); // InvalidArgumentException: Iterable must contain at least one element.
+     * Arr::last([1, 2], fn($val) => false); // NoMatchFoundException: Failed to find matching condition.
+     * Arr::last([], fn($val) => true); // EmptyNotAllowedException: $iterable must contain at least one element.
      * ```
      *
      * @template TKey of array-key
@@ -2094,10 +2096,10 @@ final class Arr
         $result = self::lastOr($iterable, self::miss(), $condition);
 
         if ($result instanceof self) {
-            $message = ($condition !== null)
-                ? 'Failed to find matching condition.'
-                : '$iterable must contain at least one element.';
-            throw new InvalidArgumentException($message, [
+            $exception = ($condition !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -2108,8 +2110,8 @@ final class Arr
 
     /**
      * Returns the last index of `$iterable` which meets the given condition.
-     *
-     * Throws `InvalidArgumentException` if no condition is met or if `$iterable` is empty.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -2135,10 +2137,10 @@ final class Arr
         $result = self::lastIndexOrNull($iterable, $condition);
 
         if ($result === null) {
-            $message = ($condition !== null)
-                ? 'Failed to find matching condition.'
-                : '$iterable must contain at least one element.';
-            throw new InvalidArgumentException($message, [
+            $exception = ($condition !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -2198,7 +2200,8 @@ final class Arr
 
     /**
      * Returns the last key of `$iterable` which meets the given condition.
-     * Throws `InvalidArgumentException` if no condition is met or if `$iterable` is empty.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -2224,10 +2227,10 @@ final class Arr
         $result = self::lastKeyOrNull($iterable, $condition);
 
         if ($result === null) {
-            $message = ($condition !== null)
-                ? 'Failed to find matching condition.'
-                : '$iterable must contain at least one element.';
-            throw new InvalidArgumentException($message, [
+            $exception = ($condition !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
                 'iterable' => $iterable,
                 'condition' => $condition,
             ]);
@@ -2585,7 +2588,8 @@ final class Arr
      * Returns the smallest element from the given array.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
-     * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
@@ -2615,10 +2619,10 @@ final class Arr
         $minVal = self::minOrNull($iterable, $by);
 
         if ($minVal === null) {
-            $message = ($by !== null)
-                ? 'Failed to find matching condition.'
-                : '$iterable must contain at least one element.';
-            throw new InvalidArgumentException($message, [
+            $exception = ($by !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
                 'iterable' => $iterable,
                 'condition' => $by,
             ]);
@@ -2683,7 +2687,8 @@ final class Arr
      * Returns the smallest and largest element from `$iterable` as array{ min: , max: }.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
-     * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
@@ -2709,10 +2714,10 @@ final class Arr
     {
         $result = self::minMaxOrNull($iterable, $by);
         if ($result === null) {
-            $message = ($by !== null)
-                ? 'Failed to find matching condition.'
-                : '$iterable must contain at least one element.';
-            throw new InvalidArgumentException($message, [
+            $exception = ($by !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
                 'iterable' => $iterable,
                 'condition' => $by,
             ]);
