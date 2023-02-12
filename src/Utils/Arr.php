@@ -6,6 +6,7 @@ use Closure;
 use JsonException;
 use LogicException;
 use Random\Randomizer;
+use SouthPointe\Collections\Exceptions\EmptyNotAllowedException;
 use SouthPointe\Collections\Exceptions\InvalidElementException;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
@@ -217,8 +218,8 @@ final class Arr
     /**
      * Get the average of the elements inside `$iterable`.
      * The elements must be af type int or float.
-     * Throws `InvalidElementException` If the iterable is empty or contains NAN.
-     *
+     * Throws `InvalidElementException` if the `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if `$iterable` contains NAN.
      * Example:
      * ```php
      * Arr::average([]); // 0
@@ -239,7 +240,7 @@ final class Arr
         $average = self::averageOrNull($iterable);
 
         if ($average === null) {
-            throw new InvalidArgumentException('$iterable must contain at least one element.');
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.');
         }
 
         return $average;
@@ -2388,7 +2389,8 @@ final class Arr
      * Returns the largest element from `$iterable`.
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.
-     * Throws `InvalidElementException`, If `$iterable` is empty or contains NAN.
+     * Throws `InvalidElementException`, If `$iterable` contains NAN.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -2943,7 +2945,7 @@ final class Arr
 
     /**
      * Pops the element off the end of the given array (reference).
-     * Throws `InvalidArgumentException`, if `&$array` is empty.
+     * Throws `EmptyNotAllowedException`, if `&$array` is empty.
      *
      * Example:
      * ```php
@@ -2965,7 +2967,7 @@ final class Arr
         $popped = self::popOrNull($array);
 
         if ($popped === null) {
-            throw new InvalidArgumentException('&$array must contain at least one element.');
+            throw new EmptyNotAllowedException('&$array must contain at least one element.');
         }
 
         return $popped;
@@ -3315,7 +3317,7 @@ final class Arr
     /**
      * Iteratively reduce `$iterable` to a single value by invoking
      * `$callback($reduced, $val, $key)`.
-     * Throws `InvalidArgumentException` if `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -3340,7 +3342,7 @@ final class Arr
         $result = self::reduceOr($iterable, $callback, self::miss());
 
         if ($result instanceof self) {
-            throw new InvalidArgumentException('$iterable must contain at least one element.');
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.');
         }
 
         return $result;
@@ -3695,7 +3697,7 @@ final class Arr
 
     /**
      * Returns a random element from `$iterable`.
-     * Throws `InvalidArgumentException` if `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -3725,7 +3727,7 @@ final class Arr
 
     /**
      * Returns a random key picked from `$iterable`.
-     * Throws `InvalidArgumentException` if `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -3751,7 +3753,7 @@ final class Arr
         $key = self::sampleKeyOrNull($iterable, $randomizer);
 
         if ($key === null) {
-            throw new InvalidArgumentException('$iterable must contain at least one element.');
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.');
         }
 
         /** @var TKey $key */
@@ -3760,7 +3762,7 @@ final class Arr
 
     /**
      * Returns a random key picked from `$iterable`.
-     * Throws `InvalidArgumentException` if `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -4202,7 +4204,7 @@ final class Arr
 
     /**
      * Shift an element off the beginning of `&$array`.
-     * Throws a `InvalidArgumentException` if `&$array` is empty.
+     * Throws a `EmptyNotAllowedException` if `&$array` is empty.
      *
      * Example:
      * ```php
@@ -4227,7 +4229,7 @@ final class Arr
         $shifted = self::shiftOrNull($array);
 
         if ($shifted === null) {
-            throw new InvalidArgumentException('&$array must contain at least one element.', [
+            throw new EmptyNotAllowedException('&$array must contain at least one element.', [
                 'array' => $array,
             ]);
         }
