@@ -4,17 +4,17 @@ namespace SouthPointe\Collections\Utils;
 
 use Closure;
 use JsonException;
-use LogicException;
 use Random\Randomizer;
+use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Collections\Exceptions\EmptyNotAllowedException;
 use SouthPointe\Collections\Exceptions\InvalidElementException;
 use SouthPointe\Collections\Exceptions\InvalidKeyException;
 use SouthPointe\Collections\Exceptions\MissingKeyException;
 use SouthPointe\Collections\Exceptions\NoMatchFoundException;
+use SouthPointe\Collections\Exceptions\TypeMismatchException;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
 use Traversable;
-use ValueError;
 use function abs;
 use function array_diff;
 use function array_diff_ukey;
@@ -1056,7 +1056,7 @@ final class Arr
     /**
      * Returns a new array with the given keys removed from `$iterable`.
      * Non-existent keys will be ignored.
-     * If `$safe` is set to **true**, `InvalidArgumentException` will be thrown
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
      * if a key does not exist in `$iterable`.
      *
      * Example:
@@ -1072,7 +1072,7 @@ final class Arr
      * @param array<int, array-key> $keys
      * Keys to be excluded.
      * @param bool $safe
-     * [Optional] If this is set to **true**, `InvalidArgumentException` will be
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
      * thrown if key does not exist in `$iterable`.
      * If set to **false**, non-existing keys will be filled with **null**.
      * Defaults to **true**.
@@ -1199,7 +1199,7 @@ final class Arr
      * Arr::firstIndex([1, 2, 3], fn($val) => $val > 1); // 1
      * Arr::firstIndex([1, 2, 3], fn($val) => $val > 3); // null
      * Arr::firstIndex(['a' => 1, 'b' => 2], fn($val, $key) => $key === 'b'); // 1
-     * Arr::firstIndex([1], fn($v, $k) => false); // InvalidArgumentException
+     * Arr::firstIndex([1], fn($v, $k) => false); // NoMatchFoundException
      * ```
      *
      * @template TKey of array-key
@@ -1461,7 +1461,7 @@ final class Arr
 
     /**
      * Flip the given iterable so that keys become values and values become keys.
-     *
+     * Throws `InvalidKeyException` if elements contain types other than int|string.
      * Throws `DuplicateKeyException` if there are two values with the same value.
      * Set `$overwrite` to **true** to suppress this error.
      *
@@ -1497,7 +1497,7 @@ final class Arr
             }
 
             if (!$overwrite && array_key_exists($val, $flipped)) {
-                throw new InvalidArgumentException("Tried to overwrite existing key: {$val}", [
+                throw new DuplicateKeyException("Tried to overwrite existing key: {$val}", [
                     'iterable' => $iterable,
                     'key' => $val,
                 ]);
@@ -1770,16 +1770,20 @@ final class Arr
         if (self::isDifferentArrayType($array, $values)) {
             $arrayType = self::getArrayType($array);
             $valuesType = self::getArrayType($values);
-            throw new InvalidArgumentException(
-                "\$values' array type ({$valuesType}) does not match \$array's ({$arrayType})",
-            );
+            $message = "\$values' array type ({$valuesType}) does not match \$array's ({$arrayType})";
+            throw new TypeMismatchException($message, [
+                'array' => $array,
+                'at' => $at,
+                'values' => $values,
+                'overwrite' => $overwrite,
+            ]);
         }
 
         // If array is associative and overwrite is not allowed, check for duplicates before applying.
         if (!$reindex && !$overwrite) {
             $duplicates = self::keys(self::intersectKeys($array, $values));
             if (self::isNotEmpty($duplicates)) {
-                throw new InvalidArgumentException("Tried to overwrite existing key: {$duplicates[0]}", [
+                throw new DuplicateKeyException("Tried to overwrite existing key: {$duplicates[0]}", [
                     'array' => $array,
                     'values' => $values,
                     'key' => $duplicates[0],
@@ -1831,9 +1835,11 @@ final class Arr
         if (self::isDifferentArrayType($array1, $array2)) {
             $array1Type = self::getArrayType($array1);
             $array2Type = self::getArrayType($array2);
-            throw new InvalidArgumentException(
-                "\$iterable1's array type ({$array1Type}) does not match \$iterable2's ({$array2Type})",
-            );
+            $message = "\$iterable1's inner type ({$array1Type}) does not match \$iterable2's ({$array2Type})";
+            throw new TypeMismatchException($message, [
+                'iterable1' => $iterable1,
+                'iterable2' => $iterable2,
+            ]);
         }
 
         $reindex ??= array_is_list($array1);
@@ -1873,9 +1879,11 @@ final class Arr
         if (self::isDifferentArrayType($array1, $array2)) {
             $array1Type = self::getArrayType($array1);
             $array2Type = self::getArrayType($array2);
-            throw new InvalidArgumentException(
-                "\$iterable1's array type ({$array1Type}) does not match \$iterable2's ({$array2Type})",
-            );
+            $message = "\$iterable1's array type ({$array1Type}) does not match \$iterable2's ({$array2Type})";
+            throw new TypeMismatchException($message, [
+                'iterable1' => $iterable1,
+                'iterable2' => $iterable2,
+            ]);
         }
 
         return array_intersect_key($array1, $array2);
@@ -2570,7 +2578,11 @@ final class Arr
         $merging = self::from($iterable2);
 
         if (self::isDifferentArrayType($merged, $merging)) {
-            throw new InvalidArgumentException('Tried to merge list with map. Try converting the map to a list.');
+            throw new TypeMismatchException('Tried to merge list with map. Try converting the map to a list.', [
+                'iterable1' => $iterable1,
+                'iterable2' => $iterable2,
+                'depth' => $depth,
+            ]);
         }
 
         foreach ($merging as $key => $val) {
@@ -4429,7 +4441,10 @@ final class Arr
             : self::from($iterable);
 
         if (($count = count($array)) !== 1) {
-            throw new InvalidArgumentException("Expected only one element in result. $count given.");
+            throw new InvalidArgumentException("Expected only one element in result. $count given.", [
+                'iterable' => $iterable,
+                'condition' => $condition,
+            ]);
         }
 
         /** @var TValue $current */
@@ -4778,7 +4793,11 @@ final class Arr
         $array2 = self::from($iterable2);
 
         if (self::isDifferentArrayType($array1, $array2)) {
-            throw new InvalidArgumentException('Tried to compare list with map. Try converting the map to a list.');
+            throw new TypeMismatchException('Tried to compare list with map. Try converting the map to a list.', [
+                'iterable1' => $iterable1,
+                'iterable2' => $iterable2,
+                'by' => $by,
+            ]);
         }
 
         $by ??= static fn(mixed $a, mixed $b): int => $a <=> $b;
