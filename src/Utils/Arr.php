@@ -150,7 +150,7 @@ final class Arr
 
         if ($result instanceof self) {
             $count = count($array);
-            throw new IndexOutOfBoundsException("Size: $count Position: $index", [
+            throw new IndexOutOfBoundsException("Size: $count index: $index", [
                 'iterable' => $iterable,
                 'index' => $index,
                 'count' => $count,

@@ -24,7 +24,7 @@ class MissingKeyException extends LogicException
     {
         $missingFormatted = Arr::map($missingKeys, fn($k) => is_string($k) ? "'{$k}'" : $k);
         $missingJoined = Arr::join($missingFormatted, ', ', '[', ']');
-        $message = "Array keys: {$missingJoined} did not exist.";
+        $message = "Keys: {$missingJoined} did not exist.";
 
         parent::__construct($message, $context, $code, $previous);
     }

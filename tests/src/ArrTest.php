@@ -5,7 +5,14 @@ namespace Tests\SouthPointe\Collections;
 use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
+use SouthPointe\Collections\Exceptions\DuplicateKeyException;
+use SouthPointe\Collections\Exceptions\EmptyNotAllowedException;
+use SouthPointe\Collections\Exceptions\IndexOutOfBoundsException;
 use SouthPointe\Collections\Exceptions\InvalidElementException;
+use SouthPointe\Collections\Exceptions\InvalidKeyException;
+use SouthPointe\Collections\Exceptions\MissingKeyException;
+use SouthPointe\Collections\Exceptions\NoMatchFoundException;
+use SouthPointe\Collections\Exceptions\TypeMismatchException;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
@@ -44,7 +51,7 @@ class ArrTest extends TestCase
 
     public function test_append_with_map(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('$array must be a list, map given.');
         $arr = ['a' => 1];
         Arr::append($arr, 1);
@@ -57,16 +64,16 @@ class ArrTest extends TestCase
 
     public function test_at_on_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Index out of bounds. position: 0');
+        $this->expectException(IndexOutOfBoundsException::class);
+        $this->expectExceptionMessage('Size: 0 index: 0');
         self::assertSame(null, Arr::at([], 0));
     }
 
     public function test_at_missing_index(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Index out of bounds. position: 5');
-        self::assertSame(null, Arr::at([1, 2, 3], 5));
+        $this->expectException(IndexOutOfBoundsException::class);
+        $this->expectExceptionMessage('Size: 3 index: 3');
+        self::assertSame(null, Arr::at([1, 2, 3], 3));
     }
 
     public function test_atOr(): void
@@ -114,7 +121,7 @@ class ArrTest extends TestCase
 
     public function test_average_not_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         Arr::average([]);
     }
 
@@ -212,14 +219,14 @@ class ArrTest extends TestCase
 
     public function test_coalesce_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Non-null value could not be found.');
         Arr::coalesce([]);
     }
 
     public function test_coalesce_only_null(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Non-null value could not be found.');
         Arr::coalesce([null]);
     }
@@ -758,8 +765,8 @@ class ArrTest extends TestCase
 
     public function test_getOrFail_invalid_key_exception(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Undefined key 2');
+        $this->expectException(InvalidKeyException::class);
+        $this->expectExceptionMessage('2');
         Arr::get([1, 2], 2);
     }
 
@@ -795,8 +802,8 @@ class ArrTest extends TestCase
 
     public function test_except_safe_on_non_existing_keys(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Undefined array keys: [1, 2, 'b']");
+        $this->expectException(MissingKeyException::class);
+        $this->expectExceptionMessage("Keys: [1, 2, 'b']");
         self::assertSame([], Arr::except([], [1, 2, 'b']));
     }
 
@@ -830,14 +837,14 @@ class ArrTest extends TestCase
 
     public function test_first_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::first([]);
     }
 
     public function test_first_bad_condition(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::first([1, 2], static fn(int $i) => $i > 2);
     }
@@ -860,14 +867,14 @@ class ArrTest extends TestCase
 
     public function test_firstIndex_on_empty_with_scalar_lookup(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::firstIndex([], 2);
     }
 
     public function test_firstIndex_on_empty_with_condition(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::firstIndex([], static fn($v, $k) => true);
     }
@@ -906,14 +913,14 @@ class ArrTest extends TestCase
 
     public function test_firstKey_on_null(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::firstKey([]);
     }
 
     public function test_firstKey_on_no_match(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::firstKey([1, 2], static fn($v, $k) => false);
     }
@@ -1029,14 +1036,14 @@ class ArrTest extends TestCase
 
     public function test_flip_invalid_key_type(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidKeyException::class);
         $this->expectExceptionMessage('Expected: array value of type int|string. Got: boolean');
         Arr::flip([true, false]);
     }
 
     public function test_flip_duplicate_key(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(DuplicateKeyException::class);
         $this->expectExceptionMessage('Tried to overwrite existing key: 1');
         Arr::flip([1, 1]);
     }
@@ -1106,7 +1113,7 @@ class ArrTest extends TestCase
 
     public function test_groupBy_missing_key(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidKeyException::class);
         $this->expectExceptionMessage('Expected: Grouping key of type int|string. Got: double');
         Arr::groupBy([['dummy' => 3]], fn() => 1.1);
     }
@@ -1176,7 +1183,7 @@ class ArrTest extends TestCase
 
     public function test_insert_fail_on_mixed_types(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('$values\' array type (list) does not match $array\'s (map)');
         $assoc = ['a' => 1];
         Arr::insert($assoc, 1, [1]);
@@ -1184,7 +1191,7 @@ class ArrTest extends TestCase
 
     public function test_insert_with_duplicate_key(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(DuplicateKeyException::class);
         $this->expectExceptionMessage('Tried to overwrite existing key: a');
         $assoc = ['a' => 1];
         Arr::insert($assoc, 1, ['a' => 2]);
@@ -1215,8 +1222,8 @@ class ArrTest extends TestCase
 
     public function test_intersect_mixed_types(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('$iterable1\'s array type (map) does not match $iterable2\'s (list)');
+        $this->expectException(TypeMismatchException::class);
+        $this->expectExceptionMessage('$iterable1\'s inner type (map) does not match $iterable2\'s (list)');
         Arr::intersect(['a' => 1], [1]);
     }
 
@@ -1234,7 +1241,7 @@ class ArrTest extends TestCase
 
     public function test_intersectKeys_no_type_mixing(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('$iterable1\'s array type (map) does not match $iterable2\'s (list)');
         Arr::intersectKeys(['a' => 1], [1]);
     }
@@ -1303,7 +1310,7 @@ class ArrTest extends TestCase
 
     public function test_keyBy_with_duplicate_key(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(DuplicateKeyException::class);
         Arr::keyBy([['id' => 'b'], ['id' => 'b']], static fn($v): string => $v['id']);
     }
 
@@ -1312,13 +1319,13 @@ class ArrTest extends TestCase
         $array = Arr::keyBy([['id' => 'b', 1], ['id' => 'b', 2]], static fn($v): string => $v['id'], true);
         self::assertSame(['b' => ['id' => 'b', 2]], $array);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(DuplicateKeyException::class);
         Arr::keyBy([['id' => 'b'], ['id' => 'b']], static fn(array $v): string => $v['id']);
     }
 
     public function test_keyBy_with_invalid_key(): void
     {
-        $this->expectException(LogicException::class);
+        $this->expectException(InvalidKeyException::class);
         Arr::keyBy([['id' => 'b', 1], ['id' => 'b', 2]], static fn($v) => false);
     }
 
@@ -1336,14 +1343,14 @@ class ArrTest extends TestCase
 
     public function test_last_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::last([]);
     }
 
     public function test_last_bad_condition(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::last([1, 2], static fn(int $i) => $i > 2);
     }
@@ -1364,14 +1371,14 @@ class ArrTest extends TestCase
 
     public function test_lastIndex_on_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::lastIndex([]);
     }
 
     public function test_lastIndex_on_no_match(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::lastIndex([1, 2], fn() => false);
     }
@@ -1413,14 +1420,14 @@ class ArrTest extends TestCase
 
     public function test_lastKey_on_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::lastKey([]);
     }
 
     public function test_lastKey_with_no_matches(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NoMatchFoundException::class);
         $this->expectExceptionMessage('Failed to find matching condition.');
         Arr::lastKey([1, 2, 3], static fn() => false);
     }
@@ -1511,7 +1518,7 @@ class ArrTest extends TestCase
 
     public function test_max_with_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::max([]);
     }
@@ -1561,12 +1568,11 @@ class ArrTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('At least one iterable must be defined.');
         Arr::merge();
-        /** @phpstan-ignore-line */
     }
 
     public function test_merge_with_list_and_map(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('Tried to merge list with map. Try converting the map to a list.');
         Arr::merge([1, 2], [3, 'a' => 4]);
     }
@@ -1595,7 +1601,7 @@ class ArrTest extends TestCase
 
     public function test_mergeRecursive_with_list_and_map(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('Tried to merge list with map. Try converting the map to a list.');
         Arr::mergeRecursive(['a' => [1, 2]], ['a' => ['b' => 1]]);
     }
@@ -1615,7 +1621,7 @@ class ArrTest extends TestCase
 
     public function test_min_with_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::min([]);
     }
@@ -1660,7 +1666,7 @@ class ArrTest extends TestCase
 
     public function test_minMax_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::minMax([]);
     }
@@ -1740,8 +1746,8 @@ class ArrTest extends TestCase
 
     public function test_only_safe_on_non_existing_keys(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Undefined array keys: [1, 2, 'b']");
+        $this->expectException(MissingKeyException::class);
+        $this->expectExceptionMessage("Keys: [1, 2, 'b']");
         self::assertSame([], Arr::only([], [1, 2, 'b']));
     }
 
@@ -1767,7 +1773,7 @@ class ArrTest extends TestCase
 
     public function test_padding_on_assoc(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('Padding can only be applied to a list, map given.');
         Arr::pad(['a' => 1], 1, 2);
     }
@@ -1796,7 +1802,7 @@ class ArrTest extends TestCase
 
     public function test_pop_on_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('&$array must contain at least one element.');
         $list = [];
         Arr::pop($list);
@@ -1878,7 +1884,7 @@ class ArrTest extends TestCase
 
     public function test_prepend_with_map(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('$array must be a list, map given.');
         $arr = ['a' => 1];
         Arr::prepend($arr, 1);
@@ -1919,7 +1925,7 @@ class ArrTest extends TestCase
 
     public function test_pull_on_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidKeyException::class);
         $this->expectExceptionMessage('Tried to pull undefined key "1"');
         $empty = [];
         Arr::pull($empty, 1);
@@ -1927,7 +1933,7 @@ class ArrTest extends TestCase
 
     public function test_pull_undefined_key(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidKeyException::class);
         $this->expectExceptionMessage('Tried to pull undefined key "c"');
         $assoc = ['a' => 1, 'b' => 2];
         Arr::pull($assoc, 'c');
@@ -2088,7 +2094,7 @@ class ArrTest extends TestCase
 
     public function test_reduce_unable_to_guess_initial(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::reduce([], static fn($c, $i, $k) => $k);
     }
@@ -2317,7 +2323,7 @@ class ArrTest extends TestCase
 
     public function test_sample_Empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::sample([]);
     }
@@ -2356,7 +2362,7 @@ class ArrTest extends TestCase
 
     public function test_sampleKey_Empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::sampleKey([]);
     }
@@ -2784,7 +2790,7 @@ class ArrTest extends TestCase
 
     public function test_shift_on_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('&$array must contain at least one element.');
         $list = [];
         Arr::shift($list);
@@ -3103,7 +3109,7 @@ class ArrTest extends TestCase
 
     public function test_symDiff_cannot_mix_array_types(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('Tried to compare list with map. Try converting the map to a list.');
         Arr::symDiff([1], ['a' => 1]);
     }
