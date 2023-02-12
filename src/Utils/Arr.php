@@ -8,6 +8,8 @@ use LogicException;
 use Random\Randomizer;
 use SouthPointe\Collections\Exceptions\EmptyNotAllowedException;
 use SouthPointe\Collections\Exceptions\InvalidElementException;
+use SouthPointe\Collections\Exceptions\InvalidKeyException;
+use SouthPointe\Collections\Exceptions\MissingKeyException;
 use SouthPointe\Collections\Exceptions\NoMatchFoundException;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
@@ -138,10 +140,17 @@ final class Arr
         int $index,
     ): mixed
     {
-        $result = self::atOr($iterable, $index, self::miss());
+        $array = self::from($iterable);
+
+        $result = self::atOr($array, $index, self::miss());
 
         if ($result instanceof self) {
-            throw new InvalidArgumentException("Index out of bounds. position: $index");
+            $count = count($array);
+            throw new InvalidArgumentException("\$index is out of bounds. size: $count position: $index", [
+                'iterable' => $iterable,
+                'index' => $index,
+                'count' => $count,
+            ]);
         }
 
         return $result;
@@ -241,7 +250,9 @@ final class Arr
         $average = self::averageOrNull($iterable);
 
         if ($average === null) {
-            throw new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return $average;
@@ -1091,9 +1102,7 @@ final class Arr
         }
 
         if ($safe && self::isNotEmpty($missingKeys)) {
-            $missingFormatted = self::map($missingKeys, fn($k) => is_string($k) ? "'{$k}'" : $k);
-            $missingJoined = self::join($missingFormatted, ', ', '[', ']');
-            throw new InvalidArgumentException("Undefined array keys: {$missingJoined}", [
+            throw new MissingKeyException($missingKeys, [
                 'iterable' => $iterable,
                 'givenKeys' => $keys,
                 'missingKeys' => $missingKeys,
@@ -1480,7 +1489,7 @@ final class Arr
         $flipped = [];
         foreach ($iterable as $key => $val) {
             if (is_not_array_key($val)) {
-                throw new InvalidArgumentException('Expected: array value of type int|string. Got: ' . gettype($val), [
+                throw new InvalidKeyException('Expected: array value of type int|string. Got: ' . gettype($val), [
                     'iterable' => $iterable,
                     'key' => $key,
                     'value' => $val,
@@ -1691,7 +1700,7 @@ final class Arr
         foreach ($iterable as $key => $val) {
             $groupKey = $callback($val, $key);
             if (is_not_array_key($groupKey)) {
-                throw new InvalidArgumentException('Expected: Grouping key of type int|string. Got: ' . gettype($groupKey), [
+                throw new InvalidKeyException('Expected: Grouping key of type int|string. Got: ' . gettype($groupKey), [
                     'iterable' => $iterable,
                     'callback' => $callback,
                     'key' => $key,
@@ -2972,7 +2981,9 @@ final class Arr
         $popped = self::popOrNull($array);
 
         if ($popped === null) {
-            throw new EmptyNotAllowedException('&$array must contain at least one element.');
+            throw new EmptyNotAllowedException('&$array must contain at least one element.', [
+                'array' => $array,
+            ]);
         }
 
         return $popped;
@@ -3313,7 +3324,10 @@ final class Arr
     ): void
     {
         if (!array_is_list($array)) {
-            throw new InvalidArgumentException('$array must be a list, map given.');
+            throw new InvalidArgumentException('$array must be a list, map given.', [
+                'array' => $array,
+                'values' => $value,
+            ]);
         }
 
         array_push($array, ...$value);
@@ -3347,7 +3361,10 @@ final class Arr
         $result = self::reduceOr($iterable, $callback, self::miss());
 
         if ($result instanceof self) {
-            throw new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
+                'iterable' => $iterable,
+                'callback' => $callback,
+            ]);
         }
 
         return $result;
@@ -3758,7 +3775,10 @@ final class Arr
         $key = self::sampleKeyOrNull($iterable, $randomizer);
 
         if ($key === null) {
-            throw new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
+                'iterable' => $iterable,
+                'randomizer' => $randomizer,
+            ]);
         }
 
         /** @var TKey $key */
@@ -5010,8 +5030,8 @@ final class Arr
             return $key;
         }
 
-        throw new LogicException(
-            'Key of iterable must be int or string. ' . gettype($key) . ' given.'
+        throw new InvalidKeyException(
+            'Expected: key of type int|string. ' . gettype($key) . ' given.'
         );
     }
 
