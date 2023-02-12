@@ -2,8 +2,6 @@
 
 namespace SouthPointe\Collections\Exceptions;
 
-use SouthPointe\Core\Exceptions\LogicException;
-
-class InvalidElementException extends LogicException
+class InvalidElementException extends CollectionException
 {
 }

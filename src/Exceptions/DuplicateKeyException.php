@@ -2,8 +2,6 @@
 
 namespace SouthPointe\Collections\Exceptions;
 
-use SouthPointe\Core\Exceptions\LogicException;
-
-class DuplicateKeyException extends LogicException
+class DuplicateKeyException extends CollectionException
 {
 }

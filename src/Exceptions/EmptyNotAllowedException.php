@@ -2,8 +2,6 @@
 
 namespace SouthPointe\Collections\Exceptions;
 
-use SouthPointe\Core\Exceptions\LogicException;
-
-class EmptyNotAllowedException extends LogicException
+class EmptyNotAllowedException extends CollectionException
 {
 }

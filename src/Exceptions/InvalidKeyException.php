@@ -2,8 +2,6 @@
 
 namespace SouthPointe\Collections\Exceptions;
 
-use SouthPointe\Core\Exceptions\LogicException;
-
-class InvalidKeyException extends LogicException
+class InvalidKeyException extends CollectionException
 {
 }

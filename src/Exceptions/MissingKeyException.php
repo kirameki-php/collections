@@ -3,11 +3,10 @@
 namespace SouthPointe\Collections\Exceptions;
 
 use SouthPointe\Collections\Utils\Arr;
-use SouthPointe\Core\Exceptions\LogicException;
 use Throwable;
 use function is_string;
 
-class MissingKeyException extends LogicException
+class MissingKeyException extends CollectionException
 {
     /**
      * @param array<int, array-key> $missingKeys
