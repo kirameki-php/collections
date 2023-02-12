@@ -7,6 +7,7 @@ use JsonException;
 use Random\Randomizer;
 use SouthPointe\Collections\Exceptions\DuplicateKeyException;
 use SouthPointe\Collections\Exceptions\EmptyNotAllowedException;
+use SouthPointe\Collections\Exceptions\IndexOutOfBoundsException;
 use SouthPointe\Collections\Exceptions\InvalidElementException;
 use SouthPointe\Collections\Exceptions\InvalidKeyException;
 use SouthPointe\Collections\Exceptions\MissingKeyException;
@@ -84,7 +85,7 @@ final class Arr
     /**
      * Append value(s) to the end of the given iterable.
      * The iterable must be convertable to a list.
-     * Will throw `InvalidArgumentException` if map is given.
+     * Will throw `TypeMismatchException` if map is given.
      *
      * Example:
      * ```php
@@ -106,7 +107,10 @@ final class Arr
     {
         $array = self::from($iterable);
         if (!array_is_list($array)) {
-            throw new InvalidArgumentException('$array must be a list, map given.');
+            throw new TypeMismatchException('$array must be a list, map given.', [
+                'iterable' => $iterable,
+                'values' => $value,
+            ]);
         }
         if (!array_is_list($value)) {
             $value = array_values($value);
@@ -117,14 +121,14 @@ final class Arr
 
     /**
      * Returns the item at the given index.
-     * Throws `InvalidArgumentException` if the index does not exist.
+     * Throws `IndexOutOfBoundsException` if the index does not exist.
      *
      * Example:
      * ```php
      * Arr::at([6, 7], 1); // 7
      * Arr::at([6, 7], -1); // 7
      * Arr::at(['a' => 1, 'b' => 2], 0); // 1
-     * Arr::at([6], 1); // InvalidValueException
+     * Arr::at([6], 1); // IndexOutOfBoundsException
      * ```
      *
      * @template TKey of array-key
@@ -146,7 +150,7 @@ final class Arr
 
         if ($result instanceof self) {
             $count = count($array);
-            throw new InvalidArgumentException("\$index is out of bounds. size: $count position: $index", [
+            throw new IndexOutOfBoundsException("Size: $count Position: $index", [
                 'iterable' => $iterable,
                 'index' => $index,
                 'count' => $count,
@@ -293,7 +297,9 @@ final class Arr
         }
 
         if (is_float($sum) && is_nan($sum)) {
-            throw new InvalidElementException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return $sum / $size;
@@ -373,7 +379,9 @@ final class Arr
         $result = self::coalesceOrNull($iterable);
 
         if ($result === null) {
-            throw new InvalidArgumentException('Non-null value could not be found.');
+            throw new NoMatchFoundException('Non-null value could not be found.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return $result;
@@ -1572,13 +1580,13 @@ final class Arr
 
     /**
      * Returns the element of the given key.
-     * Throws `InvalidArgumentException` if key does not exist.
+     * Throws `InvalidKeyException` if key does not exist.
      *
      * Example:
      * ```php
      * Arr::get([1, 2], key: 1); // 2
      * Arr::get(['a' => 1], key: 'a'); // 1
-     * Arr::get(['a' => 1], key: 'c'); // InvalidArgumentException: Undefined array key "c"
+     * Arr::get(['a' => 1], key: 'c'); // InvalidKeyException: Undefined array key "c"
      * ```
      *
      * @template TKey of array-key
@@ -1597,9 +1605,10 @@ final class Arr
         $result = self::getOr($iterable, $key, self::miss());
 
         if ($result instanceof self) {
-            throw new InvalidArgumentException(
-                'Undefined key ' . (is_string($key) ? "\"$key\"" : $key)
-            );
+            throw new InvalidKeyException(is_string($key) ? "\"$key\"" : "$key", [
+                'iterable' => $iterable,
+                'key' => $key,
+            ]);
         }
 
         return $result;
@@ -2051,7 +2060,7 @@ final class Arr
             $newKey = self::ensureKey($callback($val, $oldKey));
 
             if (!$overwrite && array_key_exists($newKey, $result)) {
-                throw new InvalidArgumentException("Tried to overwrite existing key: {$newKey}", [
+                throw new DuplicateKeyException("Tried to overwrite existing key: {$newKey}", [
                     'iterable' => $iterable,
                     'newKey' => $newKey,
                 ]);
@@ -2134,7 +2143,7 @@ final class Arr
      * ```php
      * Arr::lastIndex([1, 2, 3, 4], fn($v) => true); // 3
      * Arr::lastIndex(['a' => 1, 'b' => 2]); // 1
-     * Arr::lastIndex([1, 2], fn($v) => false); // InvalidArgumentException
+     * Arr::lastIndex([1, 2], fn($v) => false); // NoMatchFoundException
      * ```
      *
      * @template TKey of array-key
@@ -2224,7 +2233,7 @@ final class Arr
      * ```php
      * Arr::lastKey(['a' => 1, 'b' => 2]); // 'b'
      * Arr::lastKey([1, 2], fn($val) => true); // 2
-     * Arr::lastKey([1, 2], fn($val) => false); // InvalidArgumentException
+     * Arr::lastKey([1, 2], fn($val) => false); // NoMatchFoundException
      * ```
      *
      * @template TKey of array-key
@@ -2414,7 +2423,7 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::max([], fn($i) => true) // InvalidArgumentException
+     * Arr::max([], fn($i) => true) // EmptyNotAllowedException
      * Arr::max([1, 2, 3]) // 3
      * Arr::max([-1, -2, -3]) // -1
      * Arr::max([-1, -2, -3], abs(...)) // 3
@@ -2438,7 +2447,9 @@ final class Arr
         $maxVal = self::maxOrNull($iterable, $by);
 
         if ($maxVal === null) {
-            throw new InvalidArgumentException('$iterable must contain at least one element.');
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return $maxVal;
@@ -2489,7 +2500,9 @@ final class Arr
         }
 
         if (is_float($maxVal) && is_nan($maxVal)) {
-            throw new InvalidElementException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return $maxVal;
@@ -2615,7 +2628,7 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::min([], fn($i) => true) // InvalidArgumentException
+     * Arr::min([], fn($i) => true) // EmptyNotAllowedException
      * Arr::min([1, 2, 3]) // 1
      * Arr::min([-1, -2, -3]) // -3
      * Arr::min([-1, -2, -3], abs(...)) // 3
@@ -2698,7 +2711,9 @@ final class Arr
         }
 
         if (is_float($minVal) && is_nan($minVal)) {
-            throw new InvalidElementException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return $minVal;
@@ -2716,7 +2731,7 @@ final class Arr
      * ```php
      * Arr::minMax([-1, 0, 1]) // ['min' => -1, 'max' => 1]
      * Arr::minMax([1]) // ['min' => 1, 'max' => 1]
-     * Arr::minMax([]) // InvalidArgumentException
+     * Arr::minMax([]) // EmptyNotAllowedException
      * ```
      *
      * @template TKey of array-key
@@ -2799,7 +2814,9 @@ final class Arr
         }
 
         if ((is_float($minVal) && is_nan($minVal)) || (is_float($maxVal) && is_nan($maxVal))) {
-            throw new InvalidElementException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return [
@@ -2820,7 +2837,7 @@ final class Arr
     /**
      * Returns a new array which only contain the elements that has matching
      * keys in the given iterable. Non-existent keys will be ignored.
-     * If `$safe` is set to **true**, `InvalidArgumentException` will be thrown
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
      * if a key does not exist in `$iterable`.
      *
      * Example:
@@ -2836,7 +2853,7 @@ final class Arr
      * @param iterable<int, TKey> $keys
      * Keys to be included.
      * @param bool $safe
-     * [Optional] If this is set to **true**, `InvalidArgumentException` will be
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
      * thrown if key does not exist in `$iterable`.
      * If set to **false**, non-existing keys will be filled with **null**.
      * Defaults to **true**.
@@ -2869,9 +2886,7 @@ final class Arr
         }
 
         if ($safe && self::isNotEmpty($missingKeys)) {
-            $missingFormatted = self::map($missingKeys, static fn($k) => is_string($k) ? "'{$k}'" : $k);
-            $missingJoined = self::join($missingFormatted, ', ', '[', ']');
-            throw new InvalidArgumentException("Undefined array keys: {$missingJoined}", [
+            throw new MissingKeyException($missingKeys, [
                 'iterable' => $iterable,
                 'givenKeys' => $keys,
                 'missingKeys' => $missingKeys,
@@ -2888,13 +2903,13 @@ final class Arr
      *
      * Padding can only be applied to a list, so make sure to provide an iterable
      * that only contain int as key. If an iterable with a string key is given,
-     * a `InvalidArgumentException` will be thrown.
+     * a `TypeMismatchException` will be thrown.
      *
      * Example:
      * ```php
      * Arr::pad(['a'], 3, 'b'); // ['a', 'b', 'b']
      * Arr::pad([1], -3, 2); // [2, 2, 1]
-     * Arr::pad('a' => 1], 2, 2); // InvalidArgumentException
+     * Arr::pad('a' => 1], 2, 2); // TypeMismatchException
      * ```
      *
      * @template TValue
@@ -2917,7 +2932,11 @@ final class Arr
         $absSize = abs($length);
 
         if (!array_is_list($array)) {
-            throw new InvalidArgumentException('Padding can only be applied to a list, map given.');
+            throw new TypeMismatchException('Padding can only be applied to a list, map given.', [
+                'iterable' => $iterable,
+                'length' => $length,
+                'value' => $value,
+            ]);
         }
 
         if ($arrSize <= $absSize) {
@@ -2977,7 +2996,7 @@ final class Arr
      * ```php
      * $array = ['a' => 1];
      * Arr::pop($array); // 1
-     * Arr::pop($array); // InvalidArgumentException
+     * Arr::pop($array); // EmptyNotAllowedException
      * ```
      *
      * @template TKey of array-key
@@ -3061,7 +3080,7 @@ final class Arr
     /**
      * Prepend value(s) to the front of `$iterable`.
      * The iterable must be convertable to a list.
-     * Throws `InvalidArgumentException` if map is given.
+     * Throws `TypeMismatchException` if map is given.
      *
      * Example:
      * ```php
@@ -3083,7 +3102,10 @@ final class Arr
     {
         $array = self::from($iterable);
         if (!array_is_list($array)) {
-            throw new InvalidArgumentException('$array must be a list, map given.');
+            throw new TypeMismatchException('$array must be a list, map given.', [
+                'iterable' => $iterable,
+                'values' => $value,
+            ]);
         }
         if (!array_is_list($value)) {
             $value = array_values($value);
@@ -3146,13 +3168,13 @@ final class Arr
     /**
      * Removes the given key from `&$array` and returns the pulled value.
      * If the given array is a list, the list will be re-indexed.
-     * Throws `InvalidArgumentException` if the given key is not found.
+     * Throws `InvalidKeyException` if the given key is not found.
      *
      * Example:
      * ```php
      * $array = ['a' => 1];
      * Arr::pull($array, 'a'); // 1
-     * Arr::pull($array, 'a'); // InvalidArgumentException
+     * Arr::pull($array, 'a'); // InvalidKeyException
      * ```
      *
      * @template TKey of array-key
@@ -3176,7 +3198,10 @@ final class Arr
         $result = self::pullOr($array, $key, self::miss(), $reindex);
 
         if ($result instanceof self) {
-            throw new InvalidArgumentException("Tried to pull undefined key \"$key\"");
+            throw new InvalidKeyException("Tried to pull undefined key \"$key\"", [
+                'array' => $array,
+                'key' => $key,
+            ]);
         }
 
         return $result;
@@ -3314,13 +3339,13 @@ final class Arr
 
     /**
      * Pushes values to the end of the given list (reference).
-     * Throws `InvalidArgumentException` if map is given.
+     * Throws `TypeMismatchException` if map is given.
      *
      * Example:
      * ```php
      * $array = [1, 2]; Arr::push($array, 3); // [1, 2, 3]
      * $array = [1, 2]; Arr::push($array, 3, 4); // [1, 2, 3, 4]
-     * $array = ['a' => 1]; Arr::push($array, 1); // ['a' => 1, 0 => 2]
+     * $array = ['a' => 1]; Arr::push($array, 1); // TypeMismatchException
      * ```
      *
      * @template T
@@ -3336,7 +3361,7 @@ final class Arr
     ): void
     {
         if (!array_is_list($array)) {
-            throw new InvalidArgumentException('$array must be a list, map given.', [
+            throw new TypeMismatchException('$array must be a list, map given.', [
                 'array' => $array,
                 'values' => $value,
             ]);
@@ -3736,7 +3761,7 @@ final class Arr
      * Example:
      * ```php
      * Arr::sample(['a', 'b', 'c']); // 'b'
-     * Arr::sample([]); // InvalidArgumentException
+     * Arr::sample([]); // EmptyNotAllowedException
      * ```
      *
      * @template TKey of array-key
@@ -4249,7 +4274,7 @@ final class Arr
      * Arr::shift($list); // 1 ($list is now [2])
      *
      * $empty = [];
-     * Arr::shift($empty); // InvalidArgumentException
+     * Arr::shift($empty); // EmptyNotAllowedException
      * ```
      *
      * @template TKey of array-key
@@ -4748,7 +4773,9 @@ final class Arr
         }
 
         if (is_float($total) && is_nan($total)) {
-            throw new InvalidElementException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.', [
+                'iterable' => $iterable,
+            ]);
         }
 
         return $total;
@@ -4756,7 +4783,7 @@ final class Arr
 
     /**
      * Returns the symmetric difference of the given iterables.
-     * Throws `InvalidArgumentException` if comparing a map to a list.
+     * Throws `TypeMismatchException` if comparing a map to a list.
      *
      * Example:
      * ```php
@@ -5049,9 +5076,9 @@ final class Arr
             return $key;
         }
 
-        throw new InvalidKeyException(
-            'Expected: key of type int|string. ' . gettype($key) . ' given.'
-        );
+        throw new InvalidKeyException('Expected: key of type int|string. ' . gettype($key) . ' given.', [
+            'key' => $key,
+        ]);
     }
 
     /**
@@ -5078,7 +5105,9 @@ final class Arr
                 is_array($val) => 'a:' . json_encode(array_map(self::valueToKeyString(...), $val), JSON_THROW_ON_ERROR),
                 is_object($val) => 'o:' . spl_object_id($val),
                 is_resource($val) => 'r:' . get_resource_id($val),
-                default => throw new UnreachableException('Invalid Type: ' . gettype($val)),
+                default => throw new UnreachableException('Invalid Type: ' . gettype($val), [
+                    'value' => $val,
+                ]),
             };
         } catch (JsonException $e) {
             throw new UnreachableException(
