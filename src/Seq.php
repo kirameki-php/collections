@@ -103,15 +103,6 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
-     * @return $this
-     */
-    public function clear(): static
-    {
-        $this->items = [];
-        return $this;
-    }
-
-    /**
      * @param int<1, max> $depth
      * @return static
      */
@@ -371,17 +362,6 @@ class Seq extends Iterator implements Countable, JsonSerializable
     {
         $grouped = Arr::groupBy($this, $callback, $this->isList);
         return $this->newMap($grouped)->map(fn($group) => $this->instantiate($group));
-    }
-
-    /**
-     * @param int $at
-     * @param mixed $value
-     * @return $this
-     */
-    public function insert(int $at, mixed $value): static
-    {
-        Arr::insert($this->items, $at, $value, $this->isList);
-        return $this;
     }
 
     /**

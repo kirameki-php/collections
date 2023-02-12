@@ -65,6 +65,27 @@ trait MutatesSelf
     }
 
     /**
+     * @return $this
+     */
+    public function clear(): static
+    {
+        $this->items = [];
+        return $this;
+    }
+
+    /**
+     * @param int $at
+     * @param mixed $value
+     * @return $this
+     */
+    public function insert(int $at, mixed $value): static
+    {
+        $ref = &$this->getItemsAsRef();
+        Arr::insert($ref, $at, $value, $this->isList);
+        return $this;
+    }
+
+    /**
      * @return TValue
      */
     public function pop(): mixed
