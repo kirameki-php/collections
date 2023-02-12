@@ -6,6 +6,7 @@ use Closure;
 use JsonException;
 use LogicException;
 use Random\Randomizer;
+use SouthPointe\Collections\Exceptions\InvalidElementException;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
 use Traversable;
@@ -216,7 +217,7 @@ final class Arr
     /**
      * Get the average of the elements inside `$iterable`.
      * The elements must be af type int or float.
-     * Throws `InvalidArgumentException` If the iterable is empty or contains NAN.
+     * Throws `InvalidElementException` If the iterable is empty or contains NAN.
      *
      * Example:
      * ```php
@@ -248,7 +249,7 @@ final class Arr
      * Get the average of the elements inside `$iterable`.
      * The elements must be af type int or float.
      * If `$iterable` is empty, **null** will be returned.
-     * Throws `InvalidArgumentException` if iterable contains NAN.
+     * Throws `InvalidElementException` if iterable contains NAN.
      *
      * Example:
      * ```php
@@ -279,7 +280,7 @@ final class Arr
         }
 
         if (is_float($sum) && is_nan($sum)) {
-            throw new InvalidArgumentException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.');
         }
 
         return $sum / $size;
@@ -2387,7 +2388,7 @@ final class Arr
      * Returns the largest element from `$iterable`.
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.
-     * Throws `InvalidArgumentException`, If `$iterable` is empty or contains NAN.
+     * Throws `InvalidElementException`, If `$iterable` is empty or contains NAN.
      *
      * Example:
      * ```php
@@ -2426,7 +2427,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.
      * Returns **null** if `$iterable` is empty.
-     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
+     * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2466,7 +2467,7 @@ final class Arr
         }
 
         if (is_float($maxVal) && is_nan($maxVal)) {
-            throw new InvalidArgumentException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.');
         }
 
         return $maxVal;
@@ -2583,7 +2584,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
      * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
-     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
+     * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2629,7 +2630,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
      * Returns **null** if the iterable is empty.
-     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
+     * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2670,7 +2671,7 @@ final class Arr
         }
 
         if (is_float($minVal) && is_nan($minVal)) {
-            throw new InvalidArgumentException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.');
         }
 
         return $minVal;
@@ -2681,7 +2682,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
      * Throws `InvalidArgumentException` if no match is found or if `$iterable` is empty.
-     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
+     * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2722,7 +2723,7 @@ final class Arr
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
      * If the iterable is empty, **null** will be returned.
-     * Throws `InvalidArgumentException` if `$iterable` contains NAN.
+     * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
      * ```php
@@ -2770,7 +2771,7 @@ final class Arr
         }
 
         if ((is_float($minVal) && is_nan($minVal)) || (is_float($maxVal) && is_nan($maxVal))) {
-            throw new InvalidArgumentException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.');
         }
 
         return [
@@ -3315,8 +3316,6 @@ final class Arr
      * Iteratively reduce `$iterable` to a single value by invoking
      * `$callback($reduced, $val, $key)`.
      * Throws `InvalidArgumentException` if `$iterable` is empty.
-     *
-     * TODO make a OrNull version.
      *
      * Example:
      * ```php
@@ -4682,7 +4681,7 @@ final class Arr
     /**
      * Get the sum of the elements inside iterable.
      * The elements must be af type int or float.
-     * Throws `InvalidArgumentException` if the iterable contains NAN.
+     * Throws `InvalidElementException` if the iterable contains NAN.
      *
      * Example:
      * ```php
@@ -4707,7 +4706,7 @@ final class Arr
         }
 
         if (is_float($total) && is_nan($total)) {
-            throw new InvalidArgumentException('$iterable cannot contain NAN.');
+            throw new InvalidElementException('$iterable cannot contain NAN.');
         }
 
         return $total;

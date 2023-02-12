@@ -5,6 +5,7 @@ namespace Tests\SouthPointe\Collections;
 use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
+use SouthPointe\Collections\Exceptions\InvalidElementException;
 use SouthPointe\Collections\Utils\Arr;
 use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
@@ -119,7 +120,7 @@ class ArrTest extends TestCase
 
     public function test_average_with_NAN(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::average([NAN, -INF, INF]);
     }
@@ -136,7 +137,7 @@ class ArrTest extends TestCase
 
     public function test_averageOrNull_with_NAN(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::average([NAN, -INF, INF]);
     }
@@ -1517,7 +1518,7 @@ class ArrTest extends TestCase
 
     public function test_max_with_NAN(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::max([NAN, -INF, INF]);
     }
@@ -1537,7 +1538,7 @@ class ArrTest extends TestCase
 
     public function test_maxOrNull_with_NAN(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::maxOrNull([NAN, -INF, INF]);
     }
@@ -1621,7 +1622,7 @@ class ArrTest extends TestCase
 
     public function test_min_with_NAN(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::min([NAN, -INF, INF]);
     }
@@ -1652,7 +1653,7 @@ class ArrTest extends TestCase
 
     public function test_minMax_with_NAN(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::minMax([NAN, -INF, INF]);
     }
