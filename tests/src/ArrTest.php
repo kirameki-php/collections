@@ -2,7 +2,6 @@
 
 namespace Tests\SouthPointe\Collections;
 
-use LogicException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use SouthPointe\Collections\Exceptions\DuplicateKeyException;
@@ -18,8 +17,8 @@ use SouthPointe\Collections\Utils\Iter;
 use SouthPointe\Core\Exceptions\InvalidArgumentException;
 use SouthPointe\Core\Exceptions\UnreachableException;
 use stdClass;
+use Tests\SouthPointe\Collections\References\FixedNumEngine;
 use TypeError;
-use ValueError;
 use function array_keys;
 use function array_values;
 use function in_array;
@@ -2317,8 +2316,17 @@ class ArrTest extends TestCase
             'secure randomizer'
         );
 
-        $randomizer = new Randomizer(new Xoshiro256StarStar(5));
-        self::assertSame(6, Arr::sample(range(0, 10), $randomizer), 'with randomizer');
+        self::assertSame(
+            6,
+            Arr::sample(range(0, 10), new Randomizer(new Xoshiro256StarStar(5))),
+            'with randomizer',
+        );
+
+        self::assertSame(
+            0,
+            Arr::sample(range(0, 10), FixedNumEngine::inRandomizer()),
+            'custom randomizer',
+        );
     }
 
     public function test_sample_Empty(): void
@@ -2357,6 +2365,12 @@ class ArrTest extends TestCase
             'a',
             Arr::sampleKey(['a' => 1, 'b' => 2], $randomizer),
             'map',
+        );
+
+        self::assertSame(
+            0,
+            Arr::sample(range(0, 10), FixedNumEngine::inRandomizer()),
+            'custom randomizer',
         );
     }
 
@@ -2479,6 +2493,18 @@ class ArrTest extends TestCase
             Arr::sampleKeys([], 0, true, $randomizer),
             'empty with replacement',
         );
+
+        self::assertSame(
+            [0],
+            Arr::sampleKeys(range(0, 10), 1, true, FixedNumEngine::inRandomizer()),
+            'custom randomizer with replacement',
+        );
+
+        self::assertSame(
+            [0],
+            Arr::sampleKeys(range(0, 10), 1, false, FixedNumEngine::inRandomizer()),
+            'custom randomizer without replacement',
+        );
     }
 
     public function test_sampleKeys_without_replacement_empty(): void
@@ -2580,6 +2606,18 @@ class ArrTest extends TestCase
             [],
             Arr::sampleMany([1], 0, true, $randomizer),
             'zero amount with replacement',
+        );
+
+        self::assertSame(
+            [0],
+            Arr::sampleMany(range(0, 10), 1, true, FixedNumEngine::inRandomizer()),
+            'custom randomizer with replacement',
+        );
+
+        self::assertSame(
+            [0],
+            Arr::sampleMany(range(0, 10), 1, false, FixedNumEngine::inRandomizer()),
+            'custom randomizer without replacement',
         );
     }
 
@@ -3265,11 +3303,9 @@ class ArrTest extends TestCase
 
     public function test_setDefaultRandomizer(): void
     {
-        $randomizer = new Randomizer(new Xoshiro256StarStar());
+        $randomizer = new Randomizer(new FixedNumEngine());
         Arr::setDefaultRandomizer($randomizer);
         self::assertSame($randomizer, Arr::getDefaultRandomizer());
-
-        // TODO try using it in various methods
     }
 
     public function test_getDefaultRandomizer(): void
