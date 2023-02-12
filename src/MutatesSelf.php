@@ -69,7 +69,8 @@ trait MutatesSelf
      */
     public function clear(): static
     {
-        $this->items = [];
+        $ref = &$this->getItemsAsRef();
+        $ref = [];
         return $this;
     }
 
