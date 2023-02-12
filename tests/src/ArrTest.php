@@ -2081,14 +2081,29 @@ class ArrTest extends TestCase
         self::assertSame(4, $reduced);
     }
 
+    public function test_reduce_with_empty(): void
+    {
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        Arr::reduce([], static fn($v) => $v);
+    }
+
     public function test_reduceOr(): void
     {
+        // reduce with values
+        $reduced = Arr::reduceOr([1, 2, 3], static fn(int $c, $i, $k) => $c + $i, true);
+        self::assertSame(6, $reduced);
 
+        self::assertTrue(Arr::reduceOr([], static fn($v) => $v, true));
     }
 
     public function test_reduceOrNull(): void
     {
+        // reduce with values
+        $reduced = Arr::reduceOrNull([1, 2, 3], static fn(int $c, $i, $k) => $c + $i);
+        self::assertSame(6, $reduced);
 
+        self::assertNull(Arr::reduceOrNull([], static fn($v) => $v));
     }
 
     public function test_reduce_unable_to_guess_initial(): void
