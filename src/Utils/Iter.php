@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections\Utils;
+namespace Kirameki\Collections\Utils;
 
 use Closure;
 use Generator;
-use SouthPointe\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\InvalidArgumentException;
 use function count;
 use function is_iterable;
 use const PHP_INT_MAX;

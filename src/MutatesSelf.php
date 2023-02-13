@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace Kirameki\Collections;
 
-use SouthPointe\Collections\Utils\Arr;
-use SouthPointe\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Collections\Utils\Arr;
+use Kirameki\Core\Exceptions\InvalidArgumentException;
 use function gettype;
-use function SouthPointe\Core\is_not_array_key;
+use function Kirameki\Core\is_not_array_key;
 
 /**
  * @template TKey of array-key|class-string

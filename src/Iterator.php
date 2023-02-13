@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace Kirameki\Collections;
 
 use IteratorAggregate;
-use SouthPointe\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Arr;
 use Traversable;
 use function iterator_to_array;
 

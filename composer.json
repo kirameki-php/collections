@@ -5,8 +5,8 @@
   "license": "MIT",
   "require": {
     "php": ">= 8.2",
-    "south-pointe/core": "dev-main",
-    "south-pointe/dumper": "dev-main"
+    "kirameki/core": "dev-main",
+    "kirameki/dumper": "dev-main"
   },
   "require-dev": {
     "phpstan/phpstan": "~1.9",
@@ -14,12 +14,12 @@
   },
   "autoload": {
     "psr-4": {
-      "SouthPointe\\Collections\\": "src/"
+      "Kirameki\\Collections\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\SouthPointe\\Collections\\": "tests/src/"
+      "Tests\\Kirameki\\Collections\\": "tests/src/"
     }
   },
   "config": {

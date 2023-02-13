@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\SouthPointe\Collections\References;
+namespace Tests\Kirameki\Collections\References;
 
 enum NonBackedEnum
 {

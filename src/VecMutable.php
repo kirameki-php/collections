@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace Kirameki\Collections;
 
 use function assert;
 use function is_array;

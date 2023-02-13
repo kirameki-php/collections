@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections\Exceptions;
+namespace Kirameki\Collections\Exceptions;
 
-use SouthPointe\Core\Exceptions\LogicException;
+use Kirameki\Core\Exceptions\LogicException;
 
 abstract class CollectionException extends LogicException
 {

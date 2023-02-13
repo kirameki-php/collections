@@ -1,23 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace Tests\SouthPointe\Collections;
+namespace Tests\Kirameki\Collections;
 
+use Kirameki\Collections\Exceptions\DuplicateKeyException;
+use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
+use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
+use Kirameki\Collections\Exceptions\InvalidElementException;
+use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Exceptions\MissingKeyException;
+use Kirameki\Collections\Exceptions\NoMatchFoundException;
+use Kirameki\Collections\Exceptions\TypeMismatchException;
+use Kirameki\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Iter;
+use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\UnreachableException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
-use SouthPointe\Collections\Exceptions\DuplicateKeyException;
-use SouthPointe\Collections\Exceptions\EmptyNotAllowedException;
-use SouthPointe\Collections\Exceptions\IndexOutOfBoundsException;
-use SouthPointe\Collections\Exceptions\InvalidElementException;
-use SouthPointe\Collections\Exceptions\InvalidKeyException;
-use SouthPointe\Collections\Exceptions\MissingKeyException;
-use SouthPointe\Collections\Exceptions\NoMatchFoundException;
-use SouthPointe\Collections\Exceptions\TypeMismatchException;
-use SouthPointe\Collections\Utils\Arr;
-use SouthPointe\Collections\Utils\Iter;
-use SouthPointe\Core\Exceptions\InvalidArgumentException;
-use SouthPointe\Core\Exceptions\UnreachableException;
 use stdClass;
-use Tests\SouthPointe\Collections\References\FixedNumEngine;
+use Tests\Kirameki\Collections\References\FixedNumEngine;
 use TypeError;
 use function array_keys;
 use function array_values;

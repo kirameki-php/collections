@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace Kirameki\Collections;
 
 use ArrayAccess;
 use Closure;
-use SouthPointe\Collections\Utils\Arr;
-use SouthPointe\Collections\Utils\Iter;
-use SouthPointe\Core\Exceptions\NotSupportedException;
+use Kirameki\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Iter;
+use Kirameki\Core\Exceptions\NotSupportedException;
 use function assert;
 use function is_array;
 

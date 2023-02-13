@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections\Exceptions;
+namespace Kirameki\Collections\Exceptions;
 
 class EmptyNotAllowedException extends CollectionException
 {

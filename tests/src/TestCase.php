@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\SouthPointe\Collections;
+namespace Tests\Kirameki\Collections;
 
 use Generator;
 use PHPUnit\Framework\TestCase as BaseTestCase;

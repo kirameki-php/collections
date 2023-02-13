@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace Kirameki\Collections;
 
 use Closure;
 use Countable;
 use JsonSerializable;
+use Kirameki\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
-use SouthPointe\Collections\Utils\Arr;
-use SouthPointe\Collections\Utils\Iter;
-use SouthPointe\Core\Exceptions\InvalidArgumentException;
-use SouthPointe\Core\Json;
+use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Json;
 use function array_is_list;
 use function is_iterable;
 use const PHP_INT_MAX;

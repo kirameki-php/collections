@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace Kirameki\Collections;
 
 use Closure;
 use Generator;
-use SouthPointe\Collections\Utils\Iter;
+use Kirameki\Collections\Utils\Iter;
 
 /**
  * @template TKey of array-key

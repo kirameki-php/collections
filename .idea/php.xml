@@ -21,8 +21,6 @@
       <path value="$PROJECT_DIR$/vendor/kirameki/utils" />
       <path value="$PROJECT_DIR$/vendor/symfony/var-dumper" />
       <path value="$PROJECT_DIR$/vendor/south-pointe/ansi" />
-      <path value="$PROJECT_DIR$/vendor/south-pointe/dumper" />
-      <path value="$PROJECT_DIR$/vendor/south-pointe/core" />
       <path value="$PROJECT_DIR$/vendor/sebastian/comparator" />
       <path value="$PROJECT_DIR$/vendor/sebastian/object-enumerator" />
       <path value="$PROJECT_DIR$/vendor/sebastian/global-state" />
@@ -49,6 +47,8 @@
       <path value="$PROJECT_DIR$/vendor/theseer/tokenizer" />
       <path value="$PROJECT_DIR$/vendor/phpunit/php-code-coverage" />
       <path value="$PROJECT_DIR$/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/vendor/kirameki/core" />
+      <path value="$PROJECT_DIR$/vendor/kirameki/dumper" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections\Exceptions;
+namespace Kirameki\Collections\Exceptions;
 
-use SouthPointe\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Arr;
 use Throwable;
 use function is_string;
 

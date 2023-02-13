@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace SouthPointe\Collections;
+namespace Kirameki\Collections;
 
-use SouthPointe\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\InvalidArgumentException;
 use function assert;
 use function gettype;
 use function is_array;
-use function SouthPointe\Core\is_not_array_key;
+use function Kirameki\Core\is_not_array_key;
 
 /**
  * @template TKey of array-key|class-string
