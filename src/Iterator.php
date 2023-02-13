@@ -4,7 +4,9 @@ namespace Kirameki\Collections;
 
 use IteratorAggregate;
 use Kirameki\Collections\Utils\Arr;
+use Kirameki\Dumper\Config;
 use Traversable;
+use function dump;
 use function iterator_to_array;
 
 /**
@@ -21,6 +23,16 @@ class Iterator implements IteratorAggregate
         protected iterable $items = [],
     )
     {
+    }
+
+    /**
+     * @param Config|null $config
+     * @return $this
+     */
+    public function dump(?Config $config = null): static
+    {
+        dump($this, $config);
+        return $this;
     }
 
     /**

@@ -7,12 +7,10 @@ use Countable;
 use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
-use Kirameki\Dumper\Config;
 use Random\Randomizer;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Json;
 use function array_is_list;
-use function dump;
 use function is_iterable;
 use const PHP_INT_MAX;
 use const SORT_REGULAR;
@@ -245,16 +243,6 @@ class Seq extends Iterator implements Countable, JsonSerializable
     public function dropWhile(Closure $condition): static
     {
         return $this->instantiate(Iter::dropWhile($this, $condition, $this->isList));
-    }
-
-    /**
-     * @param Config|null $config
-     * @return $this
-     */
-    public function dump(?Config $config = null): static
-    {
-        dump($this, $config);
-        return $this;
     }
 
     /**
