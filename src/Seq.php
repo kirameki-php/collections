@@ -20,9 +20,9 @@ use const SORT_REGULAR;
  *
  * @template TKey of array-key
  * @template TValue
- * @extends Iterator<TKey, TValue>
+ * @extends Enumerator<TKey, TValue>
  */
-class Seq extends Iterator implements Countable, JsonSerializable
+class Seq extends Enumerator implements Countable, JsonSerializable
 {
     protected bool $isList;
 
@@ -35,15 +35,6 @@ class Seq extends Iterator implements Countable, JsonSerializable
         $array = Arr::from($items ?? []);
         parent::__construct($array);
         $this->isList = $isList ?? array_is_list($array);
-    }
-
-    /**
-     * @param iterable<TKey, TValue> $items
-     * @return static
-     */
-    public function instantiate(mixed $items): static
-    {
-        return new static($items);
     }
 
     /**
@@ -468,11 +459,11 @@ class Seq extends Iterator implements Countable, JsonSerializable
     }
 
     /**
-     * @return SeqLazy<TKey, TValue>
+     * @return Enumerator<TKey, TValue>
      */
-    public function lazy(): SeqLazy
+    public function lazy(): Enumerator
     {
-        return new SeqLazy($this->items);
+        return new Enumerator($this->items);
     }
 
     /**

@@ -4,15 +4,32 @@ namespace Kirameki\Collections;
 
 use Closure;
 use Generator;
+use IteratorAggregate;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
+use Kirameki\Dumper\Config;
+use Traversable;
+use function dump;
+use function iterator_to_array;
 
 /**
+ * @phpstan-consistent-constructor
+ *
  * @template TKey of array-key
  * @template TValue
- * @extends Seq<TKey, TValue>
+ * @implements IteratorAggregate<TKey, TValue>
  */
-class SeqLazy extends Seq
+class Enumerator implements IteratorAggregate
 {
+    /**
+     * @param iterable<TKey, TValue> $items
+     */
+    public function __construct(
+        protected iterable $items = [],
+    )
+    {
+    }
+
     /**
      * @template TNewKey as array-key
      * @template TNewValue
@@ -23,6 +40,24 @@ class SeqLazy extends Seq
     {
         $generator = $closure();
         return new static($generator);
+    }
+
+    /**
+     * @param Config|null $config
+     * @return $this
+     */
+    public function dump(?Config $config = null): static
+    {
+        dump($this, $config);
+        return $this;
+    }
+
+    /**
+     * @return Traversable<TKey, TValue>
+     */
+    public function getIterator(): Traversable
+    {
+        yield from $this->items;
     }
 
     /**
@@ -76,15 +111,12 @@ class SeqLazy extends Seq
     }
 
     /**
-     * @return Seq<TKey, TValue>
-     */
-    public function eager(): Seq
-    {
-        return new Seq($this);
-    }
-
-    /**
-     * @inheritDoc
+     * Creates a Generator that will send the key/value to the generator if the condition is **true**.
+     *
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * A condition that should return a boolean.
+     * @return static
      */
     public function filter(Closure $condition): static
     {
@@ -92,12 +124,46 @@ class SeqLazy extends Seq
     }
 
     /**
-     * @inheritDoc
+     * @param iterable<TKey, TValue> $items
+     * @return static
+     */
+    public function instantiate(mixed $items): static
+    {
+        return new static($items);
+    }
+
+    /**
+     * @param int|null $steps
+     * @return void
+     */
+    public function iterate(int $steps = null): void
+    {
+        if ($steps === null) {
+            iterator_to_array($this);
+            return;
+        }
+
+        if ($steps === 0) {
+            return;
+        }
+
+        $count = 0;
+        foreach ($this as $_) {
+            $count++;
+            if ($steps === $count) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Creates a Generator that will send the key to the generator as value.
+     *
      * @return self<int, TKey>
      */
     public function keys(): self
     {
-        return $this->newSeqLazy(Iter::keys($this));
+        return new self(Iter::keys($this));
     }
 
     /**
@@ -107,7 +173,7 @@ class SeqLazy extends Seq
      */
     public function map(Closure $callback): self
     {
-        return $this->newSeqLazy(Iter::map($this, $callback));
+        return new self(Iter::map($this, $callback));
     }
 
     /**
@@ -144,21 +210,26 @@ class SeqLazy extends Seq
     }
 
     /**
-     * @return static<int, TValue>
+     * @return array<TKey, TValue>
      */
-    public function values(): self
+    public function toArray(): array
     {
-        return new static(Iter::values($this));
+        return Arr::from($this);
     }
 
     /**
-     * @template TNewKey of array-key|class-string
-     * @template TNewValue
-     * @param iterable<TNewKey, TNewValue> $iterable
-     * @return self<TNewKey, TNewValue>
+     * @return Seq<TKey, TValue>
      */
-    public function newSeqLazy(iterable $iterable): self
+    public function toSeq(): Seq
     {
-        return new self($iterable);
+        return new Seq($this);
+    }
+
+    /**
+     * @return self<int, TValue>
+     */
+    public function values(): self
+    {
+        return new self(Iter::values($this));
     }
 }
