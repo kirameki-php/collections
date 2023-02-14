@@ -1056,9 +1056,7 @@ final class Arr
         Closure $callback,
     ): void
     {
-        foreach ($iterable as $key => $val) {
-            $callback($val, $key);
-        }
+        iterator_to_array(Iter::each($iterable, $callback));
     }
 
     /**
@@ -3656,14 +3654,9 @@ final class Arr
         int &$count = 0,
     ): array
     {
-        $count = 0;
-        return self::map($iterable, static function(mixed $val) use ($search, $replacement, &$count) {
-            if ($val === $search) {
-                ++$count;
-                return $replacement;
-            }
-            return $val;
-        });
+        return iterator_to_array(
+            Iter::replace($iterable, $search, $replacement, $count),
+        );
     }
 
     /**
@@ -4615,7 +4608,10 @@ final class Arr
      * Defaults to `SORT_REGULAR`.
      * @return array<TKey, TValue>
      */
-    public static function sortByKeyAsc(iterable $iterable, int $flag = SORT_REGULAR): array
+    public static function sortByKeyAsc(
+        iterable $iterable,
+        int $flag = SORT_REGULAR,
+    ): array
     {
         $copy = self::from($iterable);
         ksort($copy, $flag);

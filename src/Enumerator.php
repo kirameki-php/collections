@@ -10,6 +10,7 @@ use Kirameki\Collections\Utils\Iter;
 use Kirameki\Dumper\Config;
 use Traversable;
 use function dump;
+use function is_iterable;
 use function iterator_to_array;
 
 /**
@@ -74,7 +75,16 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @inheritDoc
+     * @return static
+     */
+    public function copy(): static
+    {
+        return clone $this;
+    }
+
+    /**
+     * @param int $amount
+     * @return static
      */
     public function dropFirst(int $amount): static
     {
@@ -82,7 +92,8 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @inheritDoc
+     * @param Closure(TValue, TKey): bool $condition
+     * @return static
      */
     public function dropUntil(Closure $condition): static
     {
@@ -90,7 +101,8 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @inheritDoc
+     * @param Closure(TValue, TKey): bool $condition
+     * @return static
      */
     public function dropWhile(Closure $condition): static
     {
@@ -98,16 +110,27 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @inheritDoc
+     * @param Closure(TValue, TKey): mixed $callback
+     * @return static
      */
     public function each(Closure $callback): static
     {
         return self::fromClosure(function() use ($callback) {
-            foreach ($this as $key => $item) {
-                $callback($item, $key);
-                yield $key => $item;
-            }
+            yield from Iter::each($this, $callback);
         });
+    }
+
+    /**
+     * @param mixed $items
+     * @return bool
+     */
+    public function equals(mixed $items): bool
+    {
+        if (is_iterable($items)) {
+            /** @var iterable<array-key, mixed> $items */
+            return $this->toArray() === Arr::from($items);
+        }
+        return false;
     }
 
     /**
@@ -177,6 +200,18 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
+     * Passes $this to the given callback and returns the result.
+     *
+     * @template TPipe
+     * @param Closure($this): TPipe $callback
+     * @return TPipe
+     */
+    public function pipe(Closure $callback)
+    {
+        return $callback($this);
+    }
+
+    /**
      * @param int<0, max> $times
      * @return static
      */
@@ -186,7 +221,23 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @inheritDoc
+     * @param TValue $search
+     * The value to replace.
+     * @param TValue $replacement
+     * Replacement for the searched value.
+     * @param int &$count
+     * [Optional][Reference] Sets the number of times replacements occurred.
+     * Any value previously set will be reset.
+     * @return static
+     */
+    public function replace(mixed $search, mixed $replacement, int &$count = 0): static
+    {
+        return $this->instantiate(Iter::replace($this, $search, $replacement, $count));
+    }
+
+    /**
+     * @param int $amount
+     * @return static
      */
     public function takeFirst(int $amount): static
     {
@@ -194,7 +245,8 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @inheritDoc
+     * @param Closure(TValue, TKey): bool $condition
+     * @return static
      */
     public function takeUntil(Closure $condition): static
     {
@@ -202,11 +254,22 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @inheritDoc
+     * @param Closure(TValue, TKey): bool $condition
+     * @return static
      */
     public function takeWhile(Closure $condition): static
     {
         return $this->instantiate(Iter::takeWhile($this, $condition));
+    }
+
+    /**
+     * @param Closure(static): mixed $callback
+     * @return $this
+     */
+    public function tap(Closure $callback): static
+    {
+        $callback($this);
+        return $this;
     }
 
     /**

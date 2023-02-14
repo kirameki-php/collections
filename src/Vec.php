@@ -5,7 +5,6 @@ namespace Kirameki\Collections;
 use ArrayAccess;
 use Closure;
 use Kirameki\Collections\Utils\Arr;
-use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use function assert;
 use function is_array;
@@ -131,7 +130,7 @@ class Vec extends Seq implements ArrayAccess
      */
     public function indices(): self
     {
-        return $this->newVec(Iter::keys($this));
+        return $this->newVec(Arr::keys($this));
     }
 
     /**
@@ -151,7 +150,7 @@ class Vec extends Seq implements ArrayAccess
      */
     public function map(Closure $callback): self
     {
-        return $this->newVec(Iter::map($this, $callback));
+        return $this->newVec(Arr::map($this, $callback));
     }
 
     /**

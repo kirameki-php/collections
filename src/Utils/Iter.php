@@ -164,6 +164,28 @@ final class Iter
     }
 
     /**
+     * Iterates through `$iterable` and invoke `$callback` for each element.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): mixed $callback
+     * Callback which is called for every element of `$iterable`.
+     * @return Generator<TKey, TValue>
+     */
+    public static function each(
+        iterable $iterable,
+        Closure $callback,
+    ): Generator
+    {
+        foreach ($iterable as $key => $item) {
+            $callback($item, $key);
+            yield $key => $item;
+        }
+    }
+
+    /**
      * Creates a Generator that will send the key/value to the generator if the condition is **true**.
      *
      * @template TKey of array-key
@@ -257,6 +279,40 @@ final class Iter
                 yield $key => $val;
             }
         }
+    }
+
+    /**
+     * Returns an array which contains keys and values from `$iterable`
+     * but with the `$search` value replaced with the `$replacement` value.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param TValue $search
+     * The value to replace.
+     * @param TValue $replacement
+     * Replacement for the searched value.
+     * @param int &$count
+     * [Optional][Reference] Sets the number of times replacements occurred.
+     * Any value previously set will be reset.
+     * @return Generator<TKey, TValue>
+     */
+    public static function replace(
+        iterable $iterable,
+        mixed $search,
+        mixed $replacement,
+        int &$count = 0,
+    ): Generator
+    {
+        $count = 0;
+        return self::map($iterable, static function(mixed $val) use ($search, $replacement, &$count) {
+            if ($val === $search) {
+                ++$count;
+                return $replacement;
+            }
+            return $val;
+        });
     }
 
     /**
