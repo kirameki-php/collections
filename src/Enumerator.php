@@ -10,8 +10,8 @@ use Kirameki\Collections\Utils\Iter;
 use Kirameki\Dumper\Config;
 use Traversable;
 use function dump;
-use function is_iterable;
 use function iterator_to_array;
+use const PHP_INT_MAX;
 
 /**
  * @phpstan-consistent-constructor
@@ -39,8 +39,7 @@ class Enumerator implements IteratorAggregate
      */
     public static function fromClosure(Closure $closure): self
     {
-        $generator = $closure();
-        return new static($generator);
+        return new static($closure());
     }
 
     /**
@@ -62,6 +61,22 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
+     * @return TValue
+     */
+    public function coalesce(): mixed
+    {
+        return Arr::coalesce($this);
+    }
+
+    /**
+     * @return TValue|null
+     */
+    public function coalesceOrNull(): mixed
+    {
+        return Arr::coalesceOrNull($this);
+    }
+
+    /**
      * @param int<1, max> $size
      * @return self<int, static>
      */
@@ -75,11 +90,29 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
+     * @param mixed|Closure(TValue, TKey): bool $value
+     * @return bool
+     */
+    public function contains(mixed $value): bool
+    {
+        return Arr::contains($this, $value);
+    }
+
+    /**
      * @return static
      */
     public function copy(): static
     {
         return clone $this;
+    }
+
+    /**
+     * @param mixed $value
+     * @return bool
+     */
+    public function doesNotContain(mixed $value): bool
+    {
+        return Arr::doesNotContain($this, $value);
     }
 
     /**
@@ -121,16 +154,11 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @param mixed $items
-     * @return bool
+     * @return Seq<TKey, TValue>
      */
-    public function equals(mixed $items): bool
+    public function eager(): Seq
     {
-        if (is_iterable($items)) {
-            /** @var iterable<array-key, mixed> $items */
-            return $this->toArray() === Arr::from($items);
-        }
-        return false;
+        return new Seq($this);
     }
 
     /**
@@ -147,12 +175,75 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
+     * @param Closure(TValue, TKey): bool|null $condition
+     * @return TValue
+     */
+    public function first(?Closure $condition = null): mixed
+    {
+        return Arr::first($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey):bool $condition
+     * @return int
+     */
+    public function firstIndex(Closure $condition): ?int
+    {
+        return Arr::firstIndex($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey):bool $condition
+     * @return int|null
+     */
+    public function firstIndexOrNull(Closure $condition): ?int
+    {
+        return Arr::firstIndexOrNull($this, $condition);
+    }
+
+    /**
+     * @template TDefault
+     * @param TDefault $default
+     * @param Closure(TValue, TKey): bool|null $condition
+     * @return TValue|null
+     */
+    public function firstOr(mixed $default, ?Closure $condition = null): mixed
+    {
+        return Arr::firstOr($this, $default, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): bool|null $condition
+     * @return TValue|null
+     */
+    public function firstOrNull(?Closure $condition = null): mixed
+    {
+        return Arr::firstOrNull($this, $condition);
+    }
+
+    /**
      * @param iterable<TKey, TValue> $items
      * @return static
      */
     public function instantiate(mixed $items): static
     {
         return new static($items);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return Arr::isEmpty($this);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNotEmpty(): bool
+    {
+        return Arr::isNotEmpty($this);
     }
 
     /**
@@ -236,6 +327,16 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
+     * @param int $offset
+     * @param int $length
+     * @return static
+     */
+    public function slice(int $offset, int $length = PHP_INT_MAX): static
+    {
+        return $this->instantiate(Iter::slice($this, $offset, $length));
+    }
+
+    /**
      * @param int $amount
      * @return static
      */
@@ -281,18 +382,59 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @return Seq<TKey, TValue>
-     */
-    public function toSeq(): Seq
-    {
-        return new Seq($this);
-    }
-
-    /**
      * @return self<int, TValue>
      */
     public function values(): self
     {
         return new self(Iter::values($this));
+    }
+
+    /**
+     * @param bool|Closure($this): bool $bool
+     * @param Closure($this): static $callback
+     * @param Closure($this): static|null $fallback
+     * @return static
+     */
+    public function when(
+        bool|Closure $bool,
+        Closure $callback,
+        ?Closure $fallback = null,
+    ): static
+    {
+        $fallback ??= static fn($self) => $self;
+
+        if ($bool instanceof Closure) {
+            $bool = $bool($this);
+        }
+
+        return $bool
+            ? $callback($this)
+            : $fallback($this);
+    }
+
+    /**
+     * @param Closure($this): static $callback
+     * @param Closure($this): static|null $fallback
+     * @return static
+     */
+    public function whenEmpty(
+        Closure $callback,
+        ?Closure $fallback = null,
+    ): static
+    {
+        return static::when($this->isEmpty(), $callback, $fallback);
+    }
+
+    /**
+     * @param Closure($this): static $callback
+     * @param Closure($this): static|null $fallback
+     * @return static
+     */
+    public function whenNotEmpty(
+        Closure $callback,
+        ?Closure $fallback = null,
+    ): static
+    {
+        return static::when($this->isNotEmpty(), $callback, $fallback);
     }
 }

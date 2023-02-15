@@ -4433,6 +4433,8 @@ final class Arr
      * If a condition is also given, the sole element of a sequence that satisfies a specified
      * condition is returned instead.
      * Throws `InvalidArgumentException` if there are more than one element in `$iterable`.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -4454,21 +4456,35 @@ final class Arr
         ?Closure $condition = null,
     ): mixed
     {
-        $array = ($condition !== null)
-            ? self::filter($iterable, $condition)
-            : self::from($iterable);
+        $found = self::miss();
+        $count = 0;
+        foreach ($iterable as $key => $val) {
+            if ($condition === null || $condition($val, $key)) {
+                ++$count;
+                $found = $val;
+            }
+        }
 
-        if (($count = count($array)) !== 1) {
+        if ($count > 1) {
             throw new InvalidArgumentException("Expected only one element in result. $count given.", [
                 'iterable' => $iterable,
                 'condition' => $condition,
+                'count' => $count,
             ]);
         }
 
-        /** @var TValue $current */
-        $current = current($array);
+        if ($found instanceof self) {
+            $exception = ($condition !== null)
+                ? new NoMatchFoundException('Failed to find matching condition.')
+                : new EmptyNotAllowedException('$iterable must contain at least one element.');
+            throw $exception->setContext([
+                'iterable' => $iterable,
+                'condition' => $condition,
+                'count' => $count,
+            ]);
+        }
 
-        return $current;
+        return $found;
     }
 
     /**

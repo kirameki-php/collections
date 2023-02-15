@@ -86,37 +86,12 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
-     * @return TValue
-     */
-    public function coalesce(): mixed
-    {
-        return Arr::coalesce($this);
-    }
-
-    /**
-     * @return TValue|null
-     */
-    public function coalesceOrNull(): mixed
-    {
-        return Arr::coalesceOrNull($this);
-    }
-
-    /**
      * @param int<1, max> $depth
      * @return static
      */
     public function compact(int $depth = 1): static
     {
         return $this->instantiate(Arr::compact($this, $depth, $this->isList));
-    }
-
-    /**
-     * @param mixed|Closure(TValue, TKey): bool $value
-     * @return bool
-     */
-    public function contains(mixed $value): bool
-    {
-        return Arr::contains($this, $value);
     }
 
     /**
@@ -183,15 +158,6 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
-     * @param mixed $value
-     * @return bool
-     */
-    public function doesNotContain(mixed $value): bool
-    {
-        return Arr::doesNotContain($this, $value);
-    }
-
-    /**
      * @param mixed $items
      * @return bool
      */
@@ -218,6 +184,19 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
+     * @param mixed $items
+     * @return bool
+     */
+    public function equals(mixed $items): bool
+    {
+        if (is_iterable($items)) {
+            /** @var iterable<array-key, mixed> $items */
+            return $this->toArray() === Arr::from($items);
+        }
+        return false;
+    }
+
+    /**
      * @param array<TKey> $keys
      * @param bool $safe
      * @return static
@@ -225,53 +204,6 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     public function except(iterable $keys, bool $safe = true): static
     {
         return $this->instantiate(Arr::except($this, $keys, $safe, $this->isList));
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TValue
-     */
-    public function first(?Closure $condition = null): mixed
-    {
-        return Arr::first($this, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey):bool $condition
-     * @return int
-     */
-    public function firstIndex(Closure $condition): ?int
-    {
-        return Arr::firstIndex($this, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey):bool $condition
-     * @return int|null
-     */
-    public function firstIndexOrNull(Closure $condition): ?int
-    {
-        return Arr::firstIndexOrNull($this, $condition);
-    }
-
-    /**
-     * @template TDefault
-     * @param TDefault $default
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TValue|null
-     */
-    public function firstOr(mixed $default, ?Closure $condition = null): mixed
-    {
-        return Arr::firstOr($this, $default, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TValue|null
-     */
-    public function firstOrNull(?Closure $condition = null): mixed
-    {
-        return Arr::firstOrNull($this, $condition);
     }
 
     /**
@@ -303,22 +235,6 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     public function intersect(iterable $items): static
     {
         return $this->instantiate(Arr::intersect($this, $items, $this->isList));
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmpty(): bool
-    {
-        return Arr::isEmpty($this);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isNotEmpty(): bool
-    {
-        return Arr::isNotEmpty($this);
     }
 
     /**
@@ -670,7 +586,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function slice(int $offset, int $length = PHP_INT_MAX): static
     {
-        return $this->instantiate(Iter::slice($this, $offset, $length, $this->isList));
+        return $this->instantiate(Arr::slice($this, $offset, $length, $this->isList));
     }
 
     /**
@@ -817,55 +733,6 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     public function unique(?Closure $by = null): static
     {
         return $this->instantiate(Arr::unique($this, $by, $this->isList));
-    }
-
-    /**
-     * @param bool|Closure($this): bool $bool
-     * @param Closure($this): static $callback
-     * @param Closure($this): static|null $fallback
-     * @return static
-     */
-    public function when(
-        bool|Closure $bool,
-        Closure $callback,
-        ?Closure $fallback = null,
-    ): static
-    {
-        $fallback ??= static fn($self) => $self;
-
-        if ($bool instanceof Closure) {
-            $bool = $bool($this);
-        }
-
-        return $bool
-            ? $callback($this)
-            : $fallback($this);
-    }
-
-    /**
-     * @param Closure($this): static $callback
-     * @param Closure($this): static|null $fallback
-     * @return static
-     */
-    public function whenEmpty(
-        Closure $callback,
-        ?Closure $fallback = null,
-    ): static
-    {
-        return static::when($this->isEmpty(), $callback, $fallback);
-    }
-
-    /**
-     * @param Closure($this): static $callback
-     * @param Closure($this): static|null $fallback
-     * @return static
-     */
-    public function whenNotEmpty(
-        Closure $callback,
-        ?Closure $fallback = null,
-    ): static
-    {
-        return static::when($this->isNotEmpty(), $callback, $fallback);
     }
 
     /**

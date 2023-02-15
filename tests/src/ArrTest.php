@@ -2981,9 +2981,16 @@ class ArrTest extends TestCase
 
     public function test_sole_zero_item(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected only one element in result. 0 given.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::sole([]);
+    }
+
+    public function test_sole_no_match(): void
+    {
+        $this->expectException(NoMatchFoundException::class);
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        Arr::sole([1, 2], static fn() => false);
     }
 
     public function test_sole_more_than_one_item(): void
