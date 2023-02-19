@@ -144,12 +144,10 @@ final class Arr
         int $index,
     ): mixed
     {
-        $array = self::from($iterable);
-
-        $result = self::atOr($array, $index, self::miss());
+        $result = self::atOr($iterable, $index, self::miss());
 
         if ($result instanceof self) {
-            $count = count($array);
+            $count = self::count($iterable);
             throw new IndexOutOfBoundsException("Size: $count index: $index", [
                 'iterable' => $iterable,
                 'index' => $index,
@@ -181,6 +179,8 @@ final class Arr
      * @param TDefault $default
      * Value that is used when the given index did not exist.
      * @return TValue|TDefault
+     *
+     * TODO iterable version
      */
     public static function atOr(
         iterable $iterable,
