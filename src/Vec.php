@@ -5,6 +5,7 @@ namespace Kirameki\Collections;
 use ArrayAccess;
 use Closure;
 use Kirameki\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use function assert;
 use function is_array;
@@ -75,33 +76,7 @@ class Vec extends Seq implements ArrayAccess
      */
     public function append(mixed ...$value): static
     {
-        return $this->instantiate(Arr::append($this->items, ...$value));
-    }
-
-    /**
-     * @param int $index
-     * @return bool
-     */
-    public function containsIndex(int $index): bool
-    {
-        return Arr::containsKey($this, $index);
-    }
-
-    /**
-     * @param int $index
-     * @return bool
-     */
-    public function doesNotContainIndex(int $index): bool
-    {
-        return Arr::doesNotContainKey($this, $index);
-    }
-
-    /**
-     * @return self<int>
-     */
-    public function indices(): self
-    {
-        return $this->newVec(Arr::keys($this));
+        return $this->instantiate(Arr::append($this, ...$value));
     }
 
     /**
@@ -110,7 +85,7 @@ class Vec extends Seq implements ArrayAccess
      */
     public function keys(): self
     {
-        return $this->indices();
+        return $this->newVec(Iter::keys($this));
     }
 
     /**
@@ -121,7 +96,7 @@ class Vec extends Seq implements ArrayAccess
      */
     public function map(Closure $callback): self
     {
-        return $this->newVec(Arr::map($this, $callback));
+        return $this->newVec(Iter::map($this, $callback));
     }
 
     /**
@@ -157,6 +132,6 @@ class Vec extends Seq implements ArrayAccess
      */
     public function prepend(mixed ...$value): static
     {
-        return $this->instantiate(Arr::prepend($this->items, ...$value));
+        return $this->instantiate(Arr::prepend($this, ...$value));
     }
 }
