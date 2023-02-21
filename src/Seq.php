@@ -496,22 +496,24 @@ class Seq extends Enumerator implements Countable, JsonSerializable
 
     /**
      * @param int $amount
+     * @param bool $replace
      * @param Randomizer|null $randomizer
      * @return Vec<TKey>
      */
-    public function sampleKeys(int $amount, ?Randomizer $randomizer = null): Vec
+    public function sampleKeys(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
     {
-        return $this->newVec(Arr::sampleKeys($this, $amount, $this->isList, $randomizer));
+        return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
     }
 
     /**
      * @param int $amount
+     * @param bool $replace
      * @param Randomizer|null $randomizer
      * @return Vec<TValue>
      */
-    public function sampleMany(int $amount, ?Randomizer $randomizer = null): Vec
+    public function sampleMany(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
     {
-        return $this->newVec(Arr::sampleMany($this, $amount, $this->isList, $randomizer));
+        return $this->newVec(Arr::sampleMany($this, $amount, $replace, $randomizer));
     }
 
     /**
