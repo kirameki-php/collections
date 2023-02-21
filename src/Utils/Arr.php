@@ -2241,7 +2241,7 @@ final class Arr
      * @param Closure(TValue, TKey): bool|null $condition
      * [Optional] User defined condition callback. The callback must return a boolean value.
      * Defaults to **null**.
-     * @return TKey|null
+     * @return TKey
      */
     public static function lastKey(
         iterable $iterable,
@@ -2260,6 +2260,7 @@ final class Arr
             ]);
         }
 
+        /** @var TKey */
         return $result;
     }
 

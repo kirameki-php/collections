@@ -183,11 +183,20 @@ class Map extends Seq implements ArrayAccess
 
     /**
      * @param Closure(TValue, TKey): bool|null $condition
-     * @return mixed
+     * @return TKey
      */
     public function lastKey(?Closure $condition = null): mixed
     {
         return Arr::lastKey($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): bool|null $condition
+     * @return TKey|null
+     */
+    public function lastKeyOrNull(?Closure $condition = null): mixed
+    {
+        return Arr::lastKeyOrNull($this, $condition);
     }
 
     /**
