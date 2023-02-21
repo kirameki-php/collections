@@ -71,6 +71,13 @@ use const PHP_INT_MAX;
 use const PHP_QUERY_RFC3986;
 use const SORT_REGULAR;
 
+/**
+ * TODO static range
+ * TODO eachCons
+ * TODO insertAfter/insertBefore
+ * TODO recursive (walk)
+ * TODO zip
+ */
 final class Arr
 {
     private const EMPTY = [];
@@ -517,6 +524,7 @@ final class Arr
      * @param iterable<array-key, TValue> $values
      * Values to be searched.
      * @return bool
+     * TODO make generator friendly
      */
     public static function containsAll(
         iterable $iterable,
@@ -546,6 +554,7 @@ final class Arr
      * @param iterable<int, TKey> $keys
      * Values to be searched.
      * @return bool
+     * TODO make generator friendly
      */
     public static function containsAllKeys(
         iterable $iterable,
@@ -578,6 +587,7 @@ final class Arr
      * @param iterable<array-key, TValue> $values
      * Values to be searched.
      * @return bool
+     * TODO make generator friendly
      */
     public static function containsAny(
         iterable $iterable,
@@ -639,6 +649,7 @@ final class Arr
      * @param array-key $key
      * Key to check for in `$iterable`.
      * @return bool
+     * TODO make generator friendly
      */
     public static function containsKey(
         iterable $iterable,
