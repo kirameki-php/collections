@@ -97,35 +97,6 @@ class Vec extends Seq implements ArrayAccess
     }
 
     /**
-     * @param int $index
-     * @return TValue
-     */
-    public function get(int $index): mixed
-    {
-        return Arr::get($this, $index);
-    }
-
-    /**
-     * @template TDefault
-     * @param int $index
-     * @param TDefault $default
-     * @return TValue|TDefault
-     */
-    public function getOr(int $index, mixed $default): mixed
-    {
-        return Arr::getOr($this, $index, $default);
-    }
-
-    /**
-     * @param int $index
-     * @return TValue|null
-     */
-    public function getOrNull(int $index): mixed
-    {
-        return Arr::getOrNull($this, $index);
-    }
-
-    /**
      * @return self<int>
      */
     public function indices(): self

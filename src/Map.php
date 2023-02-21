@@ -263,7 +263,7 @@ class Map extends Seq implements ArrayAccess
     /**
      * @return Vec<TValue>
      */
-    public function toVec(): Vec
+    public function values(): Vec
     {
         return $this->newVec(Arr::values($this));
     }

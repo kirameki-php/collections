@@ -95,7 +95,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * @return bool
      */
     public function containsAll(iterable $values): bool
@@ -104,7 +104,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
-     * @param iterable<array-key, TValue> $keys
+     * @param iterable<int, TKey> $keys
      * @return bool
      */
     public function containsAllKeys(iterable $keys): bool
@@ -113,7 +113,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * @return bool
      */
     public function containsAny(iterable $values): bool
@@ -122,7 +122,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
-     * @param iterable<array-key, TValue> $keys
+     * @param iterable<int, TKey> $keys
      * @return bool
      */
     public function containsAnyKeys(iterable $keys): bool
@@ -131,7 +131,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     }
 
     /**
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * @return bool
      */
     public function containsNone(iterable $values): bool
