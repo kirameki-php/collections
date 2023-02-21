@@ -16,7 +16,7 @@ trait MutatesSelf
     /**
      * @var bool
      */
-    protected bool $isList;
+    protected bool $reindex;
 
     /**
      * @return array<TKey, TValue>
@@ -82,7 +82,7 @@ trait MutatesSelf
     public function insert(int $at, mixed $value): static
     {
         $ref = &$this->getItemsAsRef();
-        Arr::insert($ref, $at, $value, $this->isList);
+        Arr::insert($ref, $at, $value, $this->reindex);
         return $this;
     }
 
@@ -121,7 +121,7 @@ trait MutatesSelf
     public function pull(int|string $key): mixed
     {
         $ref = &$this->getItemsAsRef();
-        return Arr::pull($ref, $key, $this->isList);
+        return Arr::pull($ref, $key, $this->reindex);
     }
 
     /**
@@ -133,7 +133,7 @@ trait MutatesSelf
     public function pullOr(int|string $key, mixed $default): mixed
     {
         $ref = &$this->getItemsAsRef();
-        return Arr::pullOr($ref, $key, $default, $this->isList);
+        return Arr::pullOr($ref, $key, $default, $this->reindex);
     }
 
     /**
@@ -143,7 +143,7 @@ trait MutatesSelf
     public function pullOrNull(int|string $key): mixed
     {
         $ref = &$this->getItemsAsRef();
-        return Arr::pullOrNull($ref, $key, $this->isList);
+        return Arr::pullOrNull($ref, $key, $this->reindex);
     }
 
     /**
@@ -153,7 +153,7 @@ trait MutatesSelf
     public function pullMany(iterable $keys): static
     {
         $ref = &$this->getItemsAsRef();
-        return $this->instantiate(Arr::pullMany($ref, $keys, $this->isList));
+        return $this->instantiate(Arr::pullMany($ref, $keys, $this->reindex));
     }
 
     /**
@@ -164,7 +164,7 @@ trait MutatesSelf
     public function remove(mixed $value, ?int $limit = null): array
     {
         $ref = &$this->getItemsAsRef();
-        return Arr::remove($ref, $value, $limit, $this->isList);
+        return Arr::remove($ref, $value, $limit, $this->reindex);
     }
 
     /**

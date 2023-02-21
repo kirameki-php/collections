@@ -24,17 +24,17 @@ use const SORT_REGULAR;
  */
 class Seq extends Enumerator implements Countable, JsonSerializable
 {
-    protected bool $isList;
+    protected bool $reindex;
 
     /**
      * @param iterable<TKey, TValue>|null $items
-     * @param bool|null $isList
+     * @param bool|null $reindex
      */
-    public function __construct(iterable|null $items = null, ?bool $isList = null)
+    public function __construct(iterable|null $items = null, ?bool $reindex = null)
     {
         $array = Arr::from($items ?? []);
         parent::__construct($array);
-        $this->isList = $isList ?? array_is_list($array);
+        $this->reindex = $reindex ?? array_is_list($array);
     }
 
     /**
@@ -91,7 +91,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function compact(int $depth = 1): static
     {
-        return $this->instantiate(Arr::compact($this, $depth, $this->isList));
+        return $this->instantiate(Arr::compact($this, $depth, $this->reindex));
     }
 
     /**
@@ -154,7 +154,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function diff(iterable $items): static
     {
-        return $this->instantiate(Arr::diff($this, $items, null, $this->isList));
+        return $this->instantiate(Arr::diff($this, $items, null, $this->reindex));
     }
 
     /**
@@ -172,7 +172,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function dropLast(int $amount): static
     {
-        return $this->instantiate(Arr::dropLast($this, $amount, $this->isList));
+        return $this->instantiate(Arr::dropLast($this, $amount, $this->reindex));
     }
 
     /**
@@ -203,7 +203,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function except(iterable $keys, bool $safe = true): static
     {
-        return $this->instantiate(Arr::except($this, $keys, $safe, $this->isList));
+        return $this->instantiate(Arr::except($this, $keys, $safe, $this->reindex));
     }
 
     /**
@@ -224,7 +224,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function groupBy(Closure $callback): Map
     {
-        $grouped = Arr::groupBy($this, $callback, $this->isList);
+        $grouped = Arr::groupBy($this, $callback, $this->reindex);
         return $this->newMap($grouped)->map(fn($group) => $this->instantiate($group));
     }
 
@@ -234,7 +234,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function intersect(iterable $items): static
     {
-        return $this->instantiate(Arr::intersect($this, $items, $this->isList));
+        return $this->instantiate(Arr::intersect($this, $items, $this->reindex));
     }
 
     /**
@@ -394,7 +394,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function only(iterable $keys, bool $safe = true): static
     {
-        return $this->instantiate(Arr::only($this, $keys, $safe, $this->isList));
+        return $this->instantiate(Arr::only($this, $keys, $safe, $this->reindex));
     }
 
     /**
@@ -418,7 +418,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function prioritize(Closure $condition): static
     {
-        return $this->instantiate(Arr::prioritize($this, $condition, $this->isList));
+        return $this->instantiate(Arr::prioritize($this, $condition, $this->reindex));
     }
 
     /**
@@ -455,7 +455,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function reverse(): static
     {
-        return $this->instantiate(Arr::reverse($this, $this->isList));
+        return $this->instantiate(Arr::reverse($this, $this->reindex));
     }
 
     /**
@@ -464,7 +464,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function rotate(int $count): static
     {
-        return $this->instantiate(Arr::rotate($this, $count, $this->isList));
+        return $this->instantiate(Arr::rotate($this, $count, $this->reindex));
     }
 
     /**
@@ -578,7 +578,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function shuffle(?Randomizer $randomizer = null): static
     {
-        return $this->instantiate(Arr::shuffle($this, $this->isList, $randomizer));
+        return $this->instantiate(Arr::shuffle($this, $this->reindex, $randomizer));
     }
 
     /**
@@ -588,7 +588,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function slice(int $offset, int $length = PHP_INT_MAX): static
     {
-        return $this->instantiate(Arr::slice($this, $offset, $length, $this->isList));
+        return $this->instantiate(Arr::slice($this, $offset, $length, $this->reindex));
     }
 
     /**
@@ -608,7 +608,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function sort(bool $ascending, ?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->instantiate(Arr::sort($this, $ascending, $by, $flag, $this->isList));
+        return $this->instantiate(Arr::sort($this, $ascending, $by, $flag, $this->reindex));
     }
 
     /**
@@ -618,7 +618,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function sortAsc(?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->instantiate(Arr::sortAsc($this, $by, $flag, $this->isList));
+        return $this->instantiate(Arr::sortAsc($this, $by, $flag, $this->reindex));
     }
 
     /**
@@ -656,7 +656,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function sortDesc(?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->instantiate(Arr::sortDesc($this, $by, $flag, $this->isList));
+        return $this->instantiate(Arr::sortDesc($this, $by, $flag, $this->reindex));
     }
 
     /**
@@ -665,7 +665,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function sortWith(Closure $comparison): static
     {
-        return $this->instantiate(Arr::sortWith($this, $comparison, $this->isList));
+        return $this->instantiate(Arr::sortWith($this, $comparison, $this->reindex));
     }
 
     /**
@@ -684,7 +684,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
     public function split(int $size): Vec
     {
         $chunks = [];
-        foreach (Iter::chunk($this, $size, $this->isList) as $chunk) {
+        foreach (Iter::chunk($this, $size, $this->reindex) as $chunk) {
             $converted = $this->instantiate($chunk);
             $chunks[] = $converted;
         }
@@ -698,7 +698,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function symDiff(iterable $items, Closure $by = null): static
     {
-        return $this->instantiate(Arr::symDiff($this, $items, $by, $this->isList));
+        return $this->instantiate(Arr::symDiff($this, $items, $by, $this->reindex));
     }
 
     /**
@@ -734,7 +734,7 @@ class Seq extends Enumerator implements Countable, JsonSerializable
      */
     public function unique(?Closure $by = null): static
     {
-        return $this->instantiate(Arr::unique($this, $by, $this->isList));
+        return $this->instantiate(Arr::unique($this, $by, $this->reindex));
     }
 
     /**
