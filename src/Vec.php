@@ -4,6 +4,8 @@ namespace Kirameki\Collections;
 
 use ArrayAccess;
 use Closure;
+use Countable;
+use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
@@ -12,15 +14,16 @@ use function is_array;
 
 /**
  * @template TValue
- * @extends Seq<int, TValue>
+ * @extends Enumerator<int, TValue>
  * @implements ArrayAccess<int, TValue>
+ * @phpstan-consistent-constructor
  */
-class Vec extends Seq implements ArrayAccess
+class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 {
     /**
-     * @param iterable<int, TValue>|null $items
+     * @param iterable<int, TValue> $items
      */
-    public function __construct(iterable|null $items = null)
+    public function __construct(iterable $items = [])
     {
         parent::__construct($items, true);
     }
@@ -68,6 +71,14 @@ class Vec extends Seq implements ArrayAccess
             'this' => $this,
             'offset' => $offset,
         ]);
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return Arr::from($this);
     }
 
     /**
@@ -133,5 +144,13 @@ class Vec extends Seq implements ArrayAccess
     public function prepend(mixed ...$value): static
     {
         return $this->instantiate(Arr::prepend($this, ...$value));
+    }
+
+    /**
+     * @return Vec<TValue>
+     */
+    public function values(): Vec
+    {
+        return $this->newVec(Iter::values($this));
     }
 }

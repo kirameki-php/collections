@@ -4,7 +4,10 @@ namespace Kirameki\Collections;
 
 use ArrayAccess;
 use Closure;
+use Countable;
+use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use function assert;
 use function is_array;
@@ -12,15 +15,16 @@ use function is_array;
 /**
  * @template TKey of array-key|class-string
  * @template TValue
- * @extends Seq<TKey, TValue>
+ * @extends Enumerator<TKey, TValue>
  * @implements ArrayAccess<TKey, TValue>
+ * @phpstan-consistent-constructor
  */
-class Map extends Seq implements ArrayAccess
+class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 {
     /**
-     * @param iterable<TKey, TValue>|null $items
+     * @param iterable<TKey, TValue> $items
      */
-    public function __construct(iterable|null $items = null)
+    public function __construct(iterable $items = [])
     {
         parent::__construct($items, false);
     }
@@ -90,48 +94,12 @@ class Map extends Seq implements ArrayAccess
     }
 
     /**
-     * @param int|string $key
-     * @return bool
-     */
-    public function containsKey(int|string $key): bool
-    {
-        return Arr::containsKey($this, $key);
-    }
-
-    /**
      * @param iterable<TKey, TValue> $items
      * @return static
      */
     public function diffKeys(iterable $items): static
     {
         return $this->instantiate(Arr::diffKeys($this, $items));
-    }
-
-    /**
-     * @param int|string $key
-     * @return bool
-     */
-    public function doesNotContainKey(int|string $key): bool
-    {
-        return Arr::doesNotContainKey($this, $key);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TKey
-     */
-    public function firstKey(?Closure $condition = null): int|string|null
-    {
-        return Arr::firstKey($this, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TKey|null
-     */
-    public function firstKeyOrNull(?Closure $condition = null): int|string|null
-    {
-        return Arr::firstKeyOrNull($this, $condition);
     }
 
     /**
@@ -178,7 +146,7 @@ class Map extends Seq implements ArrayAccess
      */
     public function keys(): Vec
     {
-        return $this->newVec(Arr::keys($this));
+        return $this->newVec(Iter::keys($this));
     }
 
     /**
@@ -274,6 +242,6 @@ class Map extends Seq implements ArrayAccess
      */
     public function values(): Vec
     {
-        return $this->newVec(Arr::values($this));
+        return $this->newVec(Iter::values($this));
     }
 }
