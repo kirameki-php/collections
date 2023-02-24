@@ -12,17 +12,32 @@ use Kirameki\Core\Exceptions\NotSupportedException;
 use Random\Randomizer;
 use function assert;
 use function is_array;
+use const PHP_INT_MAX;
 
 /**
  * @template TValue
  * @extends Enumerator<int, TValue>
  * @implements ArrayAccess<int, TValue>
  * @phpstan-consistent-constructor
- * TODO static range(start, end, step)
- * TODO static sequence(size)
  */
 class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 {
+    /**
+     * @param int $times
+     * @return self<int>
+     */
+    public static function loop(int $times = PHP_INT_MAX): self
+    {
+        $generator = (function(int $times) {
+            $counter = 0;
+            while($counter < $times) {
+                yield $counter;
+                ++$counter;
+            }
+        })($times);
+        return new static(new LazyIterator($generator));
+    }
+
     /**
      * @param int $offset
      * @return bool

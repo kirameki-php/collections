@@ -6,7 +6,6 @@ use Closure;
 use IteratorAggregate;
 use Kirameki\Collections\Utils\Arr;
 use Traversable;
-use const PHP_INT_MAX;
 
 /**
  * @template TKey of array-key
@@ -44,21 +43,6 @@ abstract class Enumerator implements IteratorAggregate
     public static function empty(): static
     {
         return new static();
-    }
-
-    /**
-     * @param int $times
-     * @return static
-     */
-    public static function loop(int $times = PHP_INT_MAX): static
-    {
-        $generator = (function(int $times) {
-            $counter = 0;
-            while($counter < $times) {
-                yield;
-            }
-        })($times);
-        return new static(new LazyIterator($generator));
     }
 
     /**
