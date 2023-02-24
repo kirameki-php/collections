@@ -38,14 +38,6 @@ abstract class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @return static
-     */
-    public static function empty(): static
-    {
-        return new static();
-    }
-
-    /**
      * @return Traversable<TKey, TValue>
      */
     public function getIterator(): Traversable
