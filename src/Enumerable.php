@@ -20,9 +20,9 @@ use const SORT_REGULAR;
 trait Enumerable
 {
     /**
-     * @var bool
+     * @return bool
      */
-    protected bool $reindex;
+    abstract protected function reindex(): bool;
 
     /**
      * @param int $index
@@ -75,7 +75,7 @@ trait Enumerable
      */
     public function compact(int $depth = 1): static
     {
-        return $this->instantiate(Arr::compact($this, $depth, $this->reindex));
+        return $this->instantiate(Arr::compact($this, $depth, $this->reindex()));
     }
 
     /**
@@ -97,39 +97,12 @@ trait Enumerable
     }
 
     /**
-     * @param iterable<int, TKey> $keys
-     * @return bool
-     */
-    public function containsAllKeys(iterable $keys): bool
-    {
-        return Arr::containsAllKeys($this, $keys);
-    }
-
-    /**
      * @param iterable<int, TValue> $values
      * @return bool
      */
     public function containsAny(iterable $values): bool
     {
         return Arr::containsAny($this, $values);
-    }
-
-    /**
-     * @param iterable<int, TKey> $keys
-     * @return bool
-     */
-    public function containsAnyKeys(iterable $keys): bool
-    {
-        return Arr::containsAnyKeys($this, $keys);
-    }
-
-    /**
-     * @param TKey $key
-     * @return bool
-     */
-    public function containsKey(mixed $key): bool
-    {
-        return Arr::containsKey($this, $key);
     }
 
     /**
@@ -156,7 +129,7 @@ trait Enumerable
      */
     public function diff(iterable $items): static
     {
-        return $this->instantiate(Arr::diff($this, $items, null, $this->reindex));
+        return $this->instantiate(Arr::diff($this, $items, null, $this->reindex()));
     }
 
     /**
@@ -166,15 +139,6 @@ trait Enumerable
     public function doesNotContain(mixed $value): bool
     {
         return Arr::doesNotContain($this, $value);
-    }
-
-    /**
-     * @param TKey $key
-     * @return bool
-     */
-    public function doesNotContainKey(mixed $key): bool
-    {
-        return Arr::doesNotContainKey($this, $key);
     }
 
     /**
@@ -201,7 +165,7 @@ trait Enumerable
      */
     public function dropLast(int $amount): static
     {
-        return $this->instantiate(Arr::dropLast($this, $amount, $this->reindex));
+        return $this->instantiate(Arr::dropLast($this, $amount, $this->reindex()));
     }
 
     /**
@@ -269,7 +233,7 @@ trait Enumerable
      */
     public function except(iterable $keys, bool $safe = true): static
     {
-        return $this->instantiate(Arr::except($this, $keys, $safe, $this->reindex));
+        return $this->instantiate(Arr::except($this, $keys, $safe, $this->reindex()));
     }
 
     /**
@@ -282,7 +246,7 @@ trait Enumerable
      */
     public function filter(Closure $condition): static
     {
-        return $this->instantiate(Iter::filter($this, $condition, $this->reindex));
+        return $this->instantiate(Iter::filter($this, $condition, $this->reindex()));
     }
 
     /**
@@ -310,24 +274,6 @@ trait Enumerable
     public function firstIndexOrNull(Closure $condition): ?int
     {
         return Arr::firstIndexOrNull($this, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TKey
-     */
-    public function firstKey(?Closure $condition = null): mixed
-    {
-        return Arr::firstKey($this, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TKey|null
-     */
-    public function firstKeyOrNull(?Closure $condition = null): mixed
-    {
-        return Arr::firstKeyOrNull($this, $condition);
     }
 
     /**
@@ -368,7 +314,7 @@ trait Enumerable
      */
     public function groupBy(Closure $callback): Map
     {
-        $grouped = Arr::groupBy($this, $callback, $this->reindex);
+        $grouped = Arr::groupBy($this, $callback, $this->reindex());
         return $this->newMap($grouped)->map(fn($group) => $this->instantiate($group));
     }
 
@@ -387,7 +333,7 @@ trait Enumerable
      */
     public function intersect(iterable $items): static
     {
-        return $this->instantiate(Arr::intersect($this, $items, $this->reindex));
+        return $this->instantiate(Arr::intersect($this, $items, $this->reindex()));
     }
 
     /**
@@ -429,11 +375,11 @@ trait Enumerable
     }
 
     /**
-     * @return self<int, TKey>
+     * @return Vec<TKey>
      */
-    public function keys(): self
+    public function keys(): Vec
     {
-        return new self(Iter::keys($this));
+        return $this->newVec(Iter::keys($this));
     }
 
     /**
@@ -455,24 +401,6 @@ trait Enumerable
     }
 
     /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TKey
-     */
-    public function lastKey(?Closure $condition = null): mixed
-    {
-        return Arr::lastKey($this, $condition);
-    }
-
-    /**
-     * @param Closure(TValue, TKey): bool|null $condition
-     * @return TKey|null
-     */
-    public function lastKeyOrNull(?Closure $condition = null): mixed
-    {
-        return Arr::lastKeyOrNull($this, $condition);
-    }
-
-    /**
      * @template TDefault
      * @param Closure(TValue, TKey): bool|null $condition
      * @param TDefault $default
@@ -490,6 +418,16 @@ trait Enumerable
     public function lastOrNull(?Closure $condition = null): mixed
     {
         return Arr::lastOrNull($this, $condition);
+    }
+
+    /**
+     * @template TMapValue
+     * @param Closure(TValue, TKey): TMapValue $callback
+     * @return self<TKey, TMapValue>
+     */
+    public function map(Closure $callback): self
+    {
+        return new static(Iter::map($this, $callback));
     }
 
     /**
@@ -563,7 +501,7 @@ trait Enumerable
      */
     public function only(iterable $keys, bool $safe = true): static
     {
-        return $this->instantiate(Arr::only($this, $keys, $safe, $this->reindex));
+        return $this->instantiate(Arr::only($this, $keys, $safe, $this->reindex()));
     }
 
     /**
@@ -599,7 +537,7 @@ trait Enumerable
      */
     public function prioritize(Closure $condition): static
     {
-        return $this->instantiate(Arr::prioritize($this, $condition, $this->reindex));
+        return $this->instantiate(Arr::prioritize($this, $condition, $this->reindex()));
     }
 
     /**
@@ -651,7 +589,7 @@ trait Enumerable
      */
     public function reverse(): static
     {
-        return $this->instantiate(Arr::reverse($this, $this->reindex));
+        return $this->instantiate(Arr::reverse($this, $this->reindex()));
     }
 
     /**
@@ -660,7 +598,7 @@ trait Enumerable
      */
     public function rotate(int $count): static
     {
-        return $this->instantiate(Arr::rotate($this, $count, $this->reindex));
+        return $this->instantiate(Arr::rotate($this, $count, $this->reindex()));
     }
 
     /**
@@ -670,36 +608,6 @@ trait Enumerable
     public function sample(?Randomizer $randomizer = null): mixed
     {
         return Arr::sample($this, $randomizer);
-    }
-
-    /**
-     * @param Randomizer|null $randomizer
-     * @return TKey
-     */
-    public function sampleKey(?Randomizer $randomizer = null): mixed
-    {
-        return Arr::sampleKey($this, $randomizer);
-    }
-
-    /**
-     * @param Randomizer|null $randomizer
-     * @return TKey|null
-     */
-    public function sampleKeyOrNull(?Randomizer $randomizer = null): mixed
-    {
-        /** @var TKey|null needed for some reason by phpstan */
-        return Arr::sampleKeyOrNull($this, $randomizer);
-    }
-
-    /**
-     * @param int $amount
-     * @param bool $replace
-     * @param Randomizer|null $randomizer
-     * @return Vec<TKey>
-     */
-    public function sampleKeys(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
-    {
-        return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
     }
 
     /**
@@ -775,7 +683,7 @@ trait Enumerable
      */
     public function shuffle(?Randomizer $randomizer = null): static
     {
-        return $this->instantiate(Arr::shuffle($this, $this->reindex, $randomizer));
+        return $this->instantiate(Arr::shuffle($this, $this->reindex(), $randomizer));
     }
 
     /**
@@ -785,7 +693,7 @@ trait Enumerable
      */
     public function slice(int $offset, int $length = PHP_INT_MAX): static
     {
-        return $this->instantiate(Iter::slice($this, $offset, $length, $this->reindex));
+        return $this->instantiate(Iter::slice($this, $offset, $length, $this->reindex()));
     }
 
     /**
@@ -805,7 +713,7 @@ trait Enumerable
      */
     public function sort(bool $ascending, ?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->instantiate(Arr::sort($this, $ascending, $by, $flag, $this->reindex));
+        return $this->instantiate(Arr::sort($this, $ascending, $by, $flag, $this->reindex()));
     }
 
     /**
@@ -815,35 +723,7 @@ trait Enumerable
      */
     public function sortAsc(?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->instantiate(Arr::sortAsc($this, $by, $flag, $this->reindex));
-    }
-
-    /**
-     * @param bool $ascending
-     * @param int $flag
-     * @return static
-     */
-    public function sortByKey(bool $ascending, int $flag = SORT_REGULAR): static
-    {
-        return $this->instantiate(Arr::sortByKey($this, $ascending, $flag));
-    }
-
-    /**
-     * @param int $flag
-     * @return static
-     */
-    public function sortByKeyAsc(int $flag = SORT_REGULAR): static
-    {
-        return $this->instantiate(Arr::sortByKeyAsc($this, $flag));
-    }
-
-    /**
-     * @param int $flag
-     * @return static
-     */
-    public function sortByKeyDesc(int $flag = SORT_REGULAR): static
-    {
-        return $this->instantiate(Arr::sortByKeyDesc($this, $flag));
+        return $this->instantiate(Arr::sortAsc($this, $by, $flag, $this->reindex()));
     }
 
     /**
@@ -853,7 +733,7 @@ trait Enumerable
      */
     public function sortDesc(?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->instantiate(Arr::sortDesc($this, $by, $flag, $this->reindex));
+        return $this->instantiate(Arr::sortDesc($this, $by, $flag, $this->reindex()));
     }
 
     /**
@@ -862,16 +742,7 @@ trait Enumerable
      */
     public function sortWith(Closure $comparison): static
     {
-        return $this->instantiate(Arr::sortWith($this, $comparison, $this->reindex));
-    }
-
-    /**
-     * @param Closure(TKey, TKey): int $comparison
-     * @return static
-     */
-    public function sortWithKey(Closure $comparison): static
-    {
-        return $this->instantiate(Arr::sortWithKey($this, $comparison));
+        return $this->instantiate(Arr::sortWith($this, $comparison, $this->reindex()));
     }
 
     /**
@@ -881,7 +752,7 @@ trait Enumerable
     public function split(int $size): Vec
     {
         $chunks = [];
-        foreach (Iter::chunk($this, $size, $this->reindex) as $chunk) {
+        foreach (Iter::chunk($this, $size, $this->reindex()) as $chunk) {
             $converted = $this->instantiate($chunk);
             $chunks[] = $converted;
         }
@@ -895,7 +766,7 @@ trait Enumerable
      */
     public function symDiff(iterable $items, Closure $by = null): static
     {
-        return $this->instantiate(Arr::symDiff($this, $items, $by, $this->reindex));
+        return $this->instantiate(Arr::symDiff($this, $items, $by, $this->reindex()));
     }
 
     /**
@@ -957,7 +828,7 @@ trait Enumerable
      */
     public function unique(?Closure $by = null): static
     {
-        return $this->instantiate(Arr::unique($this, $by, $this->reindex));
+        return $this->instantiate(Arr::unique($this, $by, $this->reindex()));
     }
 
     /**

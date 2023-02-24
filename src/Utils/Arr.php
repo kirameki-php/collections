@@ -187,7 +187,7 @@ final class Arr
      * Value that is used when the given index did not exist.
      * @return TValue|TDefault
      *
-     * TODO iterable version
+     * TODO make generator friendly
      */
     public static function atOr(
         iterable $iterable,

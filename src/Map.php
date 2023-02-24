@@ -7,10 +7,11 @@ use Closure;
 use Countable;
 use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
-use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
+use Random\Randomizer;
 use function assert;
 use function is_array;
+use const SORT_REGULAR;
 
 /**
  * @template TKey of array-key|class-string
@@ -21,14 +22,6 @@ use function is_array;
  */
 class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 {
-    /**
-     * @param iterable<TKey, TValue> $items
-     */
-    public function __construct(iterable $items = [])
-    {
-        parent::__construct($items, false);
-    }
-
     /**
      * @template TNewValue
      * @param TNewValue ...$values
@@ -94,12 +87,66 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
+     * @param iterable<int, TKey> $keys
+     * @return bool
+     */
+    public function containsAllKeys(iterable $keys): bool
+    {
+        return Arr::containsAllKeys($this, $keys);
+    }
+
+    /**
+     * @param iterable<int, TKey> $keys
+     * @return bool
+     */
+    public function containsAnyKeys(iterable $keys): bool
+    {
+        return Arr::containsAnyKeys($this, $keys);
+    }
+
+    /**
+     * @param TKey $key
+     * @return bool
+     */
+    public function containsKey(mixed $key): bool
+    {
+        return Arr::containsKey($this, $key);
+    }
+
+    /**
      * @param iterable<TKey, TValue> $items
      * @return static
      */
     public function diffKeys(iterable $items): static
     {
         return $this->instantiate(Arr::diffKeys($this, $items));
+    }
+
+    /**
+     * @param TKey $key
+     * @return bool
+     */
+    public function doesNotContainKey(mixed $key): bool
+    {
+        return Arr::doesNotContainKey($this, $key);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): bool|null $condition
+     * @return TKey
+     */
+    public function firstKey(?Closure $condition = null): mixed
+    {
+        return Arr::firstKey($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): bool|null $condition
+     * @return TKey|null
+     */
+    public function firstKeyOrNull(?Closure $condition = null): mixed
+    {
+        return Arr::firstKeyOrNull($this, $condition);
     }
 
     /**
@@ -141,15 +188,6 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @inheritDoc
-     * @return Vec<TKey>
-     */
-    public function keys(): Vec
-    {
-        return $this->newVec(Iter::keys($this));
-    }
-
-    /**
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TKey
      */
@@ -187,45 +225,70 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @param TKey $key
-     * @return bool
+     * @param Randomizer|null $randomizer
+     * @return TKey
      */
-    public function removeKey(int|string $key): bool
+    public function sampleKey(?Randomizer $randomizer = null): mixed
     {
-        return Arr::removeKey($this->items, $key);
+        return Arr::sampleKey($this, $randomizer);
     }
 
     /**
-     * @param TKey $key
-     * @param TValue $value
-     * @return $this
+     * @param Randomizer|null $randomizer
+     * @return TKey|null
      */
-    public function set(int|string $key, mixed $value): static
+    public function sampleKeyOrNull(?Randomizer $randomizer = null): mixed
     {
-        Arr::set($this->items, $key, $value);
-        return $this;
+        /** @var TKey|null needed for some reason by phpstan */
+        return Arr::sampleKeyOrNull($this, $randomizer);
     }
 
     /**
-     * @param TKey $key
-     * @param TValue $value
-     * @return $this
+     * @param int $amount
+     * @param bool $replace
+     * @param Randomizer|null $randomizer
+     * @return Vec<TKey>
      */
-    public function setIfExists(int|string $key, mixed $value): static
+    public function sampleKeys(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
     {
-        Arr::setIfExists($this->items, $key, $value);
-        return $this;
+        return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
     }
 
     /**
-     * @param TKey $key
-     * @param TValue $value
-     * @return $this
+     * @param bool $ascending
+     * @param int $flag
+     * @return static
      */
-    public function setIfNotExists(int|string $key, mixed $value): static
+    public function sortByKey(bool $ascending, int $flag = SORT_REGULAR): static
     {
-        Arr::setIfNotExists($this->items, $key, $value);
-        return $this;
+        return $this->instantiate(Arr::sortByKey($this, $ascending, $flag));
+    }
+
+    /**
+     * @param int $flag
+     * @return static
+     */
+    public function sortByKeyAsc(int $flag = SORT_REGULAR): static
+    {
+        return $this->instantiate(Arr::sortByKeyAsc($this, $flag));
+    }
+
+    /**
+     * @param int $flag
+     * @return static
+     */
+    public function sortByKeyDesc(int $flag = SORT_REGULAR): static
+    {
+        return $this->instantiate(Arr::sortByKeyDesc($this, $flag));
+    }
+
+    /**
+     * @param Closure(TKey, TKey): int $comparison
+     * @return static
+     */
+    public function sortWithKey(Closure $comparison): static
+    {
+        return $this->instantiate(Arr::sortWithKey($this, $comparison));
     }
 
     /**
@@ -238,10 +301,10 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @return Vec<TValue>
+     * @return bool
      */
-    public function values(): Vec
+    protected function reindex(): bool
     {
-        return $this->newVec(Iter::values($this));
+        return true;
     }
 }

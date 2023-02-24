@@ -5,17 +5,16 @@ namespace Kirameki\Collections;
 use Closure;
 use IteratorAggregate;
 use Kirameki\Collections\Utils\Arr;
-use Kirameki\Collections\Utils\Iter;
 use Traversable;
+use const PHP_INT_MAX;
 
 /**
- * @phpstan-consistent-constructor
- *
  * @template TKey of array-key
  * @template TValue
  * @implements IteratorAggregate<TKey, TValue>
+ * @phpstan-consistent-constructor
  */
-class Enumerator implements IteratorAggregate
+abstract class Enumerator implements IteratorAggregate
 {
     /** @use Enumerable<TKey, TValue> */
     use Enumerable;
@@ -27,11 +26,9 @@ class Enumerator implements IteratorAggregate
 
     /**
      * @param iterable<TKey, TValue> $items
-     * @param bool $reindex
      */
     public function __construct(
         iterable $items = [],
-        bool $reindex = false,
     )
     {
         if (!$items instanceof LazyIterator) {
@@ -39,7 +36,6 @@ class Enumerator implements IteratorAggregate
         }
 
         $this->items = $items;
-        $this->reindex = $reindex;
     }
 
     /**
@@ -48,6 +44,21 @@ class Enumerator implements IteratorAggregate
     public static function empty(): static
     {
         return new static();
+    }
+
+    /**
+     * @param int $times
+     * @return static
+     */
+    public static function loop(int $times = PHP_INT_MAX): static
+    {
+        $generator = (function(int $times) {
+            $counter = 0;
+            while($counter < $times) {
+                yield;
+            }
+        })($times);
+        return new static(new LazyIterator($generator));
     }
 
     /**
@@ -87,29 +98,11 @@ class Enumerator implements IteratorAggregate
     }
 
     /**
-     * @return Vec<TKey>
-     */
-    public function keys(): Vec
-    {
-        return $this->newVec(Iter::keys($this));
-    }
-
-    /**
      * @return static
      */
     public function lazy(): static
     {
         return $this->instantiate(new LazyIterator($this->items));
-    }
-
-    /**
-     * @template TMapValue
-     * @param Closure(TValue, TKey): TMapValue $callback
-     * @return self<TKey, TMapValue>
-     */
-    public function map(Closure $callback): self
-    {
-        return new self(Iter::map($this, $callback));
     }
 
     /**
@@ -120,13 +113,5 @@ class Enumerator implements IteratorAggregate
     {
         $callback($this);
         return $this;
-    }
-
-    /**
-     * @return self<int, TValue>
-     */
-    public function values(): self
-    {
-        return new self(Iter::values($this));
     }
 }

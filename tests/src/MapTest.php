@@ -14,6 +14,6 @@ class MapTest extends TestCase
             ->lazy()
             ->dump()
             ->each(fn($i) => dump($i))
-            ->first();
+            ->values();
     }
 }

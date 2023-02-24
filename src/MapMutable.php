@@ -2,6 +2,7 @@
 
 namespace Kirameki\Collections;
 
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use function assert;
 use function gettype;
@@ -38,6 +39,48 @@ class MapMutable extends Map
         }
 
         $this->baseOffsetSet($offset, $value);
+    }
+
+    /**
+     * @param TKey $key
+     * @return bool
+     */
+    public function removeKey(int|string $key): bool
+    {
+        return Arr::removeKey($this->items, $key);
+    }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @return $this
+     */
+    public function set(int|string $key, mixed $value): static
+    {
+        Arr::set($this->items, $key, $value);
+        return $this;
+    }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @return $this
+     */
+    public function setIfExists(int|string $key, mixed $value): static
+    {
+        Arr::setIfExists($this->items, $key, $value);
+        return $this;
+    }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @return $this
+     */
+    public function setIfNotExists(int|string $key, mixed $value): static
+    {
+        Arr::setIfNotExists($this->items, $key, $value);
+        return $this;
     }
 
     /**

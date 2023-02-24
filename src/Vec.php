@@ -9,6 +9,7 @@ use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
+use Random\Randomizer;
 use function assert;
 use function is_array;
 
@@ -17,17 +18,11 @@ use function is_array;
  * @extends Enumerator<int, TValue>
  * @implements ArrayAccess<int, TValue>
  * @phpstan-consistent-constructor
+ * TODO static range(start, end, step)
+ * TODO static sequence(size)
  */
 class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 {
-    /**
-     * @param iterable<int, TValue> $items
-     */
-    public function __construct(iterable $items = [])
-    {
-        parent::__construct($items, true);
-    }
-
     /**
      * @param int $offset
      * @return bool
@@ -92,15 +87,6 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 
     /**
      * @inheritDoc
-     * @return self<int>
-     */
-    public function keys(): self
-    {
-        return $this->newVec(Iter::keys($this));
-    }
-
-    /**
-     * @inheritDoc
      * @template TMapValue
      * @param Closure(TValue, int): TMapValue $callback
      * @return self<TMapValue>
@@ -147,10 +133,40 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @return Vec<TValue>
+     * @param Randomizer|null $randomizer
+     * @return int
      */
-    public function values(): Vec
+    public function sampleIndex(?Randomizer $randomizer = null): mixed
     {
-        return $this->newVec(Iter::values($this));
+        return Arr::sampleKey($this, $randomizer);
+    }
+
+    /**
+     * @param Randomizer|null $randomizer
+     * @return int|null
+     */
+    public function sampleIndexOrNull(?Randomizer $randomizer = null): mixed
+    {
+        /** @var int|null needed for some reason by phpstan */
+        return Arr::sampleKeyOrNull($this, $randomizer);
+    }
+
+    /**
+     * @param int $amount
+     * @param bool $replace
+     * @param Randomizer|null $randomizer
+     * @return self<int>
+     */
+    public function sampleIndexes(int $amount, bool $replace = false, ?Randomizer $randomizer = null): self
+    {
+        return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
+    }
+
+    /**
+     * @return bool
+     */
+    protected function reindex(): bool
+    {
+        return false;
     }
 }
