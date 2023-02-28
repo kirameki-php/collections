@@ -8,7 +8,6 @@ use Countable;
 use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
-use Kirameki\Core\Exceptions\NotSupportedException;
 use Random\Randomizer;
 use function assert;
 use function is_array;
@@ -23,6 +22,11 @@ use const PHP_INT_MAX;
 class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 {
     /**
+     * @use MutatesSelf<int, TValue>
+     */
+    use MutatesSelf;
+
+    /**
      * @param int $times
      * @return self<int>
      */
@@ -36,51 +40,6 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
             }
         })($times);
         return new static(new LazyIterator($generator));
-    }
-
-    /**
-     * @param int $offset
-     * @return bool
-     */
-    public function offsetExists(mixed $offset): bool
-    {
-        return isset($this->items[$offset]);
-    }
-
-    /**
-     * @param int $offset
-     * @return TValue
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        assert(is_array($this->items));
-
-        return $this->items[$offset];
-    }
-
-    /**
-     * @param int|null $offset
-     * @param TValue $value
-     * @return void
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        throw new NotSupportedException('Calling offsetSet on non-mutable class: ' . static::class, [
-            'this' => $this,
-            'offset' => $offset,
-        ]);
-    }
-
-    /**
-     * @param mixed $offset
-     * @return void
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        throw new NotSupportedException('Calling offsetUnset on non-mutable class: ' . static::class, [
-            'this' => $this,
-            'offset' => $offset,
-        ]);
     }
 
     /**
@@ -109,14 +68,6 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     public function map(Closure $callback): self
     {
         return $this->newVec(Iter::map($this, $callback));
-    }
-
-    /**
-     * @return VecMutable<TValue>
-     */
-    public function mutable(): VecMutable
-    {
-        return new VecMutable($this->items);
     }
 
     /**
@@ -183,5 +134,14 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     protected function reindex(): bool
     {
         return false;
+    }
+
+    /**
+     * @return array<int, TValue>
+     */
+    protected function &getItemsAsRef(): array
+    {
+        assert(is_array($this->items));
+        return $this->items;
     }
 }

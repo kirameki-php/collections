@@ -30,6 +30,26 @@ trait MutatesSelf
     abstract protected function reindex(): bool;
 
     /**
+     * @param TKey $offset
+     * @return bool
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        $ref = $this->getItemsAsRef();
+        return isset($ref[$offset]);
+    }
+
+    /**
+     * @param TKey $offset
+     * @return TValue
+     */
+    public function offsetGet(mixed $offset): mixed
+    {
+        $ref = $this->getItemsAsRef();
+        return $ref[$offset];
+    }
+
+    /**
      * @param int|null $offset
      * @param TValue $value
      * @return void
@@ -38,7 +58,7 @@ trait MutatesSelf
     {
         $ref = &$this->getItemsAsRef();
 
-        if ($offset === null) {
+        if ($offset === null && $this->reindex()) {
             $ref[] = $value;
             return;
         }

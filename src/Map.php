@@ -7,7 +7,6 @@ use Closure;
 use Countable;
 use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
-use Kirameki\Core\Exceptions\NotSupportedException;
 use Random\Randomizer;
 use function assert;
 use function is_array;
@@ -23,6 +22,11 @@ use const SORT_REGULAR;
 class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
 {
     /**
+     * @use MutatesSelf<TKey, TValue>
+     */
+    use MutatesSelf;
+
+    /**
      * @template TNewValue
      * @param TNewValue ...$values
      * @return self<string, TNewValue>
@@ -31,51 +35,6 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     {
         /** @var array<string, TNewValue> $values */
         return new self($values);
-    }
-
-    /**
-     * @param TKey $offset
-     * @return bool
-     */
-    public function offsetExists(mixed $offset): bool
-    {
-        return isset($this->items[$offset]);
-    }
-
-    /**
-     * @param TKey $offset
-     * @return TValue
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        assert(is_array($this->items));
-
-        return $this->items[$offset];
-    }
-
-    /**
-     * @param TKey $offset
-     * @param TValue $value
-     * @return void
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        throw new NotSupportedException('Calling offsetSet on non-mutable class: ' . static::class, [
-            'this' => $this,
-            'offset' => $offset,
-        ]);
-    }
-
-    /**
-     * @param mixed $offset
-     * @return void
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        throw new NotSupportedException('Calling offsetUnset on non-mutable class: ' . static::class, [
-            'this' => $this,
-            'offset' => $offset,
-        ]);
     }
 
     /**
@@ -217,11 +176,12 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @return MapMutable<TKey, TValue>
+     * @param TKey $key
+     * @return bool
      */
-    public function mutable(): MapMutable
+    public function removeKey(int|string $key): bool
     {
-        return new MapMutable($this->items);
+        return Arr::removeKey($this->items, $key);
     }
 
     /**
@@ -252,6 +212,40 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     public function sampleKeys(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
     {
         return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
+    }
+
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @return $this
+     */
+    public function set(int|string $key, mixed $value): static
+    {
+        Arr::set($this->items, $key, $value);
+        return $this;
+    }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @return $this
+     */
+    public function setIfExists(int|string $key, mixed $value): static
+    {
+        Arr::setIfExists($this->items, $key, $value);
+        return $this;
+    }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @return $this
+     */
+    public function setIfNotExists(int|string $key, mixed $value): static
+    {
+        Arr::setIfNotExists($this->items, $key, $value);
+        return $this;
     }
 
     /**
@@ -306,5 +300,14 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     protected function reindex(): bool
     {
         return true;
+    }
+
+    /**
+     * @return array<TKey, TValue>
+     */
+    protected function &getItemsAsRef(): array
+    {
+        assert(is_array($this->items));
+        return $this->items;
     }
 }
