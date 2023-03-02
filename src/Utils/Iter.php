@@ -5,6 +5,7 @@ namespace Kirameki\Collections\Utils;
 use Closure;
 use Generator;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use function array_slice;
 use function count;
 use function is_iterable;
 use const PHP_INT_MAX;
@@ -510,6 +511,50 @@ final class Iter
     {
         foreach ($iterable as $val) {
             yield $val;
+        }
+    }
+
+    /**
+     * Creates a Generator that yields sub-slices of `$size`.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $size
+     * Size of the window. Must be >= 1.
+     * @param bool $reindex
+     * If set to **true** the array will be re-indexed.
+     * @return Generator<int, array<TKey, TValue>>
+     */
+    public static function windows(iterable $iterable, int $size, bool $reindex = false): Generator
+    {
+        $window = [];
+        $filled = false;
+        foreach ($iterable as $key => $val) {
+            $reindex
+                ? $window[] = $val
+                : $window[$key] = $val;
+
+            // backfill until window size is at $size
+            if ($filled === false) {
+                $filled = count($window) === $size;
+                if ($filled === false) {
+                    continue;
+                }
+            }
+
+            yield $window;
+
+            $window = array_slice($window, 1, null, !$reindex);
+        }
+
+        if ($filled === false) {
+            throw new InvalidArgumentException("{$size} must be bigger than the given iterable.", [
+                'iterable' => $iterable,
+                'size' => $size,
+                'reindex' => $reindex,
+            ]);
         }
     }
 

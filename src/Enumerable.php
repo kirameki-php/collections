@@ -872,7 +872,7 @@ trait Enumerable
         ?Closure $fallback = null,
     ): static
     {
-        return static::when($this->isEmpty(), $callback, $fallback);
+        return $this->when($this->isEmpty(), $callback, $fallback);
     }
 
     /**
@@ -885,7 +885,16 @@ trait Enumerable
         ?Closure $fallback = null,
     ): static
     {
-        return static::when($this->isNotEmpty(), $callback, $fallback);
+        return $this->when($this->isNotEmpty(), $callback, $fallback);
+    }
+
+    /**
+     * @param int $size
+     * @return static
+     */
+    public function windows(int $size): static
+    {
+        return $this->instantiate(Iter::windows($this, $size, $this->reindex()));
     }
 
     /**

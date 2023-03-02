@@ -72,10 +72,7 @@ use const PHP_QUERY_RFC3986;
 use const SORT_REGULAR;
 
 /**
- * TODO static range
- * TODO eachCons
  * TODO insertAfter/insertBefore
- * TODO recursive (walk)
  * TODO zip
  */
 final class Arr
@@ -5013,7 +5010,7 @@ final class Arr
      * Removes duplicate values from the given iterable and returns it
      * as an array.
      *
-     * This is different from `array_unique` in that, this does not do a
+     * This differs from `array_unique` in that, this does not do a
      * string conversion before comparing.
      * For example, `array_unique([1, true])` will result in: `[1]` but
      * doing `Arr::unique([1, true])` will result in: `[1, true]`.
@@ -5065,7 +5062,7 @@ final class Arr
     }
 
     /**
-     * Convert an iterable to a list. Any keys will be dropped.
+     * Converts `$iterable` to a list. Any keys will be dropped.
      *
      * Example:
      * ```php
@@ -5084,6 +5081,35 @@ final class Arr
     ): array
     {
         return iterator_to_array(Iter::values($iterable));
+    }
+
+    /**
+     * Converts `$iterable` to an overlapping sub-slices of `$size`.
+     *
+     * Example:
+     * ```php
+     * Arr::windows(range(0, 4), 3) // [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+     * Arr::windows(['a' => 1, 'b' => 2, 'c' => 3], 2) // [['a' => 1, 'b' => 2], ['b' => 2, , 'c' => 3]]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $size
+     * Size of the window. Must be >= 1.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * @return array<int, array<TKey, TValue>>
+     */
+    public static function windows(iterable $iterable, int $size, ?bool $reindex = null): array
+    {
+        if ($reindex === null) {
+            $iterable = self::from($iterable);
+            $reindex = array_is_list($iterable);
+        }
+        return iterator_to_array(Iter::windows($iterable, $size, $reindex));
     }
 
     /**
