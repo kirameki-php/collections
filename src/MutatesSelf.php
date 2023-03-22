@@ -95,14 +95,14 @@ trait MutatesSelf
     }
 
     /**
-     * @param int $at
+     * @param int $index
      * @param mixed $value
      * @return $this
      */
-    public function insert(int $at, mixed $value): static
+    public function insertAt(int $index, mixed $value): static
     {
         $ref = &$this->getItemsAsRef();
-        Arr::insert($ref, $at, $value, $this->reindex());
+        Arr::insertAt($ref, $index, $value, $this->reindex());
         return $this;
     }
 

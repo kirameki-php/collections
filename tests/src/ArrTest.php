@@ -1123,62 +1123,62 @@ class ArrTest extends TestCase
     {
         // empty
         $list = [];
-        Arr::insert($list, 0, ['a']);
+        Arr::insertAt($list, 0, ['a']);
         self::assertSame(['a'], $list);
 
         // no values
         $list = [];
-        Arr::insert($list, 0, []);
+        Arr::insertAt($list, 0, []);
         self::assertSame([], $list);
 
         // list: at 0
         $list = [1, 2, 3, 4];
-        Arr::insert($list, 0, ['a']);
+        Arr::insertAt($list, 0, ['a']);
         self::assertSame(['a', 1, 2, 3, 4], $list);
 
         // list: at 1
         $list = [1, 2, 3, 4];
-        Arr::insert($list, 1, ['a']);
+        Arr::insertAt($list, 1, ['a']);
         self::assertSame([1, 'a', 2, 3, 4], $list);
 
         // list: at 1 multiple
         $list = [1, 2, 3, 4];
-        Arr::insert($list, 1, ['a', 'b']);
+        Arr::insertAt($list, 1, ['a', 'b']);
         self::assertSame([1, 'a', 'b', 2, 3, 4], $list);
 
         // list: out of range
         $list = [1, 2, 3, 4];
-        Arr::insert($list, 10, ['a']);
+        Arr::insertAt($list, 10, ['a']);
         self::assertSame([1, 2, 3, 4, 'a'], $list);
 
         // list: negative
         $list = [1, 2, 3, 4];
-        Arr::insert($list, -1, ['a']);
+        Arr::insertAt($list, -1, ['a']);
         self::assertSame([1, 2, 3, 4, 'a'], $list);
 
         // list: negative alt
         $list = [1, 2, 3, 4];
-        Arr::insert($list, -2, ['a']);
+        Arr::insertAt($list, -2, ['a']);
         self::assertSame([1, 2, 3, 'a', 4], $list);
 
         // assoc
         $assoc = [];
-        Arr::insert($assoc, 0, ['a' => 2]);
+        Arr::insertAt($assoc, 0, ['a' => 2]);
         self::assertSame([2], $assoc);
 
         // assoc with index overflow
         $assoc = ['a' => 1];
-        Arr::insert($assoc, 1, ['b' => 1, 'c' => 2]);
+        Arr::insertAt($assoc, 1, ['b' => 1, 'c' => 2]);
         self::assertSame(['a' => 1, 'b' => 1, 'c' => 2], $assoc);
 
         // assoc insert between
         $assoc = ['a' => 1, 'b' => 2];
-        Arr::insert($assoc, 1, ['c' => 3]);
+        Arr::insertAt($assoc, 1, ['c' => 3]);
         self::assertSame(['a' => 1, 'c' => 3, 'b' => 2], $assoc);
 
         // insert array
         $list = [];
-        Arr::insert($list, 0, [['a']]);
+        Arr::insertAt($list, 0, [['a']]);
         self::assertSame([['a']], $list);
     }
 
@@ -1187,7 +1187,7 @@ class ArrTest extends TestCase
         $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('$values\' array type (list) does not match $array\'s (map)');
         $assoc = ['a' => 1];
-        Arr::insert($assoc, 1, [1]);
+        Arr::insertAt($assoc, 1, [1]);
     }
 
     public function test_insert_with_duplicate_key(): void
@@ -1195,7 +1195,7 @@ class ArrTest extends TestCase
         $this->expectException(DuplicateKeyException::class);
         $this->expectExceptionMessage('Tried to overwrite existing key: a');
         $assoc = ['a' => 1];
-        Arr::insert($assoc, 1, ['a' => 2]);
+        Arr::insertAt($assoc, 1, ['a' => 2]);
     }
 
     public function test_intersect(): void

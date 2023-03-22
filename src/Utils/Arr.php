@@ -12,9 +12,9 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
-use Random\Randomizer;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\UnreachableException;
+use Random\Randomizer;
 use Traversable;
 use function abs;
 use function array_diff;
@@ -57,12 +57,12 @@ use function is_string;
 use function iterator_to_array;
 use function json_encode;
 use function key;
+use function Kirameki\Core\is_not_array_key;
 use function krsort;
 use function ksort;
 use function max;
 use function prev;
 use function range;
-use function Kirameki\Core\is_not_array_key;
 use function spl_object_id;
 use function uasort;
 use function uksort;
@@ -1755,7 +1755,7 @@ final class Arr
      * @template TValue
      * @param array<TKey, TValue> $array
      * [Reference] Array to be inserted.
-     * @param int $at
+     * @param int $index
      * The position where the values will be inserted.
      * @param iterable<TKey, TValue> $values
      * One or more values that will be inserted.
@@ -1765,9 +1765,9 @@ final class Arr
      * Defaults to **false**.
      * @return void
      */
-    public static function insert(
+    public static function insertAt(
         array &$array,
-        int $at,
+        int $index,
         iterable $values,
         bool $overwrite = false,
     ): void
@@ -1780,8 +1780,8 @@ final class Arr
         // Offset is off by one for negative indexes (Ex: -2 inserts at 3rd element from right).
         // So we add one to correct offset. If adding to one results in 0, we set it to max count
         // to put it at the end.
-        if ($at < 0) {
-            $at = $at === -1 ? count($array) : $at + 1;
+        if ($index < 0) {
+            $index = $index === -1 ? count($array) : $index + 1;
         }
 
         $reindex = array_is_list($array);
@@ -1792,7 +1792,7 @@ final class Arr
             $message = "\$values' array type ({$valuesType}) does not match \$array's ({$arrayType})";
             throw new TypeMismatchException($message, [
                 'array' => $array,
-                'at' => $at,
+                'index' => $index,
                 'values' => $values,
                 'overwrite' => $overwrite,
             ]);
@@ -1810,7 +1810,7 @@ final class Arr
             }
         }
 
-        $tail = array_splice($array, $at);
+        $tail = array_splice($array, $index);
 
         foreach ([$values, $tail] as $inserting) {
             foreach ($inserting as $key => $val) {
