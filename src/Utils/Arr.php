@@ -1804,7 +1804,9 @@ final class Arr
             if (self::isNotEmpty($duplicates)) {
                 throw new DuplicateKeyException("Tried to overwrite existing key: {$duplicates[0]}", [
                     'array' => $array,
+                    'index' => $index,
                     'values' => $values,
+                    'overwrite' => $overwrite,
                     'key' => $duplicates[0],
                 ]);
             }
