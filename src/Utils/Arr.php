@@ -1745,10 +1745,10 @@ final class Arr
      * Example:
      * ```php
      * $list = [1, 3];
-     * Arr::insert($list, 1, [2]); // [1, 2, 3]
+     * Arr::insertAt($list, 1, [2]); // [1, 2, 3]
      *
      * $map = ['a' => 1, 'c' => 2];
-     * Arr::insert($map, 1, ['b' => 1]); // ['a' => 1, 'b' => 1 'c' => 2]
+     * Arr::insertAt($map, 1, ['b' => 1]); // ['a' => 1, 'b' => 1 'c' => 2]
      * ```
      *
      * @template TKey of array-key
