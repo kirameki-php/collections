@@ -551,7 +551,6 @@ final class Arr
      * @param iterable<int, TKey> $keys
      * Values to be searched.
      * @return bool
-     * TODO make generator friendly
      */
     public static function containsAllKeys(
         iterable $iterable,
@@ -649,7 +648,6 @@ final class Arr
      * @param array-key $key
      * Key to check for in `$iterable`.
      * @return bool
-     * TODO make generator friendly
      */
     public static function containsKey(
         iterable $iterable,
@@ -682,10 +680,13 @@ final class Arr
         iterable $values,
     ): bool
     {
-        $array1 = self::from($iterable);
-        $array2 = self::from($values);
-
-        return array_diff($array2, $array1) === $array2;
+        $values = self::from($values);
+        foreach ($iterable as $item) {
+            if (in_array($item, $values, true)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
