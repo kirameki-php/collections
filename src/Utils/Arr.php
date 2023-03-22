@@ -183,8 +183,6 @@ final class Arr
      * @param TDefault $default
      * Value that is used when the given index did not exist.
      * @return TValue|TDefault
-     *
-     * TODO make generator friendly
      */
     public static function atOr(
         iterable $iterable,
@@ -192,12 +190,14 @@ final class Arr
         mixed $default,
     ): mixed
     {
-        $array = self::from($iterable);
-        $offset = $index >= 0 ? $index : count($array) + $index;
-        $count = 0;
+        if ($index < 0) {
+            $iterable = self::from($iterable);
+            $index = count($iterable) + $index;
+        }
 
-        foreach ($array as $val) {
-            if ($count === $offset) {
+        $count = 0;
+        foreach ($iterable as $val) {
+            if ($count === $index) {
                 return $val;
             }
             ++$count;
