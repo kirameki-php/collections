@@ -584,16 +584,19 @@ final class Arr
      * @param iterable<array-key, TValue> $values
      * Values to be searched.
      * @return bool
-     * TODO make generator friendly
      */
     public static function containsAny(
         iterable $iterable,
         iterable $values,
     ): bool
     {
-        $array1 = self::from($iterable);
-        $array2 = self::from($values);
-        return array_intersect($array2, $array1) !== self::EMPTY;
+        $values = self::from($values);
+        foreach ($iterable as $item) {
+            if (in_array($item, $values, true)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
