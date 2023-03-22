@@ -321,6 +321,7 @@ class ArrTest extends TestCase
         self::assertFalse(Arr::containsAll([], [1]), 'empty iterable');
         self::assertTrue(Arr::containsAll([1], []), 'empty values');
         self::assertTrue(Arr::containsAll([1, 2, 3], [1]), 'match one');
+        self::assertTrue(Arr::containsAll([1, 2], [1, 1, 1]), 'match same');
         self::assertTrue(Arr::containsAll([1, 2, 3], [2, 3]), 'match many');
         self::assertTrue(Arr::containsAll([1, 2, 3], [1, 2, 3]), 'match all');
         self::assertFalse(Arr::containsAll([1, 2, 3], [1, 4]), 'match one miss one');
@@ -396,6 +397,7 @@ class ArrTest extends TestCase
         self::assertTrue(Arr::containsNone([1, 2], []), 'empty values');
         self::assertTrue(Arr::containsNone([1, 2], [3]), 'no match');
         self::assertFalse(Arr::containsNone([1, 2], [2]), 'partial match');
+        self::assertFalse(Arr::containsNone([1, 2], [1, 1, 1]), 'same match');
         self::assertFalse(Arr::containsNone([1, 2], [1, 2]), 'full match');
         self::assertFalse(Arr::containsNone(['a' => 1, 'b' => 2], [1, 2]), 'map iterable');
         self::assertFalse(Arr::containsNone(['a' => 1, 'b' => 2], ['y' => 1, 'z' => 2]), 'map both');
