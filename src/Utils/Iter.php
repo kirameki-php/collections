@@ -536,7 +536,7 @@ final class Iter
                 ? $window[] = $val
                 : $window[$key] = $val;
 
-            // backfill until window size is at $size
+            // Backfill until window size is at $size
             if ($filled === false) {
                 $filled = count($window) === $size;
                 if ($filled === false) {

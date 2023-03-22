@@ -111,7 +111,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      * @param Randomizer|null $randomizer
      * @return int|null
      */
-    public function sampleIndexOrNull(?Randomizer $randomizer = null): mixed
+    public function sampleIndexOrNull(?Randomizer $randomizer = null): ?int
     {
         /** @var int|null needed for some reason by phpstan */
         return Arr::sampleKeyOrNull($this, $randomizer);

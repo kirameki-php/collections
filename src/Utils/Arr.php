@@ -88,7 +88,7 @@ final class Arr
 
     /**
      * Append value(s) to the end of the given iterable.
-     * The iterable must be convertable to a list.
+     * The iterable must be convertible to a list.
      * Will throw `TypeMismatchException` if map is given.
      *
      * Example:
@@ -1457,7 +1457,7 @@ final class Arr
     }
 
     /**
-     * Collapse the given iterable upto the given `$depth` and turn it into a
+     * Collapse the given iterable up to the given `$depth` and turn it into a
      * single dimensional array.
      *
      * @template TKey of array-key
@@ -3090,7 +3090,7 @@ final class Arr
 
     /**
      * Prepend value(s) to the front of `$iterable`.
-     * The iterable must be convertable to a list.
+     * The iterable must be convertible to a list.
      * Throws `TypeMismatchException` if map is given.
      *
      * Example:
