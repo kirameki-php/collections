@@ -17,7 +17,6 @@ use Kirameki\Core\Exceptions\UnreachableException;
 use Random\Randomizer;
 use Traversable;
 use function abs;
-use function array_diff;
 use function array_diff_ukey;
 use function array_fill;
 use function array_intersect;
@@ -29,6 +28,7 @@ use function array_map;
 use function array_pop;
 use function array_push;
 use function array_reverse;
+use function array_search;
 use function array_shift;
 use function array_splice;
 use function array_udiff;
@@ -73,7 +73,6 @@ use const SORT_REGULAR;
 
 /**
  * TODO insertAfter/insertBefore
- * TODO zip
  */
 final class Arr
 {
@@ -521,16 +520,28 @@ final class Arr
      * @param iterable<array-key, TValue> $values
      * Values to be searched.
      * @return bool
-     * TODO make generator friendly
      */
     public static function containsAll(
         iterable $iterable,
         iterable $values,
     ): bool
     {
-        $array1 = self::from($iterable);
-        $array2 = self::from($values);
-        return array_diff($array2, $array1) === self::EMPTY;
+        $values = self::unique(self::from($values));
+
+        if (count($values) === 0) {
+            return true;
+        }
+
+        foreach ($iterable as $item) {
+            $key = array_search($item, $values, true);
+            if ($key !== false) {
+                unset($values[$key]);
+                if (count($values) === 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -927,7 +938,7 @@ final class Arr
     ): array
     {
         if ($amount < 0) {
-            throw new InvalidArgumentException("Expected \$amount >= 0. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
                 'iterable' => $iterable,
                 'amount' => $amount,
             ]);
@@ -4644,9 +4655,7 @@ final class Arr
         int $flag = SORT_REGULAR,
     ): array
     {
-        $copy = self::from($iterable);
-        ksort($copy, $flag);
-        return $copy;
+        return self::sortByKey($iterable, true, $flag);
     }
 
     /**
@@ -4672,9 +4681,7 @@ final class Arr
         int $flag = SORT_REGULAR,
     ): array
     {
-        $copy = self::from($iterable);
-        krsort($copy, $flag);
-        return $copy;
+        return self::sortByKey($iterable, false, $flag);
     }
 
     /**
@@ -4921,7 +4928,7 @@ final class Arr
     ): array
     {
         if ($amount < 0) {
-            throw new InvalidArgumentException("Expected \$amount >= 0. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
                 'iterable' => $iterable,
                 'amount' => $amount,
             ]);
@@ -5165,6 +5172,7 @@ final class Arr
                     'value' => $val,
                 ]),
             };
+        // @codeCoverageIgnoreStart
         } catch (JsonException $e) {
             throw new UnreachableException(
                 message: 'json_encode should never throw an error here but it did.',
@@ -5172,6 +5180,7 @@ final class Arr
                 previous: $e,
             );
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**

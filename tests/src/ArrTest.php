@@ -578,7 +578,7 @@ class ArrTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
-        Arr::dropFirst(['a' => 1], -1);
+        Arr::dropLast(['a' => 1], -1);
     }
 
     public function test_dropUntil(): void
@@ -1627,6 +1627,13 @@ class ArrTest extends TestCase
         Arr::min([]);
     }
 
+    public function test_min_no_match_with_empty(): void
+    {
+        $this->expectException(NoMatchFoundException::class);
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        Arr::min([], fn() => true);
+    }
+
     public function test_min_with_NAN(): void
     {
         $this->expectException(InvalidElementException::class);
@@ -1670,6 +1677,13 @@ class ArrTest extends TestCase
         $this->expectException(EmptyNotAllowedException::class);
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         Arr::minMax([]);
+    }
+
+    public function test_minMax_no_match_with_empty(): void
+    {
+        $this->expectException(NoMatchFoundException::class);
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        Arr::minMax([], fn() => true);
     }
 
     public function test_minMaxOrNull(): void
@@ -2062,6 +2076,14 @@ class ArrTest extends TestCase
         $list = [];
         Arr::push($list, null, false, 0, '0', 'false');
         self::assertSame([null, false, 0, '0', 'false'], $list, 'falsy');
+    }
+
+    public function test_push_non_list(): void
+    {
+        $this->expectException(TypeMismatchException::class);
+        $this->expectExceptionMessage('$array must be a list, map given.');
+        $map = ['a' => 1, 'b' => 2];
+        Arr::push($map, 1);
     }
 
     public function test_reduce(): void
@@ -3136,6 +3158,13 @@ class ArrTest extends TestCase
         Arr::sum(['a', 'b']);
     }
 
+    public function test_sum_with_NAN(): void
+    {
+        $this->expectException(InvalidElementException::class);
+        $this->expectExceptionMessage('$iterable cannot contain NAN');
+        Arr::sum([NAN]);
+    }
+
     public function test_symDiff(): void
     {
         // empty array1
@@ -3223,7 +3252,7 @@ class ArrTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
-        Arr::takeFirst(['a' => 1], -1);
+        Arr::takeLast(['a' => 1], -1);
     }
 
     public function test_takeUntil(): void
