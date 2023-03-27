@@ -925,16 +925,11 @@ final class Arr
      * Iterable to be traversed.
      * @param int $amount
      * Amount of items to be dropped from the end. Must be >= 0.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
      * @return array<TKey, TValue>
      */
     public static function dropLast(
         iterable $iterable,
         int $amount,
-        ?bool $reindex = null,
     ): array
     {
         if ($amount < 0) {
@@ -946,8 +941,7 @@ final class Arr
 
         $array = self::from($iterable);
         $length = count($array);
-        $reindex ??= array_is_list($array);
-        return iterator_to_array(Iter::slice($array, 0, max(0, $length - $amount), $reindex));
+        return iterator_to_array(Iter::slice($array, 0, max(0, $length - $amount)));
     }
 
     /**
