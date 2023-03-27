@@ -6,6 +6,7 @@ use ArrayAccess;
 use Closure;
 use Countable;
 use JsonSerializable;
+use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
@@ -25,6 +26,20 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      * @use MutatesSelf<int, TValue>
      */
     use MutatesSelf;
+
+    /**
+     * @param iterable<int, mixed> $items
+     */
+    public function __construct(iterable $items = [])
+    {
+        if (is_array($items) && !Arr::isList($items)) {
+            throw new InvalidKeyException('$items must only contain integer for key.', [
+                'items' => $items,
+            ]);
+        }
+
+        parent::__construct($items);
+    }
 
     /**
      * @param int $times
@@ -133,7 +148,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      */
     protected function reindex(): bool
     {
-        return false;
+        return true;
     }
 
     /**

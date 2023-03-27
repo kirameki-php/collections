@@ -299,7 +299,7 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      */
     protected function reindex(): bool
     {
-        return true;
+        return false;
     }
 
     /**
