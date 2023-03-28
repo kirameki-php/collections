@@ -6,7 +6,7 @@ use Closure;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
-use Kirameki\Dumper\Config;
+use Kirameki\Dumper\Config as DumperConfig;
 use Random\Randomizer;
 use function dump;
 use function is_iterable;
@@ -187,10 +187,10 @@ trait Enumerable
     }
 
     /**
-     * @param Config|null $config
+     * @param DumperConfig|null $config
      * @return $this
      */
-    public function dump(?Config $config = null): static
+    public function dump(?DumperConfig $config = null): static
     {
         dump($this, $config);
         return $this;
