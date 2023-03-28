@@ -3128,7 +3128,6 @@ final class Arr
             ]);
         }
         if (!array_is_list($value)) {
-            // TODO value is a map, throw exception
             $value = array_values($value);
         }
         array_unshift($array, ...$value);
