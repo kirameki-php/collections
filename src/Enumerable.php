@@ -165,7 +165,7 @@ trait Enumerable
      */
     public function dropLast(int $amount): static
     {
-        return $this->instantiate(Arr::dropLast($this, $amount, $this->reindex()));
+        return $this->instantiate(Arr::dropLast($this, $amount));
     }
 
     /**
@@ -851,11 +851,11 @@ trait Enumerable
         ?Closure $fallback = null,
     ): static
     {
-        $fallback ??= static fn($self) => $self;
-
         if ($bool instanceof Closure) {
             $bool = $bool($this);
         }
+
+        $fallback ??= static fn($self): static => $self;
 
         return $bool
             ? $callback($this)
@@ -890,11 +890,16 @@ trait Enumerable
 
     /**
      * @param int $size
-     * @return static
+     * @return Vec<static>
      */
-    public function windows(int $size): static
+    public function windows(int $size): Vec
     {
-        return $this->instantiate(Iter::windows($this, $size, $this->reindex()));
+        $generator = (function() use ($size) {
+            foreach (Iter::windows($this, $size, $this->reindex()) as $window) {
+                yield $this->instantiate($window);
+            }
+        })();
+        return $this->newVec($generator);
     }
 
     /**
