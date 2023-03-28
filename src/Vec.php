@@ -96,21 +96,21 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @param int<0, max> $times
-     * @return static
-     */
-    public function repeat(int $times): static
-    {
-        return $this->instantiate(Arr::repeat($this, $times));
-    }
-
-    /**
      * @param mixed ...$value
      * @return static
      */
     public function prepend(mixed ...$value): static
     {
         return $this->instantiate(Arr::prepend($this, ...$value));
+    }
+
+    /**
+     * @param int<0, max> $times
+     * @return static
+     */
+    public function repeat(int $times): static
+    {
+        return $this->instantiate(Arr::repeat($this, $times));
     }
 
     /**

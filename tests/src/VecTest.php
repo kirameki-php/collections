@@ -5,6 +5,8 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Random\Engine\Xoshiro256StarStar;
+use Random\Randomizer;
 
 class VecTest extends TestCase
 {
@@ -83,6 +85,15 @@ class VecTest extends TestCase
         self::assertSame([0, 1, 1], $this->vec([0])->pad(3, 1)->toArray(), 'pad left');
     }
 
+    public function test_prepend(): void
+    {
+        self::assertSame([], $this->vec()->prepend()->toArray(), 'empty prepend on empty array');
+        self::assertSame([1], $this->vec()->prepend(1)->toArray(), 'prepend on empty array');
+        self::assertSame([1], $this->vec([1])->prepend()->toArray(), 'empty prepend');
+        self::assertSame([1, 2], $this->vec([2])->prepend(1)->toArray(), 'prepend one');
+        self::assertSame([1, 1, 2], $this->vec([2])->prepend(1, 1)->toArray(), 'prepend multi');
+    }
+
     public function test_repeat(): void
     {
         self::assertSame([], $this->vec()->repeat(2)->toArray(), 'empty repeat');
@@ -106,5 +117,14 @@ class VecTest extends TestCase
         self::assertSame([1, 3], $this->vec([1, 2, 3])->filter(fn($n) => (bool)($n % 2))->toArray(), 'with filter');
         self::assertSame([2], $this->vec([1, 2, 3])->only([1])->toArray(), 'with only');
         self::assertSame([2, 1], $this->vec([1, 2])->reverse()->toArray(), 'with reverse');
+    }
+
+    public function test_sampleIndex(): void
+    {
+        self::assertLessThanOrEqual(2, $this->vec([1, 2, 3])->sampleIndex(), 'sample index');
+
+        $randomizer = new Randomizer(new Xoshiro256StarStar(seed: 1));
+        $index = $this->vec([10, 20, 30])->sampleIndex($randomizer);
+        self::assertSame(1, $index, 'sample index with randomizer');
     }
 }
