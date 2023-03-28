@@ -2935,6 +2935,7 @@ final class Arr
      * Iterable to be traversed.
      * @param int $length
      * Apply padding until the array size reaches the given length.
+     * If the given length is negative, padding will be applied to the left.
      * @param TValue $value
      * Value inserted into each padding.
      * @return array<int, TValue>
@@ -2963,6 +2964,7 @@ final class Arr
                 ? self::merge($array, $repeated)
                 : self::merge($repeated, $array);
         }
+
         return $array;
     }
 

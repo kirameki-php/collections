@@ -4,6 +4,7 @@ namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Vec;
+use Kirameki\Core\Exceptions\InvalidArgumentException;
 
 class VecTest extends TestCase
 {
@@ -70,6 +71,32 @@ class VecTest extends TestCase
     {
         $mapped = $this->vec([1, 2])->map(fn($v): int => $v * 2);
         self::assertSame([2, 4], $mapped->toArray());
+    }
+
+    public function test_pad(): void
+    {
+        self::assertSame([], $this->vec()->pad(0, 1)->toArray(), 'zero pad');
+        self::assertSame([1, 1], $this->vec()->pad(2, 1)->toArray(), 'on empty');
+        self::assertSame([0], $this->vec([0])->pad(1, 1)->toArray(), 'no pad');
+        self::assertSame([0], $this->vec([0])->pad(-1, 1)->toArray(), 'negative pad');
+        self::assertSame([1, 1, 0], $this->vec([0])->pad(-3, 1)->toArray(), 'negative pad');
+        self::assertSame([0, 1, 1], $this->vec([0])->pad(3, 1)->toArray(), 'pad left');
+    }
+
+    public function test_repeat(): void
+    {
+        self::assertSame([], $this->vec()->repeat(2)->toArray(), 'empty repeat');
+        self::assertSame([1], $this->vec([1])->repeat(1)->toArray(), 'repeat single');
+        self::assertSame([1, 2], $this->vec([1, 2])->repeat(1)->toArray(), 'repeat multiple');
+        self::assertSame([1, 1], $this->vec([1])->repeat(2)->toArray(), 'repeat x2');
+        self::assertSame([1, 2, 1, 2], $this->vec([1, 2])->repeat(2)->toArray(), 'repeat multi x2');
+    }
+
+    public function test_repeat_negative(): void
+    {
+        $this->expectExceptionMessage('Expected: $times >= 0. Got: -1');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1])->repeat(-1);
     }
 
     public function test_reindex(): void

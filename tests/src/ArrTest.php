@@ -1773,7 +1773,6 @@ class ArrTest extends TestCase
 
         // not padded
         self::assertSame([1], Arr::pad([1], 0, 1));
-        self::assertSame([1], Arr::pad([1], -1, 0));
 
         // pad right
         self::assertSame([0], Arr::pad([], 1, 0));
