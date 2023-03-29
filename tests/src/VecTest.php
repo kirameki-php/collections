@@ -2,11 +2,13 @@
 
 namespace Tests\Kirameki\Collections;
 
+use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
+use function range;
 
 class VecTest extends TestCase
 {
@@ -126,5 +128,44 @@ class VecTest extends TestCase
         $randomizer = new Randomizer(new Xoshiro256StarStar(seed: 1));
         $index = $this->vec([10, 20, 30])->sampleIndex($randomizer);
         self::assertSame(1, $index, 'sample index with randomizer');
+    }
+
+    public function test_sampleIndex_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec()->sampleIndex();
+    }
+
+    public function test_sampleIndexOrNull(): void
+    {
+        self::assertLessThanOrEqual(2, $this->vec([1, 2, 3])->sampleIndexOrNull(), 'sample index');
+
+        self::assertNull($this->vec()->sampleIndexOrNull(), 'sample empty array');
+
+        $randomizer = new Randomizer(new Xoshiro256StarStar(seed: 1));
+        $index = $this->vec([10, 20, 30])->sampleIndexOrNull($randomizer);
+        self::assertSame(1, $index, 'sample index with randomizer');
+    }
+
+    public function test_sampleIndexes(): void
+    {
+        self::assertSame([], $this->vec([1])->sampleIndexes(0)->toArray(), 'sample zero');
+        self::assertSame([0], $this->vec([1])->sampleIndexes(1)->toArray(), 'sample one');
+        self::assertSame([0, 0], $this->vec([1])->sampleIndexes(2, true)->toArray(), 'sample overflow with replacement');
+
+        $randomizer = new Randomizer(new Xoshiro256StarStar(seed: 1));
+        self::assertSame([0, 1], $this->vec([10, 20])->sampleIndexes(2, false, $randomizer)->toArray(), 'size == amount');
+        self::assertSame([2, 1], $this->vec([10, 20, 30])->sampleIndexes(2, false, $randomizer)->toArray(), 'size > amount');
+        self::assertSame([1, 1], $this->vec([10, 20])->sampleIndexes(2, true, $randomizer)->toArray(), 'size == amount with replacement');
+        self::assertSame([0, 0], $this->vec([10, 20])->sampleIndexes(2, true, $randomizer)->toArray(), 'size > amount with replacement');
+        self::assertSame([1, 1, 0], $this->vec([10, 20])->sampleIndexes(3, true, $randomizer)->toArray(), 'size < amount with replacement');
+    }
+
+    public function test_sampleIndexes_overflow(): void
+    {
+        $this->expectExceptionMessage('$amount must be between 0 and size of $iterable.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1])->sampleIndexes(2);
     }
 }

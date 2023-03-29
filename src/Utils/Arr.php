@@ -3839,7 +3839,7 @@ final class Arr
 
     /**
      * Returns a random key picked from `$iterable`.
-     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     * Returns **null** if `$iterable` is empty.
      *
      * Example:
      * ```php
@@ -3907,10 +3907,17 @@ final class Arr
     {
         $randomizer ??= self::getDefaultRandomizer();
         $array = self::from($iterable);
-        $max = count($array);
+        $size = count($array);
 
-        if ($amount < 0 || $amount > $max) {
-            throw new InvalidArgumentException('$amount must be between 0 and size of $iterable', [
+        if ($size === 0) {
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
+                'iterable' => $iterable,
+                'randomizer' => $randomizer,
+            ]);
+        }
+
+        if ($amount < 0 || (!$replace && $amount > $size)) {
+            throw new InvalidArgumentException('$amount must be between 0 and size of $iterable.', [
                 'iterable' => $iterable,
                 'amount' => $amount,
                 'replace' => $replace,

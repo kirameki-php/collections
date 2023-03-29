@@ -2521,41 +2521,29 @@ class ArrTest extends TestCase
         );
 
         self::assertSame(
-            [],
-            Arr::sampleKeys([], 0, false, $randomizer),
-            'empty without replacement',
-        );
-
-        self::assertSame(
-            [],
-            Arr::sampleKeys([], 0, true, $randomizer),
-            'empty with replacement',
-        );
-
-        self::assertSame(
-            [0],
-            Arr::sampleKeys(range(0, 10), 1, true, FixedNumEngine::inRandomizer()),
-            'custom randomizer with replacement',
-        );
-
-        self::assertSame(
             [0],
             Arr::sampleKeys(range(0, 10), 1, false, FixedNumEngine::inRandomizer()),
             'custom randomizer without replacement',
+        );
+
+        self::assertSame(
+            [0, 0],
+            Arr::sampleKeys(['a'], 2, true),
+            '$amount bigger than $iterable with replacement',
         );
     }
 
     public function test_sampleKeys_without_replacement_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('$amount must be between 0 and size of $iterable');
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
         Arr::sampleKeys([], 1);
     }
 
     public function test_sampleKeys_with_replacement_empty(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('$amount must be between 0 and size of $iterable');
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
         Arr::sampleKeys([], 1, true);
     }
 
@@ -2564,13 +2552,6 @@ class ArrTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$amount must be between 0 and size of $iterable');
         Arr::sampleKeys(['a'], 2);
-    }
-
-    public function test_sampleKeys_with_replacement_amount_bigger_than_array(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('$amount must be between 0 and size of $iterable');
-        Arr::sampleKeys(['a'], 2, true);
     }
 
     public function test_sampleMany(): void
@@ -2624,18 +2605,6 @@ class ArrTest extends TestCase
 
         self::assertSame(
             [],
-            Arr::sampleMany([], 0, false, $randomizer),
-            'empty without replacement',
-        );
-
-        self::assertSame(
-            [],
-            Arr::sampleMany([], 0, true, $randomizer),
-            'empty with replacement',
-        );
-
-        self::assertSame(
-            [],
             Arr::sampleMany([1], 0, false, $randomizer),
             'zero amount without replacement',
         );
@@ -2657,6 +2626,26 @@ class ArrTest extends TestCase
             Arr::sampleMany(range(0, 10), 1, false, FixedNumEngine::inRandomizer()),
             'custom randomizer without replacement',
         );
+
+        self::assertSame(
+            ['a', 'a'],
+            Arr::sampleMany(['a'], 2, true),
+            '$amount bigger than size of $iterable with replacement',
+        );
+    }
+
+    public function test_sampleMany_empty_without_replacement(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        Arr::sampleMany([], 1);
+    }
+
+    public function test_sampleMany_empty_with_replacement(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        Arr::sampleMany([], 1, true);
     }
 
     public function test_sampleMany_amount_bigger_than_array_without_replacement(): void
@@ -2664,13 +2653,6 @@ class ArrTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$amount must be between 0 and size of $iterable');
         Arr::sampleMany(['a'], 2);
-    }
-
-    public function test_sampleMany_amount_bigger_than_array_with_replacement(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('$amount must be between 0 and size of $iterable');
-        Arr::sampleMany(['a'], 2, true);
     }
 
     public function test_sampleOr(): void
