@@ -12,6 +12,7 @@ use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
 use function assert;
 use function is_array;
+use function is_int;
 use const PHP_INT_MAX;
 
 /**
@@ -25,7 +26,12 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     /**
      * @use MutatesSelf<int, TValue>
      */
-    use MutatesSelf;
+    use MutatesSelf {
+        offsetExists as traitOffsetExists;
+        offsetGet as traitOffsetGet;
+        offsetSet as traitOffsetSet;
+        offsetUnset as traitOffsetUnset;
+    }
 
     /**
      * @param iterable<int, mixed> $items
@@ -63,6 +69,47 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     public function jsonSerialize(): array
     {
         return Arr::from($this);
+    }
+
+    /**
+     * @param int $offset
+     * @return bool
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        assert(is_int($offset));
+        return self::traitOffsetExists($offset);
+    }
+
+    /**
+     * @param int $offset
+     * @return TValue
+     */
+    public function offsetGet(mixed $offset): mixed
+    {
+        assert(is_int($offset));
+        return self::traitOffsetGet($offset);
+    }
+
+    /**
+     * @param int|null $offset
+     * @param TValue $value
+     * @return void
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        assert(is_int($offset));
+        self::traitOffsetSet($offset, $value);
+    }
+
+    /**
+     * @param int $offset
+     * @return void
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        assert(is_int($offset));
+        self::traitOffsetUnset($offset);
     }
 
     /**
