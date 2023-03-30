@@ -1231,12 +1231,12 @@ final class Arr
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool|TValue $condition
      * User defined condition callback. The callback must return a boolean value.
-     * @return int|null
+     * @return int
      */
     public static function firstIndex(
         iterable $iterable,
         mixed $condition,
-    ): ?int
+    ): int
     {
         $result = self::firstIndexOrNull($iterable, $condition);
 
@@ -1779,7 +1779,6 @@ final class Arr
     {
         // NOTE: This used to be simply array_splice($array, $index, 0, $value) but passing replacement
         // in the 4th argument does not preserve keys so implementation was changed to the current one.
-
         $values = self::from($values);
 
         // Offset is off by one for negative indexes (Ex: -2 inserts at 3rd element from right).
