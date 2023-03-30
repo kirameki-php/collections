@@ -1742,7 +1742,7 @@ final class Arr
     }
 
     /**
-     * Takes an array (reference) and insert given values at the given position.
+     * Takes an `$array` (reference) and insert `$values` at the given `$index`.
      *
      * Throws `DuplicateKeyException` when the keys in `$values` already exist in `$array`.
      * Change the `overwrite` argument to **true** to suppress this error.
