@@ -130,12 +130,11 @@ class VecTest extends TestCase
 
     public function test_append(): void
     {
+        self::assertSame([3], $this->vec()->append(3)->toArray(), 'on empty');
+        self::assertSame([1], $this->vec([1])->append()->toArray(), 'append nothing');
         self::assertSame([1, 2, 3], $this->vec([1, 2])->append(3)->toArray());
-    }
-
-    public function test_append_multiple_variables(): void
-    {
-        self::assertSame([1, 2, 3, 3, 4], $this->vec([1, 2])->append(3, 3, 4)->toArray());
+        self::assertSame([1, 2, 3, 3, 4], $this->vec([1, 2])->append(3, 3, 4)->toArray(), 'append multiple');
+        self::assertSame([1, 2, 3], $this->vec([1, 2])->append(a: 3)->toArray(), 'append named');
     }
 
     public function test_map():void
