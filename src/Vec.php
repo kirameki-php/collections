@@ -12,8 +12,11 @@ use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
 use function assert;
+use function gettype;
 use function is_array;
 use function is_int;
+use function is_null;
+use function sprintf;
 use const PHP_INT_MAX;
 
 /**
@@ -208,11 +211,11 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
         return $this->items;
     }
 
-    protected function ensureOffsetIsIndex(mixed $offset): int
+    protected function ensureOffsetIsIndex(mixed $offset): ?int
     {
-        if (!is_int($offset)) {
-            throw new InvalidKeyException(sprintf('Invalid key type %s, expected int.', gettype($offset)));
+        if (is_int($offset) || is_null($offset)) {
+            return $offset;
         }
-        return $offset;
+        throw new InvalidKeyException('Expected: $offset\'s type to be int|null. Got: ' . gettype($offset));
     }
 }

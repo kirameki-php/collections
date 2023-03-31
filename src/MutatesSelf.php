@@ -81,7 +81,7 @@ trait MutatesSelf
     public function offsetUnset(mixed $offset): void
     {
         $ref = &$this->getItemsAsRef();
-        unset($ref[$offset]);
+        Arr::removeKey($ref, $offset);
     }
 
     /**
