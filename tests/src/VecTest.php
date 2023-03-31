@@ -134,7 +134,7 @@ class VecTest extends TestCase
         self::assertSame([1], $this->vec([1])->append()->toArray(), 'append nothing');
         self::assertSame([1, 2, 3], $this->vec([1, 2])->append(3)->toArray());
         self::assertSame([1, 2, 3, 3, 4], $this->vec([1, 2])->append(3, 3, 4)->toArray(), 'append multiple');
-        self::assertSame([1, 2, 3], $this->vec([1, 2])->append(a: 3)->toArray(), 'append named');
+        self::assertSame([1, 2, 3], $this->vec([1, 2])->append(a: 3)->toArray(), 'named args');
     }
 
     public function test_map():void
@@ -160,6 +160,7 @@ class VecTest extends TestCase
         self::assertSame([1], $this->vec([1])->prepend()->toArray(), 'empty prepend');
         self::assertSame([1, 2], $this->vec([2])->prepend(1)->toArray(), 'prepend one');
         self::assertSame([1, 1, 2], $this->vec([2])->prepend(1, 1)->toArray(), 'prepend multi');
+        self::assertSame([1, 2], $this->vec([2])->prepend(a: 1)->toArray(), 'named args');
     }
 
     public function test_repeat(): void
