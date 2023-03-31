@@ -7,6 +7,7 @@ use Closure;
 use Countable;
 use JsonSerializable;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
@@ -39,7 +40,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     public function __construct(iterable $items = [])
     {
         if (is_array($items) && !Arr::isList($items)) {
-            throw new InvalidKeyException('$items must only contain integer for key.', [
+            throw new TypeMismatchException('$items must be a list, map given.', [
                 'items' => $items,
             ]);
         }
@@ -77,7 +78,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      */
     public function offsetExists(mixed $offset): bool
     {
-        assert(is_int($offset));
+        $this->ensureOffsetIsIndex($offset);
         return self::traitOffsetExists($offset);
     }
 
@@ -87,7 +88,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      */
     public function offsetGet(mixed $offset): mixed
     {
-        assert(is_int($offset));
+        $this->ensureOffsetIsIndex($offset);
         return self::traitOffsetGet($offset);
     }
 
@@ -98,7 +99,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        assert(is_int($offset));
+        $this->ensureOffsetIsIndex($offset);
         self::traitOffsetSet($offset, $value);
     }
 
@@ -108,7 +109,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      */
     public function offsetUnset(mixed $offset): void
     {
-        assert(is_int($offset));
+        $this->ensureOffsetIsIndex($offset);
         self::traitOffsetUnset($offset);
     }
 
@@ -205,5 +206,13 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     {
         assert(is_array($this->items));
         return $this->items;
+    }
+
+    protected function ensureOffsetIsIndex(mixed $offset): int
+    {
+        if (!is_int($offset)) {
+            throw new InvalidKeyException(sprintf('Invalid key type %s, expected int.', gettype($offset)));
+        }
+        return $offset;
     }
 }

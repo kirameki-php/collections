@@ -4,6 +4,7 @@ namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
@@ -45,8 +46,8 @@ class VecTest extends TestCase
 
     public function test_constructor_non_list(): void
     {
-        $this->expectExceptionMessage('$items must only contain integer for key.');
-        $this->expectException(InvalidKeyException::class);
+        $this->expectExceptionMessage('$items must be a list, map given.');
+        $this->expectException(TypeMismatchException::class);
         $this->vec(['a' => 1]);
     }
 
@@ -59,6 +60,72 @@ class VecTest extends TestCase
     public function test_jsonSerialize(): void
     {
         self::assertSame([1, 2], $this->vec([1, 2])->jsonSerialize());
+    }
+
+    public function offsetExists(): void
+    {
+        self::assertTrue(isset($this->vec([1, 2])[0]));
+        self::assertFalse(isset($this->vec([1, 2])[2]));
+    }
+
+    public function offsetExists_non_int_access(): void
+    {
+        $this->expectExceptionMessage('Invalid key type, expected int, got string.');
+        $this->expectException(InvalidKeyException::class);
+        isset($this->vec([1, 2])['0']);
+    }
+
+    public function offsetGet(): void
+    {
+        self::assertTrue($this->vec([1, 2])[0]);
+        self::assertFalse($this->vec([1, 2])[2]);
+    }
+
+    public function offsetGet_non_int_access(): void
+    {
+        $this->expectExceptionMessage('Invalid key type, expected int, got string.');
+        $this->expectException(InvalidKeyException::class);
+        $this->vec([1, 2])['0'];
+    }
+
+    public function offsetSet(): void
+    {
+        $vec = $this->vec([1, 2]);
+        $vec[0] = 3;
+        self::assertSame([3, 2], $vec->toArray(), 'Overwriting existing value');
+
+        $vec = $this->vec([1, 2]);
+        $vec[] = 3;
+        self::assertSame([1, 2, 3], $vec->toArray(), 'Appending to the end');
+    }
+
+    public function offsetSet_non_int_access(): void
+    {
+        $this->expectExceptionMessage('Invalid key type, expected int, got string.');
+        $this->expectException(InvalidKeyException::class);
+        $this->vec([1, 2])['0'] = 3;
+    }
+
+    public function offsetUnset(): void
+    {
+        $vec = $this->vec([1, 2]);
+        unset($vec[0]);
+        self::assertSame([2], $vec->toArray(), 'Unset first element');
+
+        $vec = $this->vec([1, 2, 3]);
+        unset($vec[1]);
+        self::assertSame([1, 3], $vec->toArray(), 'Unset middle element');
+
+        $vec = $this->vec([1, 2]);
+        unset($vec[2]);
+        self::assertSame([1, 2], $vec->toArray(), 'Unset non-existing element');
+    }
+
+    public function offsetUnset_non_int_access(): void
+    {
+        $this->expectExceptionMessage('Invalid key type, expected int, got string.');
+        $this->expectException(InvalidKeyException::class);
+        unset($this->vec([1, 2])['0']);
     }
 
     public function test_append(): void
