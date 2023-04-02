@@ -3,6 +3,7 @@
 namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
+use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Vec;
@@ -80,10 +81,9 @@ class VecTest extends TestCase
     public function test_offsetGet(): void
     {
         self::assertSame(1, $this->vec([1, 2])[0]);
-        self::assertSame(null, $this->vec([1, 2])[2]);
+        self::assertSame('a', $this->vec([1, 2])[2] ?? 'a', 'Null coalescing');
 
         self::assertSame(1, $this->vec([1, 2])->offsetGet(0));
-        self::assertSame(null, $this->vec([1, 2])->offsetGet(2));
     }
 
     public function test_offsetGet_non_int_access(): void
@@ -117,6 +117,14 @@ class VecTest extends TestCase
         $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string');
         $this->expectException(InvalidKeyException::class);
         $this->vec([1, 2])['0'] = 3;
+    }
+
+    public function test_offsetSet_assignment_out_of_bounds(): void
+    {
+        $this->expectExceptionMessage('Can not assign to a non-existing index. (size: 2 index: 3)');
+        $this->expectException(IndexOutOfBoundsException::class);
+        $vec = $this->vec([1, 2]);
+        $vec[3] = 3;
     }
 
     public function test_offsetUnset(): void

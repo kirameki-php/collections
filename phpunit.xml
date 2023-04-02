@@ -5,7 +5,10 @@
         executionOrder="depends,defects"
         colors="true"
         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
-        cacheDirectory="/tmp/.phpunit.cache">
+        cacheDirectory="/tmp/.phpunit.cache"
+        displayDetailsOnTestsThatTriggerWarnings="true"
+        failOnWarning="true"
+>
   <coverage>
     <include>
       <directory suffix=".php">./src</directory>

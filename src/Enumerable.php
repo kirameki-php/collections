@@ -911,7 +911,12 @@ trait Enumerable
     protected function asArrayRecursive(iterable $items, int $depth, bool $validate = false): array
     {
         if ($validate && $depth < 1) {
-            throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}");
+            throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}", [
+                'this' => $this,
+                'items' => $items,
+                'depth' => $depth,
+                'validate' => $validate,
+            ]);
         }
 
         return Arr::map($items, function($item) use ($depth) {

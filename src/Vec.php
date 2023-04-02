@@ -6,12 +6,14 @@ use ArrayAccess;
 use Closure;
 use Countable;
 use JsonSerializable;
+use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
 use function assert;
+use function count;
 use function gettype;
 use function is_array;
 use function is_int;
@@ -103,6 +105,17 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->ensureOffsetIsIndex($offset);
+
+        $ref = $this->getItemsAsRef();
+        $size = count($ref);
+        if ($offset > $size) {
+            throw new IndexOutOfBoundsException("Can not assign to a non-existing index. (size: {$size} index: {$offset})", [
+                'this' => $this,
+                'offset' => $offset,
+                'size' => $size,
+            ]);
+        }
+
         self::traitOffsetSet($offset, $value);
     }
 
@@ -216,6 +229,12 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
         if (is_int($offset) || is_null($offset)) {
             return $offset;
         }
-        throw new InvalidKeyException('Expected: $offset\'s type to be int|null. Got: ' . gettype($offset));
+
+        $type = gettype($offset);
+        throw new InvalidKeyException("Expected: \$offset's type to be int|null. Got: {$type}", [
+            'this' => $this,
+            'offset' => $offset,
+            'type' => $type,
+        ]);
     }
 }
