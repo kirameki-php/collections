@@ -163,7 +163,7 @@ final class Arr
 
     /**
      * Returns the item at the given index.
-     * Default value is returned if the given index does not exist.
+     * Returns `$default` if the given index does not exist.
      *
      * Example:
      * ```php

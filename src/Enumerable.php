@@ -20,12 +20,21 @@ use const SORT_REGULAR;
 trait Enumerable
 {
     /**
+     * On certain operations, there are options to reindex the array or not.
+     * This is a helper method to determine whether the array should be re-indexed.
+     * For example, when you remove an item from the array, the array should be
+     * re-indexed if it is a vector (Vec), but not when it is a hash-table (Map).
+     *
      * @return bool
      */
     abstract protected function reindex(): bool;
 
     /**
+     * Returns the item at the given index.
+     * Throws `IndexOutOfBoundsException` if the index does not exist.
+     *
      * @param int $index
+     * Index of iterable starting with 0. Negative index will traverse from tail.
      * @return TValue
      */
     public function at(int $index)
@@ -34,9 +43,14 @@ trait Enumerable
     }
 
     /**
+     * Returns the item at the given index.
+     * Returns `$default` if the given index does not exist.
+     *
      * @template TDefault
      * @param int $index
+     * Index of iterable starting with 0. Negative index will traverse from tail.
      * @param TDefault $default
+     * Value that is used when the given index did not exist.
      * @return TValue|TDefault
      */
     public function atOr(int $index, mixed $default)
@@ -45,7 +59,11 @@ trait Enumerable
     }
 
     /**
+     * Returns the item at the given index.
+     * Returns **null** if the given index does not exist.
+     *
      * @param int $index
+     * Index of iterable starting with 0. Negative index will traverse from tail.
      * @return TValue|null
      */
     public function atOrNull(int $index)
