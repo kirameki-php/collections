@@ -18,7 +18,6 @@ use function gettype;
 use function is_array;
 use function is_int;
 use function is_null;
-use function sprintf;
 use const PHP_INT_MAX;
 
 /**
@@ -130,7 +129,10 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
+     * Append value(s) to the end.
+     *
      * @param TValue ...$value
+     * Value(s) to be appended.
      * @return static
      */
     public function append(mixed ...$value): static
@@ -139,7 +141,7 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      * @template TMapValue
      * @param Closure(TValue, int): TMapValue $callback
      * @return self<TMapValue>
@@ -150,17 +152,26 @@ class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @param int $size
+     * Returns a new instance with a `$value` padded to the right side up to `$length`.
+     * To apply padding to the left instead, use a negative integer for `$length`.
+     *
+     * @param int $length
+     * Apply padding until the array size reaches the given length.
+     * If the given length is negative, padding will be applied to the left.
      * @param TValue $value
+     * Value inserted into each padding.
      * @return static
      */
-    public function pad(int $size, mixed $value): static
+    public function pad(int $length, mixed $value): static
     {
-        return $this->instantiate(Arr::pad($this, $size, $value));
+        return $this->instantiate(Arr::pad($this, $length, $value));
     }
 
     /**
+     * Returns a new instance with `$value`(s) prepended to the front.
+     *
      * @param mixed ...$value
+     * Value(s) to be prepended.
      * @return static
      */
     public function prepend(mixed ...$value): static
