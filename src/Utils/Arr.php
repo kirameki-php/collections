@@ -457,7 +457,7 @@ final class Arr
         foreach (Iter::compact($iterable, $reindex) as $key => $val) {
             if (is_iterable($val) && $depth > 1) {
                 /** @var TValue $val */
-                $val = self::compact($val, $depth - 1, $reindex); /** @phpstan-ignore-line */
+                $val = self::compact($val, $depth - 1, $reindex);
             }
             $result[$key] = $val;
         }
