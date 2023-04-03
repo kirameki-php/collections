@@ -33,7 +33,7 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
      */
     public static function of(mixed ...$values): self
     {
-        /** @var array<string, TNewValue> $values */
+        /** @var self<string, TNewValue> */
         return new self($values);
     }
 
