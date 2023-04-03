@@ -2193,44 +2193,6 @@ class ArrTest extends TestCase
         self::assertSame([2], $assoc);
     }
 
-    public function test_removeKey(): void
-    {
-        // empty
-        $list = [];
-        self::assertFalse(Arr::removeKey($list, 1));
-        self::assertSame([], $list);
-
-        // list: hit
-        $list = [1, 2, 3];
-        self::assertTrue(Arr::removeKey($list, 1));
-        self::assertSame([1, 3], $list);
-
-        // list: miss
-        $list = [1, 2, 3];
-        self::assertFalse(Arr::removeKey($list, 3));
-        self::assertSame([1, 2, 3], $list);
-
-        // assoc: hit
-        $assoc = ['a' => 1, 'b' => 2, 'c' => 3];
-        self::assertTrue(Arr::removeKey($assoc, 'b'));
-        self::assertSame(['a' => 1, 'c' => 3], $assoc);
-
-        // assoc: miss
-        $assoc = ['a' => 1, 'b' => 2, 'c' => 3];
-        self::assertFalse(Arr::removeKey($assoc, 'd'));
-        self::assertSame(['a' => 1, 'b' => 2, 'c' => 3], $assoc);
-
-        // reindex: false
-        $list = [1, 2, 3];
-        self::assertTrue(Arr::removeKey($list, 1, false));
-        self::assertSame([0 => 1, 2 => 3], $list);
-
-        // reindex: true
-        $assoc = ['a' => 1, 'b' => 2, 'c' => 3];
-        self::assertTrue(Arr::removeKey($assoc, 'b', true));
-        self::assertSame([1, 3], $assoc);
-    }
-
     public function test_repeat(): void
     {
         // empty

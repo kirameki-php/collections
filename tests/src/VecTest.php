@@ -13,16 +13,6 @@ use Random\Randomizer;
 
 class VecTest extends TestCase
 {
-    /**
-     * @template T
-     * @param iterable<int, T> $items
-     * @return Vec<T>
-     */
-    private function vec(iterable $items = []): Vec
-    {
-        return new Vec($items);
-    }
-
     public function test_constructor(): void
     {
         $vec = $this->vec([1, 2]);

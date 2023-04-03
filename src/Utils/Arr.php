@@ -3592,36 +3592,6 @@ final class Arr
     }
 
     /**
-     * Removes the specified key from `&$array`.
-     * Returns **true** if key exists, **false** otherwise.
-     *
-     * Example:
-     * ```php
-     * $map = ['a' => 1];
-     * Arr::removeKey($map, 1); // ['a', 'c'] and $map will be changed to ['b' => 2]
-     * ```
-     *
-     * @template TKey of array-key
-     * @param array<TKey, mixed> &$array
-     * [Reference] Array to have the key removed.
-     * @param TKey $key
-     * Key to remove from the array.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
-     * @return bool
-     */
-    public static function removeKey(
-        array &$array,
-        int|string $key,
-        ?bool $reindex = null,
-    ): bool
-    {
-        return self::pullOrNull($array, $key, $reindex) !== null;
-    }
-
-    /**
      * Returns an array which contains `$iterable` for a given number of times.
      *
      * Example

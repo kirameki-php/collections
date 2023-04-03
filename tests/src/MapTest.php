@@ -12,17 +12,6 @@ use function dump;
 
 class MapTest extends TestCase
 {
-    /**
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $items
-     * @return Map<TKey, TValue>
-     */
-    private function map(iterable $items = []): Map
-    {
-        return new Map($items);
-    }
-
     public function test_constructor(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
@@ -162,12 +151,11 @@ class MapTest extends TestCase
         self::assertSame('b', $map->lastKeyOrNull(), 'first key');
     }
 
-    public function test_removeKey(): void
+    public function test_pullOrNull(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertTrue($map->removeKey('b'));
-        self::assertFalse($map->removeKey('b'));
-        self::assertSame(['a' => 1], $map->toArray());
+        self::assertSame(2, $map->pullOrNull('b'));
+        self::assertNull($map->pullOrNull('b'));
         self::assertSame(['a' => 1], $map->toArray());
     }
 

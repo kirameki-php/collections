@@ -176,15 +176,6 @@ class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
     }
 
     /**
-     * @param TKey $key
-     * @return bool
-     */
-    public function removeKey(int|string $key): bool
-    {
-        return Arr::removeKey($this->items, $key);
-    }
-
-    /**
      * @param Randomizer|null $randomizer
      * @return TKey
      */
