@@ -51,10 +51,15 @@ abstract class Enumerator implements IteratorAggregate
      */
     public function instantiate(mixed $items): static
     {
-        if ($this->isLazy()) {
-            $items = new LazyIterator($items);
-        }
         return new static($items);
+    }
+
+    /**
+     * @return static
+     */
+    public function eager(): static
+    {
+        return $this->instantiate(Arr::from($this));
     }
 
     /**
