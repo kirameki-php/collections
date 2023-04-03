@@ -64,7 +64,7 @@ trait MutatesSelf
         }
 
         if (is_not_array_key($offset)) {
-            throw new InvalidArgumentException('Expected: $offset\'s type to be int|string. Got: ' . gettype($offset), [
+            throw new InvalidArgumentException('Expected: $offset\'s type to be int|string. Got: ' . gettype($offset) . '.', [
                 'this' => $this,
                 'offset' => $offset,
                 'value' => $value,

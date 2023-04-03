@@ -3,6 +3,7 @@
 namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
+use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Map;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
@@ -46,6 +47,14 @@ class MapTest extends TestCase
         $data = $map->jsonSerialize();
         self::assertInstanceOf(stdClass::class, $data);
         self::assertEquals((object)['a' => 1, 'b' => 2], $data);
+    }
+
+    public function test_offsetSet_assignment_with_invalid_key(): void
+    {
+        $this->expectExceptionMessage("Expected: \$offset's type to be int|string. Got: double.");
+        $this->expectException(InvalidArgumentException::class);
+        $map = $this->map();
+        $map[0.3] = 3;
     }
 
     public function test_containsAllKeys(): void
