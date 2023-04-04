@@ -371,6 +371,42 @@ class MapTest extends TestCase
         $this->map(['a' => 1])->sampleKeys(2);
     }
 
+    public function test_set(): void
+    {
+        $map = $this->map();
+        self::assertSame(['c' => 3], $map->set('c', 3)->toArray(), 'set on empty');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => 3], $map->set('c', 3)->toArray(), 'set at end');
+
+        $map = $this->map(['a' => 1, 'b' => 0.2]);
+        self::assertSame(['a' => 1, 'b' => 0.2, 'c' => 'a'], $map->set('c', 'a')->toArray(), 'mixed types');
+    }
+
+    public function test_setIfExists(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->setIfExists('c', 3)->toArray(), 'set on empty');
+
+        $map = $this->map(['a' => 1]);
+        self::assertSame(['a' => 1], $map->setIfExists('b', 2)->toArray(), 'key does not exist');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1, 'b' => 3], $map->setIfExists('b', 3)->toArray(), 'key exists');
+    }
+
+    public function test_setIfNotExists(): void
+    {
+        $map = $this->map();
+        self::assertSame(['a' => 1], $map->setIfNotExists('a', 1)->toArray(), 'set on empty');
+
+        $map = $this->map(['a' => 1]);
+        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('b', 2)->toArray(), 'key does not exist');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('a', 3)->toArray(), 'key exists');
+    }
+
     public function test_reindex(): void
     {
         self::assertSame(['b' => 1, 'c' => 2], $this->map(['a' => null, 'b' => 1, 'c' => 2])->compact()->toArray(), 'with compact');
