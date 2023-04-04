@@ -1620,7 +1620,7 @@ final class Arr
         $result = self::getOr($iterable, $key, self::miss());
 
         if ($result instanceof self) {
-            throw new InvalidKeyException(is_string($key) ? "\"$key\"" : "$key", [
+            throw new InvalidKeyException((is_string($key) ? "\"$key\"" : "$key") . ' does not exist.', [
                 'iterable' => $iterable,
                 'key' => $key,
             ]);

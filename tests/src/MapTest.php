@@ -5,6 +5,7 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
+use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Map;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
@@ -198,6 +199,38 @@ class MapTest extends TestCase
 
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame('a', $map->firstKeyOrNull(), 'first key');
+    }
+
+    public function test_get(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(1, $map->get('a'), 'existing key');
+        self::assertSame(2, $map->get('b'), 'existing key');
+    }
+
+    public function test_get_non_exiting_key(): void
+    {
+        $this->expectExceptionMessage('"c" does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        $this->map()->get('c');
+    }
+
+    public function test_getOr(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(1, $map->getOr('a', 3), 'existing key');
+        self::assertSame(2, $map->getOr('b', 3), 'existing key');
+        self::assertTrue($map->getOr('c', true), 'non-existing key');
+        self::assertTrue($map->getOr(1, true), 'non-existing key');
+    }
+
+    public function test_getOrNull(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(1, $map->getOrNull('a'), 'existing key');
+        self::assertSame(2, $map->getOrNull('b'), 'existing key');
+        self::assertNull($map->getOrNull('c'), 'non-existing key');
+        self::assertNull($map->getOrNull(1), 'non-existing key');
     }
 
     public function test_lastKey(): void
