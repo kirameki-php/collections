@@ -1764,6 +1764,10 @@ final class Arr
      * The position where the values will be inserted.
      * @param iterable<TKey, TValue> $values
      * One or more values that will be inserted.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
      * @param bool $overwrite
      * [Optional] If **true**, duplicates will be overwritten for string keys.
      * If **false**, exception will be thrown on duplicate key.
@@ -1774,6 +1778,7 @@ final class Arr
         array &$array,
         int $index,
         iterable $values,
+        ?bool $reindex = null,
         bool $overwrite = false,
     ): void
     {
@@ -1788,12 +1793,12 @@ final class Arr
             $index = $index === -1 ? count($array) : $index + 1;
         }
 
-        $reindex = array_is_list($array);
+        $reindex = $reindex ?? array_is_list($array);
 
         if (self::isDifferentArrayType($array, $values)) {
             $arrayType = self::getArrayType($array);
             $valuesType = self::getArrayType($values);
-            $message = "\$values' array type ({$valuesType}) does not match \$array's ({$arrayType})";
+            $message = "\$values' array type ({$valuesType}) does not match \$array's ({$arrayType}).";
             throw new TypeMismatchException($message, [
                 'array' => $array,
                 'index' => $index,
@@ -1803,16 +1808,21 @@ final class Arr
         }
 
         // If array is associative and overwrite is not allowed, check for duplicates before applying.
-        if (!$reindex && !$overwrite) {
+        if (!$reindex) {
             $duplicates = self::keys(self::intersectKeys($array, $values));
             if (self::isNotEmpty($duplicates)) {
-                throw new DuplicateKeyException("Tried to overwrite existing key: {$duplicates[0]}", [
-                    'array' => $array,
-                    'index' => $index,
-                    'values' => $values,
-                    'overwrite' => $overwrite,
-                    'key' => $duplicates[0],
-                ]);
+                if (!$overwrite) {
+                    throw new DuplicateKeyException("Tried to overwrite existing key: {$duplicates[0]}.", [
+                        'array' => $array,
+                        'index' => $index,
+                        'values' => $values,
+                        'overwrite' => $overwrite,
+                        'key' => $duplicates[0],
+                    ]);
+                }
+                foreach ($duplicates as $key) {
+                    unset($array[$key]);
+                }
             }
         }
 

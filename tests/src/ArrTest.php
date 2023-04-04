@@ -1119,7 +1119,7 @@ class ArrTest extends TestCase
         Arr::groupBy([['dummy' => 3]], fn() => 1.1);
     }
 
-    public function test_insert(): void
+    public function test_insertAt(): void
     {
         // empty
         $list = [];
@@ -1182,18 +1182,18 @@ class ArrTest extends TestCase
         self::assertSame([['a']], $list);
     }
 
-    public function test_insert_fail_on_mixed_types(): void
+    public function test_insertAt_fail_on_mixed_types(): void
     {
+        $this->expectExceptionMessage('$values\' array type (list) does not match $array\'s (map).');
         $this->expectException(TypeMismatchException::class);
-        $this->expectExceptionMessage('$values\' array type (list) does not match $array\'s (map)');
         $assoc = ['a' => 1];
         Arr::insertAt($assoc, 1, [1]);
     }
 
-    public function test_insert_with_duplicate_key(): void
+    public function test_insertAt_with_duplicate_key(): void
     {
+        $this->expectExceptionMessage('Tried to overwrite existing key: a.');
         $this->expectException(DuplicateKeyException::class);
-        $this->expectExceptionMessage('Tried to overwrite existing key: a');
         $assoc = ['a' => 1];
         Arr::insertAt($assoc, 1, ['a' => 2]);
     }

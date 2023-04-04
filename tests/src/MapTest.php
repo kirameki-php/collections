@@ -2,6 +2,7 @@
 
 namespace Tests\Kirameki\Collections;
 
+use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Map;
@@ -55,6 +56,67 @@ class MapTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $map = $this->map();
         $map[0.3] = 3;
+    }
+
+    public function test_clear(): void
+    {
+        $map = $this->map([]);
+        self::assertSame([], $map->clear()->toArray(), 'empty map');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame([], $map->clear()->toArray(), 'non-empty map');
+    }
+
+    public function test_insertAt(): void
+    {
+        self::assertSame(
+            ['a' => 1],
+            $this->map()->insertAt(0, ['a' => 1])->toArray(),
+            'empty map',
+        );
+
+        self::assertSame(
+            ['a' => 1],
+            $this->map()->insertAt(-100, ['a' => 1])->toArray(),
+            'negative overflows on empty map',
+        );
+
+        self::assertSame(
+            ['a' => 1],
+            $this->map()->insertAt(100, ['a' => 1])->toArray(),
+            'overflows on empty map',
+        );
+
+        self::assertSame(
+            ['b' => 2, 'a' => 1],
+            $this->map(['a' => 1])->insertAt(0, ['b' => 2])->toArray(),
+            'non-empty map',
+        );
+
+        self::assertSame(
+            ['a' => 1, 'b' => 2, 'c' => 3],
+            $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3])->toArray(),
+            'negative insert index',
+        );
+
+        self::assertSame(
+            message: 'negative insert index',
+            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(1, ['c' => 3])->toArray(),
+            expected: ['a' => 1, 'c' => 3, 'b' => 2],
+        );
+
+        self::assertSame(
+            message: 'insert with overwrite',
+            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3, 'a' => 0], true)->toArray(),
+            expected: ['b' => 2, 'c' => 3, 'a' => 0],
+        );
+    }
+
+    public function test_insertAt_duplicate_without_overwrite(): void
+    {
+        $this->expectExceptionMessage('Tried to overwrite existing key: a.');
+        $this->expectException(DuplicateKeyException::class);
+        $this->map(['a' => 1])->insertAt(0, ['a' => 2]);
     }
 
     public function test_containsAllKeys(): void

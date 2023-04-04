@@ -96,13 +96,19 @@ trait MutatesSelf
 
     /**
      * @param int $index
-     * @param mixed $value
+     * The position where the values will be inserted.
+     * @param iterable<TKey, TValue> $values
+     * One or more values that will be inserted.
+     * @param bool $overwrite
+     * [Optional] If **true**, duplicates will be overwritten for string keys.
+     * If **false**, exception will be thrown on duplicate key.
+     * Defaults to **false**.
      * @return $this
      */
-    public function insertAt(int $index, mixed $value): static
+    public function insertAt(int $index, iterable $values, bool $overwrite = false): static
     {
         $ref = &$this->getItemsAsRef();
-        Arr::insertAt($ref, $index, $value, $this->reindex());
+        Arr::insertAt($ref, $index, $values, $this->reindex(), $overwrite);
         return $this;
     }
 
