@@ -151,7 +151,7 @@ final class Arr
 
         if ($result instanceof self) {
             $count = self::count($iterable);
-            throw new IndexOutOfBoundsException("Size: $count index: $index", [
+            throw new IndexOutOfBoundsException("Size: $count index: $index.", [
                 'iterable' => $iterable,
                 'index' => $index,
                 'count' => $count,
@@ -933,7 +933,7 @@ final class Arr
     ): array
     {
         if ($amount < 0) {
-            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}.", [
                 'iterable' => $iterable,
                 'amount' => $amount,
             ]);
@@ -1512,7 +1512,7 @@ final class Arr
         $flipped = [];
         foreach ($iterable as $key => $val) {
             if (is_not_array_key($val)) {
-                throw new InvalidKeyException('Expected: array value of type int|string. Got: ' . gettype($val), [
+                throw new InvalidKeyException('Expected: array value of type int|string. Got: ' . gettype($val) . '.', [
                     'iterable' => $iterable,
                     'key' => $key,
                     'value' => $val,
@@ -1520,7 +1520,7 @@ final class Arr
             }
 
             if (!$overwrite && array_key_exists($val, $flipped)) {
-                throw new DuplicateKeyException("Tried to overwrite existing key: {$val}", [
+                throw new DuplicateKeyException("Tried to overwrite existing key: {$val}.", [
                     'iterable' => $iterable,
                     'key' => $val,
                 ]);
@@ -1620,7 +1620,8 @@ final class Arr
         $result = self::getOr($iterable, $key, self::miss());
 
         if ($result instanceof self) {
-            throw new InvalidKeyException((is_string($key) ? "\"$key\"" : "$key") . ' does not exist.', [
+            $formattedKey = is_string($key) ? "\"$key\"" : "$key";
+            throw new InvalidKeyException("{$formattedKey} does not exist.", [
                 'iterable' => $iterable,
                 'key' => $key,
             ]);
@@ -1724,7 +1725,8 @@ final class Arr
         foreach ($iterable as $key => $val) {
             $groupKey = $callback($val, $key);
             if (is_not_array_key($groupKey)) {
-                throw new InvalidKeyException('Expected: Grouping key of type int|string. Got: ' . gettype($groupKey), [
+                $type = gettype($groupKey);
+                throw new InvalidKeyException("Expected: Grouping key of type int|string. Got: {$type}.", [
                     'iterable' => $iterable,
                     'callback' => $callback,
                     'key' => $key,
@@ -1870,7 +1872,7 @@ final class Arr
         if (self::isDifferentArrayType($array1, $array2)) {
             $array1Type = self::getArrayType($array1);
             $array2Type = self::getArrayType($array2);
-            $message = "\$iterable1's inner type ({$array1Type}) does not match \$iterable2's ({$array2Type})";
+            $message = "\$iterable1's inner type ({$array1Type}) does not match \$iterable2's ({$array2Type}).";
             throw new TypeMismatchException($message, [
                 'iterable1' => $iterable1,
                 'iterable2' => $iterable2,
@@ -1914,7 +1916,7 @@ final class Arr
         if (self::isDifferentArrayType($array1, $array2)) {
             $array1Type = self::getArrayType($array1);
             $array2Type = self::getArrayType($array2);
-            $message = "\$iterable1's array type ({$array1Type}) does not match \$iterable2's ({$array2Type})";
+            $message = "\$iterable1's array type ({$array1Type}) does not match \$iterable2's ({$array2Type}).";
             throw new TypeMismatchException($message, [
                 'iterable1' => $iterable1,
                 'iterable2' => $iterable2,
@@ -2086,7 +2088,7 @@ final class Arr
             $newKey = self::ensureKey($callback($val, $oldKey));
 
             if (!$overwrite && array_key_exists($newKey, $result)) {
-                throw new DuplicateKeyException("Tried to overwrite existing key: {$newKey}", [
+                throw new DuplicateKeyException("Tried to overwrite existing key: {$newKey}.", [
                     'iterable' => $iterable,
                     'newKey' => $newKey,
                 ]);
@@ -3074,7 +3076,7 @@ final class Arr
     ): array
     {
         if ($amount <= 0) {
-            throw new InvalidArgumentException("Expected: \$amount >= 1. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 1. Got: {$amount}.", [
                 'array' => $array,
                 'amount' => $amount,
             ]);
@@ -3227,7 +3229,7 @@ final class Arr
         $result = self::pullOr($array, $key, self::miss(), $reindex);
 
         if ($result instanceof self) {
-            throw new InvalidKeyException("Tried to pull undefined key \"$key\"", [
+            throw new InvalidKeyException("Tried to pull undefined key \"$key\".", [
                 'array' => $array,
                 'key' => $key,
             ]);
@@ -4326,7 +4328,7 @@ final class Arr
     ): array
     {
         if ($amount <= 0) {
-            throw new InvalidArgumentException("Expected: \$amount >= 1. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 1. Got: {$amount}.", [
                 'array' => $array,
                 'amount' => $amount,
             ]);
@@ -4910,7 +4912,7 @@ final class Arr
     ): array
     {
         if ($amount < 0) {
-            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}.", [
                 'iterable' => $iterable,
                 'amount' => $amount,
             ]);
@@ -5121,7 +5123,8 @@ final class Arr
             return $key;
         }
 
-        throw new InvalidKeyException('Expected: key of type int|string. ' . gettype($key) . ' given.', [
+        $type = gettype($key);
+        throw new InvalidKeyException("Expected: key of type int|string. {$type} given.", [
             'key' => $key,
         ]);
     }
@@ -5150,7 +5153,7 @@ final class Arr
                 is_array($val) => 'a:' . json_encode(array_map(self::valueToKeyString(...), $val), JSON_THROW_ON_ERROR),
                 is_object($val) => 'o:' . spl_object_id($val),
                 is_resource($val) => 'r:' . get_resource_id($val),
-                default => throw new UnreachableException('Invalid Type: ' . gettype($val), [
+                default => throw new UnreachableException('Invalid Type: ' . gettype($val) . '.', [
                     'value' => $val,
                 ]),
             };
