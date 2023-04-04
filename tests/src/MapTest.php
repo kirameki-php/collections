@@ -210,7 +210,7 @@ class MapTest extends TestCase
 
     public function test_get_non_exiting_key(): void
     {
-        $this->expectExceptionMessage('"c" does not exist.');
+        $this->expectExceptionMessage('Key: "c" does not exist.');
         $this->expectException(InvalidKeyException::class);
         $this->map()->get('c');
     }

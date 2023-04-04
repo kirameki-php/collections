@@ -1621,7 +1621,7 @@ final class Arr
 
         if ($result instanceof self) {
             $formattedKey = is_string($key) ? "\"$key\"" : "$key";
-            throw new InvalidKeyException("{$formattedKey} does not exist.", [
+            throw new InvalidKeyException("Key: {$formattedKey} does not exist.", [
                 'iterable' => $iterable,
                 'key' => $key,
             ]);
