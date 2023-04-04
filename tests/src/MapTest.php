@@ -233,6 +233,19 @@ class MapTest extends TestCase
         self::assertNull($map->getOrNull(1), 'non-existing key');
     }
 
+    public function test_intersectKeys(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->intersectKeys([])->toArray(), 'empty map and empty keys');
+        self::assertSame([], $map->intersectKeys(['a' => 1])->toArray(), 'empty map and non-empty keys');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame([], $map->intersectKeys([])->toArray(), 'empty keys');
+        self::assertSame([], $map->intersectKeys(['c' => 3])->toArray(), 'non-existing keys');
+        self::assertSame(['b' => 2], $map->intersectKeys(['b' => 8, 'c' => 9])->toArray(), 'some existing keys');
+        self::assertSame(['a' => 1, 'b' => 2], $map->intersectKeys(['a' => 7, 'b' => 8, 'c' => 9])->toArray(), 'all existing keys');
+    }
+
     public function test_lastKey(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
@@ -253,6 +266,18 @@ class MapTest extends TestCase
 
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame('b', $map->lastKeyOrNull(), 'first key');
+    }
+
+    public function test_map(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->map(static fn($v) => $v * 2)->toArray(), 'empty map');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 2, 'b' => 4], $map->map(static fn($v) => $v * 2)->toArray(), 'non-empty map');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 'aa', 'b' => 'bb'], $map->map(static fn($v, $k) => $k . $k)->toArray(), 'non-empty map with key args');
     }
 
     public function test_pullOrNull(): void
