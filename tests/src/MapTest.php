@@ -407,6 +407,66 @@ class MapTest extends TestCase
         self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('a', 3)->toArray(), 'key exists');
     }
 
+    public function test_sortByKey(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->sortByKey(true)->toArray(), 'set on empty ascending');
+        self::assertSame([], $map->sortByKey(false)->toArray(), 'set on empty descending');
+
+        $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortByKey(true)->toArray(), 'sort by key');
+        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortByKey(false)->toArray(), 'sort by key reverse');
+    }
+
+    public function test_sortByKeyAsc(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->sortByKeyAsc()->toArray(), 'set on empty');
+
+        $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortByKeyAsc()->toArray(), 'sort by key');
+    }
+
+    public function test_sortByKeyDesc(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->sortByKeyDesc()->toArray(), 'set on empty');
+
+        $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
+        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortByKeyDesc()->toArray(), 'sort by key reverse');
+    }
+
+    public function test_sortWithKey(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->sortWithKey(fn($a, $b) => $a <=> $b)->toArray(), 'set on empty');
+
+        $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortWithKey(fn($a, $b) => $a <=> $b)->toArray(), 'sort by key');
+        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortWithKey(fn($a, $b) => $b <=> $a)->toArray(), 'sort by key reverse');
+    }
+
+    public function test_toUrlQuery(): void
+    {
+        $map = $this->map();
+        self::assertSame('', $map->toUrlQuery(), 'empty');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame('a=1&b=2', $map->toUrlQuery(), 'simple');
+
+        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 'a']);
+        self::assertSame('a=1&b=2&c=a', $map->toUrlQuery(), 'mixed types');
+
+        $map = $this->map();
+        self::assertSame('', $map->toUrlQuery('x'), 'empty with namespace');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame('x%5Ba%5D=1&x%5Bb%5D=2', $map->toUrlQuery('x'), 'simple with namespace');
+
+        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 'a']);
+        self::assertSame('x%5Ba%5D=1&x%5Bb%5D=2&x%5Bc%5D=a', $map->toUrlQuery('x'), 'mixed types with namespace');
+    }
+
     public function test_reindex(): void
     {
         self::assertSame(['b' => 1, 'c' => 2], $this->map(['a' => null, 'b' => 1, 'c' => 2])->compact()->toArray(), 'with compact');
