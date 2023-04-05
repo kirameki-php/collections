@@ -288,6 +288,21 @@ class MapTest extends TestCase
         self::assertSame(['a' => 1], $map->toArray());
     }
 
+    public function test_remove(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->remove('a'), 'remove on empty map');
+
+        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 2]);
+        self::assertSame(['b', 'c'], $map->remove(2), 'remove existing value');
+        self::assertSame([], $map->remove(2), 'remove non-existing value');
+        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+
+        $map = $this->map(['a' => 1, 'b' => 1]);
+        self::assertSame(['a'], $map->remove(1, 1), 'remove only one value');
+        self::assertSame(['b' => 1], $map->toArray(), 'check remains');
+    }
+
     public function test_sampleKey(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
