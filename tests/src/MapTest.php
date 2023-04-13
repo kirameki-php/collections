@@ -11,9 +11,6 @@ use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use stdClass;
 
-/**
- * TODO test with Vec
- */
 class MapTest extends TestCase
 {
     public function test_constructor(): void
@@ -623,5 +620,4 @@ class MapTest extends TestCase
         self::assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->only(['b'])->toArray(), 'with only');
         self::assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->reverse()->toArray(), 'with reverse');
     }
-
 }

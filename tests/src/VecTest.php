@@ -11,6 +11,9 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 
+/**
+ * TODO test Mutation methods
+ */
 class VecTest extends TestCase
 {
     public function test_constructor(): void
