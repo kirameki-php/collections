@@ -303,6 +303,61 @@ class MapTest extends TestCase
         self::assertSame(['b' => 1], $map->toArray(), 'check remains');
     }
 
+    public function test_pop(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(2, $map->pop(), 'pop');
+        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+    }
+
+    public function test_pop_on_empty(): void
+    {
+        $this->expectExceptionMessage('&$array must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->map()->pop();
+    }
+
+    public function test_popMany(): void
+    {
+        $map = $this->map();
+        self::assertSame([], $map->popMany(2)->toArray(), 'pop empty');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['b' => 2], $map->popMany(1)->toArray(), 'pop one');
+        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(2)->toArray(), 'pop to empty');
+        self::assertSame([], $map->toArray(), 'check remains');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(3)->toArray(), 'pop overflow');
+        self::assertSame([], $map->toArray(), 'check remains');
+    }
+
+    public function test_popMany_zero_amount(): void
+    {
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->map()->popMany(0);
+    }
+
+    public function test_popMany_negative_amount(): void
+    {
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->map()->popMany(-1);
+    }
+
+    public function test_popOrNull(): void
+    {
+        self::assertNull($this->map()->popOrNull(), 'pop on empty');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(2, $map->popOrNull(), 'pop');
+        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+    }
+
     public function test_sampleKey(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
@@ -384,6 +439,46 @@ class MapTest extends TestCase
         $this->expectExceptionMessage('$amount must be between 0 and size of $iterable.');
         $this->expectException(InvalidArgumentException::class);
         $this->map(['a' => 1])->sampleKeys(2);
+    }
+
+    public function test_shift(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(1, $map->shift(), 'shift');
+        self::assertSame(['b' => 2], $map->toArray(), 'check remains');
+    }
+
+    public function test_shift_on_empty(): void
+    {
+        $this->expectExceptionMessage('&$array must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->map()->shift();
+    }
+
+    public function test_shiftOrNull(): void
+    {
+        self::assertNull($this->map()->shiftOrNull(), 'shift on empty');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(1, $map->shiftOrNull(), 'shift');
+        self::assertSame(['b' => 2], $map->toArray(), 'check remains');
+    }
+
+    public function test_shiftMany(): void
+    {
+        self::assertSame([], $this->map()->shiftMany(2)->toArray(), 'shift many on empty');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1], $map->shiftMany(1)->toArray(), 'shift many one');
+        self::assertSame(['b' => 2], $map->toArray(), 'check remains');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(2)->toArray(), 'shift many exact');
+        self::assertSame([], $map->toArray(), 'check remains');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(3)->toArray(), 'shift many amount overflow');
+        self::assertSame([], $map->toArray(), 'check remains');
     }
 
     public function test_set(): void

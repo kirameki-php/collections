@@ -3075,7 +3075,7 @@ final class Arr
         int $amount,
     ): array
     {
-        if ($amount <= 0) {
+        if ($amount < 1) {
             throw new InvalidArgumentException("Expected: \$amount >= 1. Got: {$amount}.", [
                 'array' => $array,
                 'amount' => $amount,
