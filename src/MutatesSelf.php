@@ -174,12 +174,15 @@ trait MutatesSelf
 
     /**
      * @param iterable<TKey> $keys
+     * Keys or indexes to be pulled.
+     * @param array<int, TKey>|null &$missed
+     * [Optional][Reference] `$keys` that did not exist.
      * @return static
      */
-    public function pullMany(iterable $keys): static
+    public function pullMany(iterable $keys, ?array &$missed = null): static
     {
         $ref = &$this->getItemsAsRef();
-        return $this->instantiate(Arr::pullMany($ref, $keys, $this->reindex()));
+        return $this->instantiate(Arr::pullMany($ref, $keys, $this->reindex(), $missed));
     }
 
     /**

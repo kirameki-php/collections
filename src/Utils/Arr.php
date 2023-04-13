@@ -3342,12 +3342,15 @@ final class Arr
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
      * Defaults to **null**.
+     * @param array<int, TKey>|null &$missed
+     * [Optional][Reference] `$keys` that did not exist in `$array`.
      * @return array<TKey, TValue>
      */
     public static function pullMany(
         array &$array,
         iterable $keys,
         ?bool $reindex = null,
+        ?array &$missed = null,
     ): array
     {
         $reindex ??= array_is_list($array);
@@ -3358,6 +3361,8 @@ final class Arr
                 $value = $array[$key];
                 unset($array[$key]);
                 $pulled[$key] = $value;
+            } else {
+                $missed[] = $key;
             }
         }
 

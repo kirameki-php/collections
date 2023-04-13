@@ -280,14 +280,6 @@ class MapTest extends TestCase
         self::assertSame(['a' => 'aa', 'b' => 'bb'], $map->map(static fn($v, $k) => $k . $k)->toArray(), 'non-empty map with key args');
     }
 
-    public function test_pullOrNull(): void
-    {
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(2, $map->pullOrNull('b'));
-        self::assertNull($map->pullOrNull('b'));
-        self::assertSame(['a' => 1], $map->toArray());
-    }
-
     public function test_remove(): void
     {
         $map = $this->map();
@@ -355,6 +347,51 @@ class MapTest extends TestCase
 
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(2, $map->popOrNull(), 'pop');
+        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+    }
+
+    public function test_pull(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(2, $map->pull('b'));
+        self::assertSame(['a' => 1], $map->toArray());
+    }
+
+    public function test_pull_on_empty(): void
+    {
+        $this->expectExceptionMessage('Tried to pull undefined key "a".');
+        $this->expectException(InvalidKeyException::class);
+        $this->map()->pull('a');
+    }
+
+    public function test_pullOr(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(2, $map->pullOr('b', 100), 'pull existing');
+        self::assertSame(100, $map->pullOr('c', 100), 'pull missing');
+        self::assertSame(['a' => 1], $map->toArray());
+    }
+
+    public function test_pullOrNull(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame(2, $map->pullOrNull('b'));
+        self::assertNull($map->pullOrNull('b'));
+        self::assertSame(['a' => 1], $map->toArray());
+    }
+
+    public function test_pullMany(): void
+    {
+        $missed = [];
+        self::assertSame([], $this->map()->pullMany(['b'], $missed)->toArray(), 'pull on empty map');
+        self::assertSame(['b'], $missed, 'check missed');
+
+        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 3]);
+        self::assertSame(['b' => 2], $map->pullMany(['b'])->toArray(), 'pull one');
+        self::assertSame(['a' => 1, 'c' => 3], $map->toArray(), 'check remains');
+
+        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 3]);
+        self::assertSame(['b' => 2, 'c' => 3], $map->pullMany(['b', 'c'])->toArray(), 'pull many');
         self::assertSame(['a' => 1], $map->toArray(), 'check remains');
     }
 
