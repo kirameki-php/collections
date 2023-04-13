@@ -4,15 +4,16 @@ namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
-use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Map;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use stdClass;
-use function dump;
 
+/**
+ * TODO test with Vec
+ */
 class MapTest extends TestCase
 {
     public function test_constructor(): void
