@@ -16,6 +16,8 @@ use const SORT_REGULAR;
 /**
  * @template TKey of array-key|class-string
  * @template TValue
+ *
+ * TODO keyAt, keyAtOr, keyAtOrNull
  */
 trait Enumerable
 {
@@ -133,12 +135,14 @@ trait Enumerable
     }
 
     /**
-     * @param Closure(TValue, TKey): bool|null $by
+     * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] Condition to determine if given item should be counted.
+     * Defaults to **null**.
      * @return int
      */
-    public function count(?Closure $by = null): int
+    public function count(?Closure $condition = null): int
     {
-        return Arr::count($this, $by);
+        return Arr::count($this, $condition);
     }
 
     /**

@@ -4,7 +4,6 @@ namespace Kirameki\Collections;
 
 use ArrayAccess;
 use Closure;
-use Countable;
 use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Random\Randomizer;
@@ -19,7 +18,7 @@ use const SORT_REGULAR;
  * @implements ArrayAccess<TKey, TValue>
  * @phpstan-consistent-constructor
  */
-class Map extends Enumerator implements ArrayAccess, Countable, JsonSerializable
+class Map extends Enumerator implements ArrayAccess, JsonSerializable
 {
     /**
      * @use MutatesSelf<TKey, TValue>

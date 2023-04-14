@@ -4,7 +4,6 @@ namespace Kirameki\Collections;
 
 use ArrayAccess;
 use Closure;
-use Countable;
 use JsonSerializable;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
@@ -26,7 +25,7 @@ use const PHP_INT_MAX;
  * @implements ArrayAccess<int, TValue>
  * @phpstan-consistent-constructor
  */
-class Vec extends Enumerator implements ArrayAccess, Countable, JsonSerializable
+class Vec extends Enumerator implements ArrayAccess, JsonSerializable
 {
     /**
      * @use MutatesSelf<int, TValue>
