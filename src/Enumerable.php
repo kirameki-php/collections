@@ -32,7 +32,7 @@ trait Enumerable
     abstract protected function reindex(): bool;
 
     /**
-     * Returns the item at the given index.
+     * Returns the value at the given index.
      * Throws `IndexOutOfBoundsException` if the index does not exist.
      *
      * @param int $index
@@ -45,7 +45,7 @@ trait Enumerable
     }
 
     /**
-     * Returns the item at the given index.
+     * Returns the value at the given index.
      * Returns `$default` if the given index does not exist.
      *
      * @template TDefault
@@ -61,7 +61,7 @@ trait Enumerable
     }
 
     /**
-     * Returns the item at the given index.
+     * Returns the value at the given index.
      * Returns **null** if the given index does not exist.
      *
      * @param int $index
@@ -74,6 +74,9 @@ trait Enumerable
     }
 
     /**
+     * Returns the first non-null value.
+     * Throws `InvalidArgumentException` if empty or all elements are **null**.
+     *
      * @return TValue
      */
     public function coalesce(): mixed
@@ -82,6 +85,9 @@ trait Enumerable
     }
 
     /**
+     * Returns the first non-null value.
+     * Returns **null** if `$iterable` is empty or if all elements are **null**.
+     *
      * @return TValue|null
      */
     public function coalesceOrNull(): mixed
