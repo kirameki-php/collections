@@ -96,7 +96,10 @@ trait Enumerable
     }
 
     /**
+     * Returns a new instance with all null elements removed.
+     *
      * @param int<1, max> $depth
+     * [Optional] Must be >= 1. Default is 1.
      * @return static
      */
     public function compact(int $depth = 1): static
@@ -105,7 +108,10 @@ trait Enumerable
     }
 
     /**
-     * @param mixed|Closure(TValue, TKey): bool $value
+     * Returns **true** if value exists, **false** otherwise.
+     *
+     * @param mixed $value
+     * Value to be searched.
      * @return bool
      */
     public function contains(mixed $value): bool

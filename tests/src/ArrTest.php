@@ -286,6 +286,20 @@ class ArrTest extends TestCase
         self::assertSame(['c' => 1], Arr::compact(['a' => null, 'b' => null, 'c' => 1], 1, false));
     }
 
+    public function test_compact_zero_depth(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0');
+        Arr::compact([], 0);
+    }
+
+    public function test_compact_negative_depth(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1');
+        Arr::compact([], -1);
+    }
+
     public function test_contains(): void
     {
         self::assertFalse(Arr::contains([], null));

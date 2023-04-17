@@ -447,6 +447,13 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
+        if ($depth < 1) {
+            throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}.", [
+                'iterable' => $iterable,
+                'depth' => $depth,
+            ]);
+        }
+
         if ($reindex === null) {
             $iterable = self::from($iterable);
             $reindex = array_is_list($iterable);
