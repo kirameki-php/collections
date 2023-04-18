@@ -4,8 +4,10 @@ namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
+use Kirameki\Collections\Map;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use function dump;
 
 class EnumerableTest extends TestCase
 {
@@ -166,5 +168,105 @@ class EnumerableTest extends TestCase
         $this->assertFalse($this->map(['a' => 1, 'b' => 2])->contains('2'), 'wrong type');
         $this->assertTrue($this->map(['a' => 1, 'b' => 2])->contains(2), 'has int');
         $this->assertTrue($this->map(['a' => 1, 'b' => null])->contains(null), 'has null');
+    }
+
+    public function test_containsAll(): void
+    {
+        $this->assertTrue($this->vec()->containsAll([]), 'both empty');
+        $this->assertFalse($this->vec()->containsAll([null]), 'null in empty');
+        $this->assertFalse($this->vec()->containsAll(['']), 'blank in empty');
+        $this->assertTrue($this->vec([''])->containsAll(['']), 'contains blank');
+        $this->assertTrue($this->vec([''])->containsAll([]), 'empty arg');
+        $this->assertFalse($this->vec([1, 2])->containsAll(['2']), 'wrong type');
+        $this->assertFalse($this->vec([1, 2])->containsAll([3, 4]), 'no match');
+        $this->assertFalse($this->vec([1, 2])->containsAll([1, 2, 3]), 'match partial');
+        $this->assertTrue($this->vec([1, 2])->containsAll([2]), 'has int');
+        $this->assertTrue($this->vec([1])->containsAll([1, 1]), 'more in haystack');
+        $this->assertTrue($this->vec([1, null])->containsAll([null, 1]), 'match out of order');
+        $this->assertTrue($this->vec([1, null])->containsAll([1, null]), 'exact match');
+        $this->assertTrue($this->vec([1])->containsAll(['b' => 1]), 'assoc as arg');
+        $this->assertTrue($this->vec([1])->containsAll($this->vec([1])), 'vec as arg');
+
+        $this->assertTrue($this->map()->containsAll([]), 'both empty');
+        $this->assertFalse($this->map()->containsAll([null]), 'null in empty');
+        $this->assertFalse($this->map()->containsAll(['']), 'blank in empty');
+        $this->assertTrue($this->map(['a' => ''])->containsAll(['']), 'contains blank');
+        $this->assertTrue($this->map(['a' => ''])->containsAll([]), 'empty arg');
+        $this->assertFalse($this->map(['a' => 1, 'b' => 2])->containsAll(['2']), 'wrong type');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->containsAll([2]), 'has int');
+        $this->assertTrue($this->map(['a' => 1])->containsAll([1, 1]), 'more in haystack');
+        $this->assertTrue($this->map(['a' => 1, 'b' => null])->containsAll([null, 1]), 'match out of order');
+        $this->assertTrue($this->map(['a' => 1, 'b' => null])->containsAll([1, null]), 'exact match');
+        $this->assertTrue($this->map(['a' => 1])->containsAll(['b' => 1]), 'assoc as arg');
+        $this->assertTrue($this->map(['a' => 1])->containsAll($this->vec([1])), 'vec as arg');
+    }
+
+    public function test_containsAny(): void
+    {
+        $this->assertFalse($this->vec()->containsAny([]), 'both empty');
+        $this->assertFalse($this->vec()->containsAny([null]), 'null in empty');
+        $this->assertFalse($this->vec()->containsAny(['']), 'blank in empty');
+        $this->assertTrue($this->vec([''])->containsAny(['']), 'contains blank');
+        $this->assertFalse($this->vec([''])->containsAny([]), 'empty arg');
+        $this->assertFalse($this->vec([1, 2])->containsAny(['2']), 'wrong type');
+        $this->assertTrue($this->vec([1, 2])->containsAny([2]), 'has int');
+        $this->assertFalse($this->vec([1, 2])->containsAny([3, 4]), 'no match');
+        $this->assertTrue($this->vec([1, 2])->containsAny([1, 2, 3]), 'match partial');
+        $this->assertTrue($this->vec([1])->containsAny([1, 1]), 'more in haystack');
+        $this->assertTrue($this->vec([1, null])->containsAny([null, 1]), 'match out of order');
+        $this->assertTrue($this->vec([1, null])->containsAny([1, null]), 'exact match');
+        $this->assertTrue($this->vec([1])->containsAny(['b' => 1]), 'assoc as arg');
+        $this->assertTrue($this->vec([1])->containsAny($this->vec([1])), 'vec as arg');
+
+        $this->assertFalse($this->map()->containsAny([]), 'both empty');
+        $this->assertFalse($this->map()->containsAny([null]), 'null in empty');
+        $this->assertFalse($this->map()->containsAny(['']), 'blank in empty');
+        $this->assertTrue($this->map(['a' => ''])->containsAny(['']), 'contains blank');
+        $this->assertFalse($this->map(['a' => ''])->containsAny([]), 'empty arg');
+        $this->assertFalse($this->map(['a' => 1, 'b' => 2])->containsAny(['2']), 'wrong type');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->containsAny([2]), 'has int');
+        $this->assertTrue($this->map(['a' => 1])->containsAny([1, 1]), 'more in haystack');
+        $this->assertTrue($this->map(['a' => 1, 'b' => null])->containsAny([null, 1]), 'match out of order');
+    }
+
+    public function test_containsNone(): void
+    {
+        $this->assertTrue($this->vec()->containsNone([]), 'both empty');
+        $this->assertTrue($this->vec()->containsNone([null]), 'null in empty');
+        $this->assertTrue($this->vec()->containsNone(['']), 'blank in empty');
+        $this->assertFalse($this->vec([''])->containsNone(['']), 'contains blank');
+        $this->assertTrue($this->vec([''])->containsNone([]), 'empty arg');
+        $this->assertTrue($this->vec([1, 2])->containsNone(['2']), 'wrong type');
+        $this->assertFalse($this->vec([1, 2])->containsNone([2]), 'has int');
+        $this->assertTrue($this->vec([1, 2])->containsNone([3, 4]), 'no match');
+        $this->assertFalse($this->vec([1, 2])->containsNone([1, 2, 3]), 'match partial');
+        $this->assertFalse($this->vec([1])->containsNone([1, 1]), 'more in haystack');
+        $this->assertFalse($this->vec([1, null])->containsNone([null, 1]), 'match out of order');
+        $this->assertFalse($this->vec([1, null])->containsNone([1, null]), 'exact match');
+        $this->assertFalse($this->vec([1])->containsNone(['b' => 1]), 'assoc as arg');
+        $this->assertFalse($this->vec([1])->containsNone($this->vec([1])), 'vec as arg');
+
+        $this->assertTrue($this->map()->containsNone([]), 'both empty');
+        $this->assertTrue($this->map()->containsNone([null]), 'null in empty');
+        $this->assertTrue($this->map()->containsNone(['']), 'blank in empty');
+        $this->assertFalse($this->map(['a' => ''])->containsNone(['']), 'contains blank');
+        $this->assertTrue($this->map(['a' => ''])->containsNone([]), 'empty arg');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->containsNone(['2']), 'wrong type');
+        $this->assertFalse($this->map(['a' => 1, 'b' => 2])->containsNone([2]), 'has int');
+        $this->assertTrue($this->map(['a' => 1])->containsAny([1, 1]), 'more in haystack');
+        $this->assertTrue($this->map(['a' => 1, 'b' => null])->containsAny([null, 1]), 'match out of order');
+    }
+
+    public function test_count(): void
+    {
+        $this->assertSame(0, $this->vec()->count());
+        $this->assertSame(2, $this->vec([1, 2])->count());
+        $this->assertSame(1, $this->vec([1, 2, 3])->count(fn(int $n) => $n %2 === 0), 'with condition');
+        $this->assertSame(0, $this->vec([1, 2])->count(fn() => false), 'no condition match');
+
+        $this->assertSame(0, $this->map()->count());
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->count());
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->count(fn(int $n) => $n %2 === 0), 'with condition');
+        $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->count(fn() => false), 'no condition match');
     }
 }

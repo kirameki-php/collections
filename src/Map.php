@@ -26,17 +26,6 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     use MutatesSelf;
 
     /**
-     * @template TNewValue
-     * @param TNewValue ...$values
-     * @return self<string, TNewValue>
-     */
-    public static function of(mixed ...$values): self
-    {
-        /** @var self<string, TNewValue> */
-        return new self($values);
-    }
-
-    /**
      * @return object
      */
     public function jsonSerialize(): object

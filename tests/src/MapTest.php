@@ -34,13 +34,6 @@ class MapTest extends TestCase
         self::assertSame([], $map->toArray());
     }
 
-    public function test_of(): void
-    {
-        $map = Map::of(a: 1);
-        self::assertInstanceOf(Map::class, $map);
-        self::assertSame(['a' => 1], $map->toArray());
-    }
-
     public function test_jsonSerialize(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);

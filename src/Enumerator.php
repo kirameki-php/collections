@@ -19,7 +19,9 @@ use function is_countable;
 abstract class Enumerator implements Countable, IteratorAggregate
 {
     /** @use Enumerable<TKey, TValue> */
-    use Enumerable;
+    use Enumerable {
+        count as traitCount;
+    }
 
     /**
      * @var iterable<TKey, TValue> $items
@@ -51,7 +53,7 @@ abstract class Enumerator implements Countable, IteratorAggregate
     {
         return $condition === null && is_countable($this->items)
             ? count($this->items)
-            : Arr::count($this->items, $condition);
+            : $this->traitCount($condition);
     }
 
     /**
