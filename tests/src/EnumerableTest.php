@@ -14,7 +14,7 @@ class EnumerableTest extends TestCase
         $this->assertSame([], $this->vec()->all());
         $this->assertSame([], $this->map()->all());
         $this->assertSame([1, 2], $this->vec([1, 2])->all());
-        $this->assertSame([1, 2], $this->map(['a' => 1, 'b' => 2])->all());
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->all());
     }
 
     public function test_at(): void
@@ -342,9 +342,25 @@ class EnumerableTest extends TestCase
         $this->vec([1])->dropFirst(-1)->all();
     }
 
-
     public function test_dropLast(): void
     {
+        $this->assertSame([], $this->vec()->dropLast(0)->all(), 'zero on empty');
+        $this->assertSame([], $this->vec()->dropLast(2)->all(), 'over limit on empty');
+        $this->assertSame([1, 2], $this->vec([1, 2, 3])->dropLast(1)->all(), 'drop 1');
+        $this->assertSame([1], $this->vec([1, 2, 3])->dropLast(2)->all(), 'drop 2');
+        $this->assertSame([], $this->vec([1])->dropLast(2)->all(), 'over limit');
 
+        $this->assertSame([], $this->map()->dropLast(0)->all(), 'zero on empty');
+        $this->assertSame([], $this->map()->dropLast(2)->all(), 'over limit on empty');
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropLast(1)->all(), 'drop 1');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropLast(2)->all(), 'drop 2');
+        $this->assertSame([], $this->map(['a' => 1])->dropLast(2)->all(), 'over limit');
+    }
+
+    public function test_dropLast_negative_amount(): void
+    {
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1])->dropLast(-1)->all();
     }
 }
