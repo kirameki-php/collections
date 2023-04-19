@@ -566,7 +566,7 @@ class ArrTest extends TestCase
     public function test_dropFirst_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         Arr::dropFirst(['a' => 1], -1);
     }
 

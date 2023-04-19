@@ -17,21 +17,21 @@ class MapTest extends TestCase
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertInstanceOf(Map::class, $map);
-        self::assertSame(['a' => 1, 'b' => 2], $map->toArray());
+        self::assertSame(['a' => 1, 'b' => 2], $map->all());
     }
 
     public function test_constructor_no_args(): void
     {
         $map = new Map();
         self::assertInstanceOf(Map::class, $map);
-        self::assertSame([], $map->toArray());
+        self::assertSame([], $map->all());
     }
 
     public function test_constructor_empty(): void
     {
         $map = $this->map([]);
         self::assertInstanceOf(Map::class, $map);
-        self::assertSame([], $map->toArray());
+        self::assertSame([], $map->all());
     }
 
     public function test_jsonSerialize(): void
@@ -53,53 +53,53 @@ class MapTest extends TestCase
     public function test_clear(): void
     {
         $map = $this->map([]);
-        self::assertSame([], $map->clear()->toArray(), 'empty map');
+        self::assertSame([], $map->clear()->all(), 'empty map');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame([], $map->clear()->toArray(), 'non-empty map');
+        self::assertSame([], $map->clear()->all(), 'non-empty map');
     }
 
     public function test_insertAt(): void
     {
         self::assertSame(
             ['a' => 1],
-            $this->map()->insertAt(0, ['a' => 1])->toArray(),
+            $this->map()->insertAt(0, ['a' => 1])->all(),
             'empty map',
         );
 
         self::assertSame(
             ['a' => 1],
-            $this->map()->insertAt(-100, ['a' => 1])->toArray(),
+            $this->map()->insertAt(-100, ['a' => 1])->all(),
             'negative overflows on empty map',
         );
 
         self::assertSame(
             ['a' => 1],
-            $this->map()->insertAt(100, ['a' => 1])->toArray(),
+            $this->map()->insertAt(100, ['a' => 1])->all(),
             'overflows on empty map',
         );
 
         self::assertSame(
             ['b' => 2, 'a' => 1],
-            $this->map(['a' => 1])->insertAt(0, ['b' => 2])->toArray(),
+            $this->map(['a' => 1])->insertAt(0, ['b' => 2])->all(),
             'non-empty map',
         );
 
         self::assertSame(
             ['a' => 1, 'b' => 2, 'c' => 3],
-            $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3])->toArray(),
+            $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3])->all(),
             'negative insert index',
         );
 
         self::assertSame(
             message: 'negative insert index',
-            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(1, ['c' => 3])->toArray(),
+            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(1, ['c' => 3])->all(),
             expected: ['a' => 1, 'c' => 3, 'b' => 2],
         );
 
         self::assertSame(
             message: 'insert with overwrite',
-            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3, 'a' => 0], true)->toArray(),
+            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3, 'a' => 0], true)->all(),
             expected: ['b' => 2, 'c' => 3, 'a' => 0],
         );
     }
@@ -150,14 +150,14 @@ class MapTest extends TestCase
     public function test_diffKeys(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->diffKeys([])->toArray(), 'empty map and empty keys');
-        self::assertSame([], $map->diffKeys(['a' => 1])->toArray(), 'empty map and non-empty keys');
+        self::assertSame([], $map->diffKeys([])->all(), 'empty map and empty keys');
+        self::assertSame([], $map->diffKeys(['a' => 1])->all(), 'empty map and non-empty keys');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->diffKeys([])->toArray());
-        self::assertSame(['a' => 1, 'b' => 2], $map->diffKeys(['c' => 1])->toArray());
-        self::assertSame(['a' => 1], $map->diffKeys(['b' => 8, 'c' => 9])->toArray());
-        self::assertSame([], $map->diffKeys(['a' => 7, 'b' => 8, 'c' => 9])->toArray());
+        self::assertSame(['a' => 1, 'b' => 2], $map->diffKeys([])->all());
+        self::assertSame(['a' => 1, 'b' => 2], $map->diffKeys(['c' => 1])->all());
+        self::assertSame(['a' => 1], $map->diffKeys(['b' => 8, 'c' => 9])->all());
+        self::assertSame([], $map->diffKeys(['a' => 7, 'b' => 8, 'c' => 9])->all());
     }
 
     public function test_doesNotContainKey(): void
@@ -227,14 +227,14 @@ class MapTest extends TestCase
     public function test_intersectKeys(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->intersectKeys([])->toArray(), 'empty map and empty keys');
-        self::assertSame([], $map->intersectKeys(['a' => 1])->toArray(), 'empty map and non-empty keys');
+        self::assertSame([], $map->intersectKeys([])->all(), 'empty map and empty keys');
+        self::assertSame([], $map->intersectKeys(['a' => 1])->all(), 'empty map and non-empty keys');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame([], $map->intersectKeys([])->toArray(), 'empty keys');
-        self::assertSame([], $map->intersectKeys(['c' => 3])->toArray(), 'non-existing keys');
-        self::assertSame(['b' => 2], $map->intersectKeys(['b' => 8, 'c' => 9])->toArray(), 'some existing keys');
-        self::assertSame(['a' => 1, 'b' => 2], $map->intersectKeys(['a' => 7, 'b' => 8, 'c' => 9])->toArray(), 'all existing keys');
+        self::assertSame([], $map->intersectKeys([])->all(), 'empty keys');
+        self::assertSame([], $map->intersectKeys(['c' => 3])->all(), 'non-existing keys');
+        self::assertSame(['b' => 2], $map->intersectKeys(['b' => 8, 'c' => 9])->all(), 'some existing keys');
+        self::assertSame(['a' => 1, 'b' => 2], $map->intersectKeys(['a' => 7, 'b' => 8, 'c' => 9])->all(), 'all existing keys');
     }
 
     public function test_lastKey(): void
@@ -262,13 +262,13 @@ class MapTest extends TestCase
     public function test_map(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->map(static fn($v) => $v * 2)->toArray(), 'empty map');
+        self::assertSame([], $map->map(static fn($v) => $v * 2)->all(), 'empty map');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 2, 'b' => 4], $map->map(static fn($v) => $v * 2)->toArray(), 'non-empty map');
+        self::assertSame(['a' => 2, 'b' => 4], $map->map(static fn($v) => $v * 2)->all(), 'non-empty map');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 'aa', 'b' => 'bb'], $map->map(static fn($v, $k) => $k . $k)->toArray(), 'non-empty map with key args');
+        self::assertSame(['a' => 'aa', 'b' => 'bb'], $map->map(static fn($v, $k) => $k . $k)->all(), 'non-empty map with key args');
     }
 
     public function test_remove(): void
@@ -279,18 +279,18 @@ class MapTest extends TestCase
         $map = $this->map(['a' => 1, 'b' => 2, 'c' => 2]);
         self::assertSame(['b', 'c'], $map->remove(2), 'remove existing value');
         self::assertSame([], $map->remove(2), 'remove non-existing value');
-        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1], $map->all(), 'check remains');
 
         $map = $this->map(['a' => 1, 'b' => 1]);
         self::assertSame(['a'], $map->remove(1, 1), 'remove only one value');
-        self::assertSame(['b' => 1], $map->toArray(), 'check remains');
+        self::assertSame(['b' => 1], $map->all(), 'check remains');
     }
 
     public function test_pop(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(2, $map->pop(), 'pop');
-        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1], $map->all(), 'check remains');
     }
 
     public function test_pop_on_empty(): void
@@ -303,19 +303,19 @@ class MapTest extends TestCase
     public function test_popMany(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->popMany(2)->toArray(), 'pop empty');
+        self::assertSame([], $map->popMany(2)->all(), 'pop empty');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['b' => 2], $map->popMany(1)->toArray(), 'pop one');
-        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+        self::assertSame(['b' => 2], $map->popMany(1)->all(), 'pop one');
+        self::assertSame(['a' => 1], $map->all(), 'check remains');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(2)->toArray(), 'pop to empty');
-        self::assertSame([], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(2)->all(), 'pop to empty');
+        self::assertSame([], $map->all(), 'check remains');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(3)->toArray(), 'pop overflow');
-        self::assertSame([], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(3)->all(), 'pop overflow');
+        self::assertSame([], $map->all(), 'check remains');
     }
 
     public function test_popMany_zero_amount(): void
@@ -338,14 +338,14 @@ class MapTest extends TestCase
 
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(2, $map->popOrNull(), 'pop');
-        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1], $map->all(), 'check remains');
     }
 
     public function test_pull(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(2, $map->pull('b'));
-        self::assertSame(['a' => 1], $map->toArray());
+        self::assertSame(['a' => 1], $map->all());
     }
 
     public function test_pull_on_empty(): void
@@ -360,7 +360,7 @@ class MapTest extends TestCase
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(2, $map->pullOr('b', 100), 'pull existing');
         self::assertSame(100, $map->pullOr('c', 100), 'pull missing');
-        self::assertSame(['a' => 1], $map->toArray());
+        self::assertSame(['a' => 1], $map->all());
     }
 
     public function test_pullOrNull(): void
@@ -368,22 +368,22 @@ class MapTest extends TestCase
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(2, $map->pullOrNull('b'));
         self::assertNull($map->pullOrNull('b'));
-        self::assertSame(['a' => 1], $map->toArray());
+        self::assertSame(['a' => 1], $map->all());
     }
 
     public function test_pullMany(): void
     {
         $missed = [];
-        self::assertSame([], $this->map()->pullMany(['b'], $missed)->toArray(), 'pull on empty map');
+        self::assertSame([], $this->map()->pullMany(['b'], $missed)->all(), 'pull on empty map');
         self::assertSame(['b'], $missed, 'check missed');
 
         $map = $this->map(['a' => 1, 'b' => 2, 'c' => 3]);
-        self::assertSame(['b' => 2], $map->pullMany(['b'])->toArray(), 'pull one');
-        self::assertSame(['a' => 1, 'c' => 3], $map->toArray(), 'check remains');
+        self::assertSame(['b' => 2], $map->pullMany(['b'])->all(), 'pull one');
+        self::assertSame(['a' => 1, 'c' => 3], $map->all(), 'check remains');
 
         $map = $this->map(['a' => 1, 'b' => 2, 'c' => 3]);
-        self::assertSame(['b' => 2, 'c' => 3], $map->pullMany(['b', 'c'])->toArray(), 'pull many');
-        self::assertSame(['a' => 1], $map->toArray(), 'check remains');
+        self::assertSame(['b' => 2, 'c' => 3], $map->pullMany(['b', 'c'])->all(), 'pull many');
+        self::assertSame(['a' => 1], $map->all(), 'check remains');
     }
 
     public function test_sampleKey(): void
@@ -417,7 +417,7 @@ class MapTest extends TestCase
     {
         self::assertCount(
             2,
-            $this->map(['a' => 1, 'b' => 2])->sampleKeys(2)->toArray(),
+            $this->map(['a' => 1, 'b' => 2])->sampleKeys(2)->all(),
             'sample keys exact no-randomizer',
         );
 
@@ -425,25 +425,25 @@ class MapTest extends TestCase
 
         self::assertSame(
             ['b'],
-            $this->map(['a' => 1, 'b' => 2])->sampleKeys(1, false, $randomizer)->toArray(),
+            $this->map(['a' => 1, 'b' => 2])->sampleKeys(1, false, $randomizer)->all(),
             'sample 1 keys +no-replacement +randomizer',
         );
 
         self::assertSame(
             ['b', 'a'],
-            $this->map(['a' => 1, 'b' => 2])->sampleKeys(2, false, $randomizer)->toArray(),
+            $this->map(['a' => 1, 'b' => 2])->sampleKeys(2, false, $randomizer)->all(),
             'sample keys exact (should be out of order) +no-replacement +randomizer',
         );
 
         self::assertSame(
             ['b', 'b'],
-            $this->map(['a' => 1, 'b' => 2])->sampleKeys(2, true, $randomizer)->toArray(),
+            $this->map(['a' => 1, 'b' => 2])->sampleKeys(2, true, $randomizer)->all(),
             'sample keys exact +replacement +randomizer',
         );
 
         self::assertSame(
             ['a', 'c'],
-            $this->map(['a' => 1, 'b' => 1, 'c' => 1])->sampleKeys(2, true, $randomizer)->toArray(),
+            $this->map(['a' => 1, 'b' => 1, 'c' => 1])->sampleKeys(2, true, $randomizer)->all(),
             'sample keys less than size +replacement +randomizer',
         );
     }
@@ -473,7 +473,7 @@ class MapTest extends TestCase
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(1, $map->shift(), 'shift');
-        self::assertSame(['b' => 2], $map->toArray(), 'check remains');
+        self::assertSame(['b' => 2], $map->all(), 'check remains');
     }
 
     public function test_shift_on_empty(): void
@@ -489,99 +489,99 @@ class MapTest extends TestCase
 
         $map = $this->map(['a' => 1, 'b' => 2]);
         self::assertSame(1, $map->shiftOrNull(), 'shift');
-        self::assertSame(['b' => 2], $map->toArray(), 'check remains');
+        self::assertSame(['b' => 2], $map->all(), 'check remains');
     }
 
     public function test_shiftMany(): void
     {
-        self::assertSame([], $this->map()->shiftMany(2)->toArray(), 'shift many on empty');
+        self::assertSame([], $this->map()->shiftMany(2)->all(), 'shift many on empty');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1], $map->shiftMany(1)->toArray(), 'shift many one');
-        self::assertSame(['b' => 2], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1], $map->shiftMany(1)->all(), 'shift many one');
+        self::assertSame(['b' => 2], $map->all(), 'check remains');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(2)->toArray(), 'shift many exact');
-        self::assertSame([], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(2)->all(), 'shift many exact');
+        self::assertSame([], $map->all(), 'check remains');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(3)->toArray(), 'shift many amount overflow');
-        self::assertSame([], $map->toArray(), 'check remains');
+        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(3)->all(), 'shift many amount overflow');
+        self::assertSame([], $map->all(), 'check remains');
     }
 
     public function test_set(): void
     {
         $map = $this->map();
-        self::assertSame(['c' => 3], $map->set('c', 3)->toArray(), 'set on empty');
+        self::assertSame(['c' => 3], $map->set('c', 3)->all(), 'set on empty');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2, 'c' => 3], $map->set('c', 3)->toArray(), 'set at end');
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => 3], $map->set('c', 3)->all(), 'set at end');
 
         $map = $this->map(['a' => 1, 'b' => 0.2]);
-        self::assertSame(['a' => 1, 'b' => 0.2, 'c' => 'a'], $map->set('c', 'a')->toArray(), 'mixed types');
+        self::assertSame(['a' => 1, 'b' => 0.2, 'c' => 'a'], $map->set('c', 'a')->all(), 'mixed types');
     }
 
     public function test_setIfExists(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->setIfExists('c', 3)->toArray(), 'set on empty');
+        self::assertSame([], $map->setIfExists('c', 3)->all(), 'set on empty');
 
         $map = $this->map(['a' => 1]);
-        self::assertSame(['a' => 1], $map->setIfExists('b', 2)->toArray(), 'key does not exist');
+        self::assertSame(['a' => 1], $map->setIfExists('b', 2)->all(), 'key does not exist');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 3], $map->setIfExists('b', 3)->toArray(), 'key exists');
+        self::assertSame(['a' => 1, 'b' => 3], $map->setIfExists('b', 3)->all(), 'key exists');
     }
 
     public function test_setIfNotExists(): void
     {
         $map = $this->map();
-        self::assertSame(['a' => 1], $map->setIfNotExists('a', 1)->toArray(), 'set on empty');
+        self::assertSame(['a' => 1], $map->setIfNotExists('a', 1)->all(), 'set on empty');
 
         $map = $this->map(['a' => 1]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('b', 2)->toArray(), 'key does not exist');
+        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('b', 2)->all(), 'key does not exist');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('a', 3)->toArray(), 'key exists');
+        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('a', 3)->all(), 'key exists');
     }
 
     public function test_sortByKey(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->sortByKey(true)->toArray(), 'set on empty ascending');
-        self::assertSame([], $map->sortByKey(false)->toArray(), 'set on empty descending');
+        self::assertSame([], $map->sortByKey(true)->all(), 'set on empty ascending');
+        self::assertSame([], $map->sortByKey(false)->all(), 'set on empty descending');
 
         $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
-        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortByKey(true)->toArray(), 'sort by key');
-        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortByKey(false)->toArray(), 'sort by key reverse');
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortByKey(true)->all(), 'sort by key');
+        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortByKey(false)->all(), 'sort by key reverse');
     }
 
     public function test_sortByKeyAsc(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->sortByKeyAsc()->toArray(), 'set on empty');
+        self::assertSame([], $map->sortByKeyAsc()->all(), 'set on empty');
 
         $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
-        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortByKeyAsc()->toArray(), 'sort by key');
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortByKeyAsc()->all(), 'sort by key');
     }
 
     public function test_sortByKeyDesc(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->sortByKeyDesc()->toArray(), 'set on empty');
+        self::assertSame([], $map->sortByKeyDesc()->all(), 'set on empty');
 
         $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
-        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortByKeyDesc()->toArray(), 'sort by key reverse');
+        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortByKeyDesc()->all(), 'sort by key reverse');
     }
 
     public function test_sortWithKey(): void
     {
         $map = $this->map();
-        self::assertSame([], $map->sortWithKey(fn($a, $b) => $a <=> $b)->toArray(), 'set on empty');
+        self::assertSame([], $map->sortWithKey(fn($a, $b) => $a <=> $b)->all(), 'set on empty');
 
         $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
-        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortWithKey(fn($a, $b) => $a <=> $b)->toArray(), 'sort by key');
-        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortWithKey(fn($a, $b) => $b <=> $a)->toArray(), 'sort by key reverse');
+        self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortWithKey(fn($a, $b) => $a <=> $b)->all(), 'sort by key');
+        self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortWithKey(fn($a, $b) => $b <=> $a)->all(), 'sort by key reverse');
     }
 
     public function test_toUrlQuery(): void
@@ -607,10 +607,10 @@ class MapTest extends TestCase
 
     public function test_reindex(): void
     {
-        self::assertSame(['b' => 1, 'c' => 2], $this->map(['a' => null, 'b' => 1, 'c' => 2])->compact()->toArray(), 'with compact');
-        self::assertSame(['a' => 1, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->except(['b'])->toArray(), 'with except');
-        self::assertSame(['a' => 1, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->filter(fn($n) => (bool)($n % 2))->toArray(), 'with filter');
-        self::assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->only(['b'])->toArray(), 'with only');
-        self::assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->reverse()->toArray(), 'with reverse');
+        self::assertSame(['b' => 1, 'c' => 2], $this->map(['a' => null, 'b' => 1, 'c' => 2])->compact()->all(), 'with compact');
+        self::assertSame(['a' => 1, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->except(['b'])->all(), 'with except');
+        self::assertSame(['a' => 1, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->filter(fn($n) => (bool)($n % 2))->all(), 'with filter');
+        self::assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->only(['b'])->all(), 'with only');
+        self::assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->reverse()->all(), 'with reverse');
     }
 }

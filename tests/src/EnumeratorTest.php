@@ -36,12 +36,12 @@ class EnumeratorTest extends TestCase
     {
         $enumerator = $this->enumerator([1, 2])->instantiate([3]);
         self::assertInstanceOf(Enumerator::class, $enumerator);
-        self::assertSame([3], $enumerator->toArray());
+        self::assertSame([3], $enumerator->all());
 
         $lazy = $this->enumerator([1, 2])->instantiate(new LazyIterator([3]));
         self::assertTrue($lazy->isLazy());
         self::assertFalse($lazy->isEager());
-        self::assertSame([3], $enumerator->toArray());
+        self::assertSame([3], $enumerator->all());
     }
 
     public function test_isEager(): void
@@ -72,6 +72,6 @@ class EnumeratorTest extends TestCase
         });
         self::assertSame(1, $count);
         self::assertInstanceOf(Enumerator::class, $tapped);
-        self::assertSame([1, 2], $tapped->toArray());
+        self::assertSame([1, 2], $tapped->all());
     }
 }

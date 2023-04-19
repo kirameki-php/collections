@@ -93,7 +93,7 @@ final class Iter
     public static function dropFirst(iterable $iterable, int $amount, bool $reindex = false): Generator
     {
         if ($amount < 0) {
-            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}.", [
                 'iterable' => $iterable,
                 'amount' => $amount,
             ]);

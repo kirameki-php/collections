@@ -20,21 +20,21 @@ class VecTest extends TestCase
     {
         $vec = $this->vec([1, 2]);
         self::assertInstanceOf(Vec::class, $vec);
-        self::assertSame([1, 2], $vec->toArray());
+        self::assertSame([1, 2], $vec->all());
     }
 
     public function test_constructor_no_args(): void
     {
         $vec = new Vec();
         self::assertInstanceOf(Vec::class, $vec);
-        self::assertSame([], $vec->toArray());
+        self::assertSame([], $vec->all());
     }
 
     public function test_constructor_empty(): void
     {
         $vec = $this->vec([]);
         self::assertInstanceOf(Vec::class, $vec);
-        self::assertSame([], $vec->toArray());
+        self::assertSame([], $vec->all());
     }
 
     public function test_constructor_non_list(): void
@@ -47,7 +47,7 @@ class VecTest extends TestCase
     public function test_loop(): void
     {
         $vec = Vec::loop(3);
-        self::assertSame([0, 1, 2], $vec->toArray());
+        self::assertSame([0, 1, 2], $vec->all());
     }
 
     public function test_jsonSerialize(): void
@@ -90,19 +90,19 @@ class VecTest extends TestCase
     {
         $vec = $this->vec([1, 2]);
         $vec[0] = 3;
-        self::assertSame([3, 2], $vec->toArray(), 'Overwriting existing value');
+        self::assertSame([3, 2], $vec->all(), 'Overwriting existing value');
 
         $vec = $this->vec([1, 2]);
         $vec[] = 3;
-        self::assertSame([1, 2, 3], $vec->toArray(), 'Appending to the end');
+        self::assertSame([1, 2, 3], $vec->all(), 'Appending to the end');
 
         $vec = $this->vec([1, 2]);
         $vec->offsetSet(0, 3);
-        self::assertSame([3, 2], $vec->toArray(), 'Overwriting existing value using method');
+        self::assertSame([3, 2], $vec->all(), 'Overwriting existing value using method');
 
         $vec = $this->vec([1, 2]);
         $vec->offsetSet(null, 3);
-        self::assertSame([1, 2, 3], $vec->toArray(), 'Appending to the end using method');
+        self::assertSame([1, 2, 3], $vec->all(), 'Appending to the end using method');
     }
 
     public function test_offsetSet_non_int_access(): void
@@ -124,19 +124,19 @@ class VecTest extends TestCase
     {
         $vec = $this->vec([1, 2]);
         unset($vec[0]);
-        self::assertSame([2], $vec->toArray(), 'Unset first element');
+        self::assertSame([2], $vec->all(), 'Unset first element');
 
         $vec = $this->vec([1, 2, 3]);
         unset($vec[1]);
-        self::assertSame([1, 3], $vec->toArray(), 'Unset middle element');
+        self::assertSame([1, 3], $vec->all(), 'Unset middle element');
 
         $vec = $this->vec([1, 2]);
         unset($vec[2]);
-        self::assertSame([1, 2], $vec->toArray(), 'Unset non-existing element');
+        self::assertSame([1, 2], $vec->all(), 'Unset non-existing element');
 
         $vec = $this->vec([1, 2]);
         $vec->offsetUnset(0);
-        self::assertSame([2], $vec->toArray(), 'Unset first element using method');
+        self::assertSame([2], $vec->all(), 'Unset first element using method');
 
     }
 
@@ -149,46 +149,46 @@ class VecTest extends TestCase
 
     public function test_append(): void
     {
-        self::assertSame([3], $this->vec()->append(3)->toArray(), 'on empty');
-        self::assertSame([1], $this->vec([1])->append()->toArray(), 'append nothing');
-        self::assertSame([1, 2, 3], $this->vec([1, 2])->append(3)->toArray());
-        self::assertSame([1, 2, 3, 3, 4], $this->vec([1, 2])->append(3, 3, 4)->toArray(), 'append multiple');
-        self::assertSame([1, 2, 3], $this->vec([1, 2])->append(a: 3)->toArray(), 'named args');
+        self::assertSame([3], $this->vec()->append(3)->all(), 'on empty');
+        self::assertSame([1], $this->vec([1])->append()->all(), 'append nothing');
+        self::assertSame([1, 2, 3], $this->vec([1, 2])->append(3)->all());
+        self::assertSame([1, 2, 3, 3, 4], $this->vec([1, 2])->append(3, 3, 4)->all(), 'append multiple');
+        self::assertSame([1, 2, 3], $this->vec([1, 2])->append(a: 3)->all(), 'named args');
     }
 
     public function test_map():void
     {
         $mapped = $this->vec([1, 2])->map(fn($v): int => $v * 2);
-        self::assertSame([2, 4], $mapped->toArray());
+        self::assertSame([2, 4], $mapped->all());
     }
 
     public function test_pad(): void
     {
-        self::assertSame([], $this->vec()->pad(0, 1)->toArray(), 'zero pad');
-        self::assertSame([1, 1], $this->vec()->pad(2, 1)->toArray(), 'on empty');
-        self::assertSame([0], $this->vec([0])->pad(1, 1)->toArray(), 'no pad');
-        self::assertSame([0], $this->vec([0])->pad(-1, 1)->toArray(), 'negative pad');
-        self::assertSame([1, 1, 0], $this->vec([0])->pad(-3, 1)->toArray(), 'negative pad');
-        self::assertSame([0, 1, 1], $this->vec([0])->pad(3, 1)->toArray(), 'pad left');
+        self::assertSame([], $this->vec()->pad(0, 1)->all(), 'zero pad');
+        self::assertSame([1, 1], $this->vec()->pad(2, 1)->all(), 'on empty');
+        self::assertSame([0], $this->vec([0])->pad(1, 1)->all(), 'no pad');
+        self::assertSame([0], $this->vec([0])->pad(-1, 1)->all(), 'negative pad');
+        self::assertSame([1, 1, 0], $this->vec([0])->pad(-3, 1)->all(), 'negative pad');
+        self::assertSame([0, 1, 1], $this->vec([0])->pad(3, 1)->all(), 'pad left');
     }
 
     public function test_prepend(): void
     {
-        self::assertSame([], $this->vec()->prepend()->toArray(), 'empty prepend on empty array');
-        self::assertSame([1], $this->vec()->prepend(1)->toArray(), 'prepend on empty array');
-        self::assertSame([1], $this->vec([1])->prepend()->toArray(), 'empty prepend');
-        self::assertSame([1, 2], $this->vec([2])->prepend(1)->toArray(), 'prepend one');
-        self::assertSame([1, 1, 2], $this->vec([2])->prepend(1, 1)->toArray(), 'prepend multi');
-        self::assertSame([1, 2], $this->vec([2])->prepend(a: 1)->toArray(), 'named args');
+        self::assertSame([], $this->vec()->prepend()->all(), 'empty prepend on empty array');
+        self::assertSame([1], $this->vec()->prepend(1)->all(), 'prepend on empty array');
+        self::assertSame([1], $this->vec([1])->prepend()->all(), 'empty prepend');
+        self::assertSame([1, 2], $this->vec([2])->prepend(1)->all(), 'prepend one');
+        self::assertSame([1, 1, 2], $this->vec([2])->prepend(1, 1)->all(), 'prepend multi');
+        self::assertSame([1, 2], $this->vec([2])->prepend(a: 1)->all(), 'named args');
     }
 
     public function test_repeat(): void
     {
-        self::assertSame([], $this->vec()->repeat(2)->toArray(), 'empty repeat');
-        self::assertSame([1], $this->vec([1])->repeat(1)->toArray(), 'repeat single');
-        self::assertSame([1, 2], $this->vec([1, 2])->repeat(1)->toArray(), 'repeat multiple');
-        self::assertSame([1, 1], $this->vec([1])->repeat(2)->toArray(), 'repeat x2');
-        self::assertSame([1, 2, 1, 2], $this->vec([1, 2])->repeat(2)->toArray(), 'repeat multi x2');
+        self::assertSame([], $this->vec()->repeat(2)->all(), 'empty repeat');
+        self::assertSame([1], $this->vec([1])->repeat(1)->all(), 'repeat single');
+        self::assertSame([1, 2], $this->vec([1, 2])->repeat(1)->all(), 'repeat multiple');
+        self::assertSame([1, 1], $this->vec([1])->repeat(2)->all(), 'repeat x2');
+        self::assertSame([1, 2, 1, 2], $this->vec([1, 2])->repeat(2)->all(), 'repeat multi x2');
     }
 
     public function test_repeat_negative(): void
@@ -200,11 +200,11 @@ class VecTest extends TestCase
 
     public function test_reindex(): void
     {
-        self::assertSame([1, 2], $this->vec([null, 1, 2])->compact()->toArray(), 'with compact');
-        self::assertSame([1, 3], $this->vec([1, 2, 3])->except([1])->toArray(), 'with except');
-        self::assertSame([1, 3], $this->vec([1, 2, 3])->filter(fn($n) => (bool)($n % 2))->toArray(), 'with filter');
-        self::assertSame([2], $this->vec([1, 2, 3])->only([1])->toArray(), 'with only');
-        self::assertSame([2, 1], $this->vec([1, 2])->reverse()->toArray(), 'with reverse');
+        self::assertSame([1, 2], $this->vec([null, 1, 2])->compact()->all(), 'with compact');
+        self::assertSame([1, 3], $this->vec([1, 2, 3])->except([1])->all(), 'with except');
+        self::assertSame([1, 3], $this->vec([1, 2, 3])->filter(fn($n) => (bool)($n % 2))->all(), 'with filter');
+        self::assertSame([2], $this->vec([1, 2, 3])->only([1])->all(), 'with only');
+        self::assertSame([2, 1], $this->vec([1, 2])->reverse()->all(), 'with reverse');
     }
 
     public function test_sampleIndex(): void
@@ -236,16 +236,16 @@ class VecTest extends TestCase
 
     public function test_sampleIndexes(): void
     {
-        self::assertSame([], $this->vec([1])->sampleIndexes(0)->toArray(), 'sample zero');
-        self::assertSame([0], $this->vec([1])->sampleIndexes(1)->toArray(), 'sample one');
-        self::assertSame([0, 0], $this->vec([1])->sampleIndexes(2, true)->toArray(), 'sample overflow with replacement');
+        self::assertSame([], $this->vec([1])->sampleIndexes(0)->all(), 'sample zero');
+        self::assertSame([0], $this->vec([1])->sampleIndexes(1)->all(), 'sample one');
+        self::assertSame([0, 0], $this->vec([1])->sampleIndexes(2, true)->all(), 'sample overflow with replacement');
 
         $randomizer = new Randomizer(new Xoshiro256StarStar(seed: 1));
-        self::assertSame([0, 1], $this->vec([10, 20])->sampleIndexes(2, false, $randomizer)->toArray(), 'size == amount');
-        self::assertSame([2, 1], $this->vec([10, 20, 30])->sampleIndexes(2, false, $randomizer)->toArray(), 'size > amount');
-        self::assertSame([1, 1], $this->vec([10, 20])->sampleIndexes(2, true, $randomizer)->toArray(), 'size == amount with replacement');
-        self::assertSame([0, 0], $this->vec([10, 20])->sampleIndexes(2, true, $randomizer)->toArray(), 'size > amount with replacement');
-        self::assertSame([1, 1, 0], $this->vec([10, 20])->sampleIndexes(3, true, $randomizer)->toArray(), 'size < amount with replacement');
+        self::assertSame([0, 1], $this->vec([10, 20])->sampleIndexes(2, false, $randomizer)->all(), 'size == amount');
+        self::assertSame([2, 1], $this->vec([10, 20, 30])->sampleIndexes(2, false, $randomizer)->all(), 'size > amount');
+        self::assertSame([1, 1], $this->vec([10, 20])->sampleIndexes(2, true, $randomizer)->all(), 'size == amount with replacement');
+        self::assertSame([0, 0], $this->vec([10, 20])->sampleIndexes(2, true, $randomizer)->all(), 'size > amount with replacement');
+        self::assertSame([1, 1, 0], $this->vec([10, 20])->sampleIndexes(3, true, $randomizer)->all(), 'size < amount with replacement');
     }
 
     public function test_sampleIndexes_overflow(): void

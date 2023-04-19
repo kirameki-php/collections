@@ -32,6 +32,14 @@ trait Enumerable
     abstract protected function reindex(): bool;
 
     /**
+     * @return array<TKey, TValue>
+     */
+    public function all(): array
+    {
+        return Arr::from($this);
+    }
+
+    /**
      * Returns the value at the given index.
      * Throws `IndexOutOfBoundsException` if the index does not exist.
      *
@@ -120,7 +128,11 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if all given values exist in the collection,
+     * **false** otherwise.
+     *
      * @param iterable<int, TValue> $values
+     * Values to be searched.
      * @return bool
      */
     public function containsAll(iterable $values): bool
@@ -129,7 +141,11 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if any given values exist in the collection,
+     * **false** otherwise.
+     *
      * @param iterable<int, TValue> $values
+     * Values to be searched.
      * @return bool
      */
     public function containsAny(iterable $values): bool
@@ -138,7 +154,11 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if none of the given values exist in the
+     * collection, **false** otherwise.
+     *
      * @param iterable<int, TValue> $values
+     * Values to be searched.
      * @return bool
      */
     public function containsNone(iterable $values): bool
@@ -147,6 +167,9 @@ trait Enumerable
     }
 
     /**
+     * Counts all the elements in the collection.
+     * If a condition is given, it will only increase the count if the condition returns **true**.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
      * [Optional] Condition to determine if given item should be counted.
      * Defaults to **null**.
@@ -158,16 +181,24 @@ trait Enumerable
     }
 
     /**
+     * Compares the keys against the values from `$items` and returns the difference.
+     *
      * @param iterable<TKey, TValue> $items
+     * Iterable to be compared with.
+     * @param Closure(TValue, TValue): int<-1, 1>|null $by
+     * [Optional] Callback which can be used for comparison of items.
      * @return static
      */
-    public function diff(iterable $items): static
+    public function diff(iterable $items, ?Closure $by = null): static
     {
-        return $this->instantiate(Arr::diff($this, $items, null, $this->reindex()));
+        return $this->instantiate(Arr::diff($this, $items, $by, $this->reindex()));
     }
 
     /**
+     * Returns **false** if value exists, **true** otherwise.
+     *
      * @param mixed $value
+     * Value to be searched.
      * @return bool
      */
     public function doesNotContain(mixed $value): bool
@@ -176,25 +207,22 @@ trait Enumerable
     }
 
     /**
-     * @param mixed $items
-     * @return bool
-     */
-    public function doesNotEquals(mixed $items): bool
-    {
-        return !$this->equals($items);
-    }
-
-    /**
+     * Returns a new instance with the first n elements dropped.
+     *
      * @param int $amount
+     * Amount of elements to drop from the front. Must be >= 0.
      * @return static
      */
     public function dropFirst(int $amount): static
     {
-        return $this->instantiate(Iter::dropFirst($this, $amount));
+        return $this->instantiate(Iter::dropFirst($this, $amount, $this->reindex()));
     }
 
     /**
+     * Returns a new instance with the last n elements dropped.
+     *
      * @param int $amount
+     * Amount of items to be dropped from the end. Must be >= 0.
      * @return static
      */
     public function dropLast(int $amount): static
@@ -208,7 +236,7 @@ trait Enumerable
      */
     public function dropUntil(Closure $condition): static
     {
-        return $this->instantiate(Iter::dropUntil($this, $condition));
+        return $this->instantiate(Iter::dropUntil($this, $condition, $this->reindex()));
     }
 
     /**
@@ -217,7 +245,7 @@ trait Enumerable
      */
     public function dropWhile(Closure $condition): static
     {
-        return $this->instantiate(Iter::dropWhile($this, $condition));
+        return $this->instantiate(Iter::dropWhile($this, $condition, $this->reindex()));
     }
 
     /**
@@ -245,19 +273,6 @@ trait Enumerable
     public function each(Closure $callback): static
     {
         return $this->instantiate(Iter::each($this, $callback));
-    }
-
-    /**
-     * @param mixed $items
-     * @return bool
-     */
-    public function equals(mixed $items): bool
-    {
-        if (is_iterable($items)) {
-            /** @var iterable<array-key, mixed> $items */
-            return $this->toArray() === Arr::from($items);
-        }
-        return false;
     }
 
     /**
@@ -818,7 +833,7 @@ trait Enumerable
      */
     public function takeLast(int $amount): static
     {
-        return $this->instantiate(Arr::takeLast($this, $amount));
+        return $this->instantiate(Arr::takeLast($this, $amount, $this->reindex()));
     }
 
     /**
@@ -844,7 +859,7 @@ trait Enumerable
      */
     public function toArray(): array
     {
-        return Arr::from($this);
+        return $this->all();
     }
 
     /**

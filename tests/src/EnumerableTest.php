@@ -4,13 +4,19 @@ namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
-use Kirameki\Collections\Map;
-use Kirameki\Collections\Utils\Arr;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use function dump;
 
 class EnumerableTest extends TestCase
 {
+    public function test_all(): void
+    {
+        $this->assertSame([], $this->vec()->all());
+        $this->assertSame([], $this->map()->all());
+        $this->assertSame([1, 2], $this->vec([1, 2])->all());
+        $this->assertSame([1, 2], $this->map(['a' => 1, 'b' => 2])->all());
+    }
+
     public function test_at(): void
     {
         $this->assertSame(1, $this->vec([1, 2])->at(0));
@@ -116,25 +122,25 @@ class EnumerableTest extends TestCase
 
     public function test_compact(): void
     {
-        $this->assertSame([], $this->vec()->compact()->toArray(), 'empty');
-        $this->assertSame([], $this->vec([null, null])->compact()->toArray(), 'all null');
-        $this->assertSame([1], $this->vec([1, null])->compact()->toArray(), 'null at end');
-        $this->assertSame([1], $this->vec([null, 1])->compact()->toArray(), 'null at front');
-        $this->assertSame([1, 2], $this->vec([1, null, 2])->compact()->toArray(), 'null in the middle');
-        $this->assertSame([1, 2], $this->vec([1, 2])->compact()->toArray(), 'no nulls');
-        $this->assertSame([1, 2], $this->vec([null, 1, null, 2, null])->compact()->toArray(), 'mixed nulls');
-        $this->assertSame([0, false, ''], $this->vec([null, 0, false, ''])->compact()->toArray(), 'null like');
-        $this->assertSame([[1]], $this->vec([[1, null]])->compact(2)->toArray(), 'nested');
+        $this->assertSame([], $this->vec()->compact()->all(), 'empty');
+        $this->assertSame([], $this->vec([null, null])->compact()->all(), 'all null');
+        $this->assertSame([1], $this->vec([1, null])->compact()->all(), 'null at end');
+        $this->assertSame([1], $this->vec([null, 1])->compact()->all(), 'null at front');
+        $this->assertSame([1, 2], $this->vec([1, null, 2])->compact()->all(), 'null in the middle');
+        $this->assertSame([1, 2], $this->vec([1, 2])->compact()->all(), 'no nulls');
+        $this->assertSame([1, 2], $this->vec([null, 1, null, 2, null])->compact()->all(), 'mixed nulls');
+        $this->assertSame([0, false, ''], $this->vec([null, 0, false, ''])->compact()->all(), 'null like');
+        $this->assertSame([[1]], $this->vec([[1, null]])->compact(2)->all(), 'nested');
 
-        $this->assertSame([], $this->map()->compact()->toArray(), 'empty');
-        $this->assertSame([], $this->map(['a' => null, 'b' => null])->compact()->toArray(), 'all null');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => null])->compact()->toArray(), 'null at end');
-        $this->assertSame(['b' => 1], $this->map(['a' => null, 'b' => 1])->compact()->toArray(), 'null at front');
-        $this->assertSame(['a' => 1, 'c' => 2], $this->map(['a' => 1, 'b' => null, 'c' => 2])->compact()->toArray(), 'null in the middle');
-        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->compact()->toArray(), 'no nulls');
-        $this->assertSame(['b' => 1, 'd' => 2], $this->map(['a' => null, 'b' => 1, 'c' => null, 'd' => 2])->compact()->toArray(), 'mixed nulls');
-        $this->assertSame(['b' => 0, 'c' => false, 'd' => ''], $this->map(['a' => null, 'b' => 0, 'c' => false, 'd' => ''])->compact()->toArray(), 'null like');
-        $this->assertSame(['a' => [1]], $this->map(['a' => [1, null]])->compact(2)->toArray(), 'nested');
+        $this->assertSame([], $this->map()->compact()->all(), 'empty');
+        $this->assertSame([], $this->map(['a' => null, 'b' => null])->compact()->all(), 'all null');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => null])->compact()->all(), 'null at end');
+        $this->assertSame(['b' => 1], $this->map(['a' => null, 'b' => 1])->compact()->all(), 'null at front');
+        $this->assertSame(['a' => 1, 'c' => 2], $this->map(['a' => 1, 'b' => null, 'c' => 2])->compact()->all(), 'null in the middle');
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->compact()->all(), 'no nulls');
+        $this->assertSame(['b' => 1, 'd' => 2], $this->map(['a' => null, 'b' => 1, 'c' => null, 'd' => 2])->compact()->all(), 'mixed nulls');
+        $this->assertSame(['b' => 0, 'c' => false, 'd' => ''], $this->map(['a' => null, 'b' => 0, 'c' => false, 'd' => ''])->compact()->all(), 'null like');
+        $this->assertSame(['a' => [1]], $this->map(['a' => [1, null]])->compact(2)->all(), 'nested');
     }
 
     public function test_compact_zero_depth(): void
@@ -268,5 +274,77 @@ class EnumerableTest extends TestCase
         $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->count());
         $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->count(fn(int $n) => $n %2 === 0), 'with condition');
         $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->count(fn() => false), 'no condition match');
+    }
+
+    public function test_diff(): void
+    {
+        $this->assertSame([], $this->vec()->diff([])->all(), 'both empty');
+        $this->assertSame([], $this->vec()->diff([1])->all(), 'diff empty');
+        $this->assertSame([1], $this->vec([1])->diff([])->all(), 'empty arg');
+        $this->assertSame([2], $this->vec([1, 2])->diff([1])->all(), 'diff single');
+        $this->assertSame([2], $this->vec([1, 2, 1])->diff([1])->all(), 'diff multiple items');
+        $this->assertSame([2], $this->vec([1, 2])->diff([1, 1])->all(), 'diff multiple in arg');
+        $this->assertSame([], $this->vec([1, 2])->diff([1, 2])->all(), 'diff exact');
+        $this->assertSame([], $this->vec([2])->diff([1, 2])->all(), 'diff bigger args');
+        $this->assertSame([0], $this->vec([2, 2, 0])->diff([2])->all(), 're-indexed');
+        $this->assertSame([], $this->vec([1, 2, 3])->diff([3, 4, 5], fn() => 0)->all(), 'use by callback reject');
+        $this->assertSame([1, 2], $this->vec([1, 2])->diff([2, 3], fn() => 1)->all(), 'use by callback accept');
+
+        $this->assertSame([], $this->map()->diff([])->all(), 'both empty');
+        $this->assertSame([], $this->map()->diff([1])->all(), 'diff empty');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->diff([])->all(), 'empty arg');
+        $this->assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->diff(['a' => 1])->all(), 'diff single');
+        $this->assertSame([], $this->map(['a' => 1])->diff(['b' => 1])->all(), 'map key doesnt matter');
+        $this->assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 1])->diff(['a' => 1])->all(), 'diff multiple items');
+        $this->assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->diff(['a' => 1, 'b' => 1])->all(), 'same key but different value');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2])->diff(['a' => 2, 'b' => 3], fn() => 0)->all(), 'use by callback reject');
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->diff(['a' => 2, 'b' => 3], fn() => 1)->all(), 'use by callback accept');
+    }
+
+    public function test_doesNotContain(): void
+    {
+        $this->assertTrue($this->vec()->doesNotContain(null), 'null in empty');
+        $this->assertTrue($this->vec()->doesNotContain(''), 'blank in empty');
+        $this->assertFalse($this->vec([''])->doesNotContain(''), 'contains blank');
+        $this->assertTrue($this->vec([1, 2])->doesNotContain('2'), 'wrong type');
+        $this->assertFalse($this->vec([1, 2])->doesNotContain(2), 'has int');
+        $this->assertTrue($this->vec([1, 2])->doesNotContain(3), 'no match');
+        $this->assertFalse($this->vec([1, 2])->doesNotContain(1), 'match');
+        $this->assertTrue($this->vec([1])->doesNotContain($this->vec([1])), 'vec as arg');
+
+        $this->assertTrue($this->map()->doesNotContain(null), 'null in empty');
+        $this->assertTrue($this->map()->doesNotContain(''), 'blank in empty');
+        $this->assertFalse($this->map(['a' => ''])->doesNotContain(''), 'contains blank');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->doesNotContain('2'), 'wrong type');
+        $this->assertFalse($this->map(['a' => 1, 'b' => 2])->doesNotContain(2), 'has int');
+        $this->assertTrue($this->map(['a' => 1])->doesNotContain($this->vec([1])), 'vec as arg');
+    }
+
+    public function test_dropFirst(): void
+    {
+        $this->assertSame([], $this->vec()->dropFirst(0)->all(), 'zero on empty');
+        $this->assertSame([], $this->vec()->dropFirst(2)->all(), 'over limit on empty');
+        $this->assertSame([2, 3], $this->vec([1, 2, 3])->dropFirst(1)->all(), 'drop 1');
+        $this->assertSame([3], $this->vec([1, 2, 3])->dropFirst(2)->all(), 'drop 2');
+        $this->assertSame([], $this->vec([1])->dropFirst(2)->all(), 'over limit');
+
+        $this->assertSame([], $this->map()->dropFirst(0)->all(), 'zero on empty');
+        $this->assertSame([], $this->map()->dropFirst(2)->all(), 'over limit on empty');
+        $this->assertSame(['b' => 2, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropFirst(1)->all(), 'drop 1');
+        $this->assertSame(['c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropFirst(2)->all(), 'drop 2');
+        $this->assertSame([], $this->map(['a' => 1])->dropFirst(2)->all(), 'over limit');
+    }
+
+    public function test_dropFirst_negative_amount(): void
+    {
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1])->dropFirst(-1)->all();
+    }
+
+
+    public function test_dropLast(): void
+    {
+
     }
 }
