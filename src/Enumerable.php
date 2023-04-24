@@ -231,6 +231,8 @@ trait Enumerable
     }
 
     /**
+     * Returns a new instance with the values dropped until the condition returns **true**.
+     *
      * @param Closure(TValue, TKey): bool $condition
      * @return static
      */
@@ -240,6 +242,8 @@ trait Enumerable
     }
 
     /**
+     * Returns a new instance with the values dropped while the condition returns **true**.
+     *
      * @param Closure(TValue, TKey): bool $condition
      * @return static
      */

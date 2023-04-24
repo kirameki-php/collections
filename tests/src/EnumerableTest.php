@@ -5,7 +5,15 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Dumper\Config;
+use Kirameki\Dumper\Writer;
 use function dump;
+use function fgets;
+use function file_get_contents;
+use function fopen;
+use function fread;
+use function fseek;
+use const PHP_INT_MAX;
 
 class EnumerableTest extends TestCase
 {
@@ -147,14 +155,14 @@ class EnumerableTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0');
-        $this->vec()->compact(0); /** @phpstan-ignore-line */
+        $this->vec()->compact(0);
     }
 
     public function test_compact_negative_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1');
-        $this->vec()->compact(-1); /** @phpstan-ignore-line */
+        $this->vec()->compact(-1);
     }
 
     public function test_contains(): void
@@ -267,12 +275,12 @@ class EnumerableTest extends TestCase
     {
         $this->assertSame(0, $this->vec()->count());
         $this->assertSame(2, $this->vec([1, 2])->count());
-        $this->assertSame(1, $this->vec([1, 2, 3])->count(fn(int $n) => $n %2 === 0), 'with condition');
+        $this->assertSame(1, $this->vec([1, 2, 3])->count(fn(int $n) => $n % 2 === 0), 'with condition');
         $this->assertSame(0, $this->vec([1, 2])->count(fn() => false), 'no condition match');
 
         $this->assertSame(0, $this->map()->count());
         $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->count());
-        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->count(fn(int $n) => $n %2 === 0), 'with condition');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->count(fn(int $n) => $n % 2 === 0), 'with condition');
         $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->count(fn() => false), 'no condition match');
     }
 
@@ -362,5 +370,42 @@ class EnumerableTest extends TestCase
         $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         $this->expectException(InvalidArgumentException::class);
         $this->vec([1])->dropLast(-1)->all();
+    }
+
+    public function test_dropUntil(): void
+    {
+        $this->assertSame([], $this->vec()->dropUntil(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->vec([1, 2, 3])->dropUntil(fn() => false)->all(), 'no match');
+        $this->assertSame([2, 3], $this->vec([1, 2, 3])->dropUntil(fn($v) => $v > 1)->all(), 'match');
+        $this->assertSame([], $this->vec([1, 2, 3])->dropUntil(fn($v) => $v > 3)->all(), 'no match');
+
+        $this->assertSame([], $this->map()->dropUntil(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropUntil(fn() => false)->all(), 'no match');
+        $this->assertSame(['b' => 2, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropUntil(fn($v) => $v > 1)->all(), 'match');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropUntil(fn($v) => $v > 3)->all(), 'no match');
+    }
+
+    public function test_dropWhile(): void
+    {
+        $this->assertSame([], $this->vec()->dropWhile(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->vec([1, 2])->dropWhile(fn() => true)->all(), 'no match');
+        $this->assertSame([1, 2], $this->vec([1, 2])->dropWhile(fn() => false)->all(), 'no match');
+        $this->assertSame([2, 3], $this->vec([1, 2, 3])->dropWhile(fn($v) => $v < 2)->all(), 'match');
+        $this->assertSame([], $this->vec([1, 2, 3])->dropWhile(fn($v) => $v < 4)->all(), 'no match');
+
+        $this->assertSame([], $this->map()->dropWhile(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropWhile(fn() => true)->all(), 'no match');
+        $this->assertSame(['b' => 2, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropWhile(fn($v) => $v < 2)->all(), 'match');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropWhile(fn($v) => $v < 4)->all(), 'no match');
+    }
+
+    public function test_dump(): void
+    {
+        $resource = fopen('php://memory', 'r+');
+        $config = new Config(writer: new Writer($resource), decorator: 'plain');
+        $this->vec()->dump($config);
+        fseek($resource, 0);
+        $expected = fread($resource, 100);
+        $this->assertStringContainsString('items: []', $expected);
     }
 }
