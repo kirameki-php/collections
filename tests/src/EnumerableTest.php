@@ -403,9 +403,13 @@ class EnumerableTest extends TestCase
     {
         $resource = fopen('php://memory', 'r+');
         $config = new Config(writer: new Writer($resource), decorator: 'plain');
-        $this->vec()->dump($config);
+
+        $original = $this->vec();
+        $returned = $original->dump($config);
+
         fseek($resource, 0);
         $expected = fread($resource, 100);
         $this->assertStringContainsString('items: []', $expected);
+        $this->assertSame($original, $returned);
     }
 }
