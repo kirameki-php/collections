@@ -1708,8 +1708,8 @@ final class Arr
     }
 
     /**
-     * Groups the elements of the given iterable according to the string
-     * returned by the callback.
+     * Groups the elements of the given `$iterable` according to the string
+     * returned by `$callback`.
      *
      * ```php
      * Arr::groupBy([1, 2, 3, 4], fn($n) => $n % 3); // [1 => [1, 4], 2 => [2], 0 => [3]]

@@ -392,6 +392,9 @@ trait Enumerable
     }
 
     /**
+     * Groups the elements of the collection according to the string
+     * returned by `$callback`.
+     *
      * @template TGroupKey of array-key
      * @param Closure(TValue, TKey): TGroupKey $callback
      * @return Map<TGroupKey, static>

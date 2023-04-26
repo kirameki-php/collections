@@ -16,6 +16,7 @@ use stdClass;
 use function fopen;
 use function fread;
 use function fseek;
+use function range;
 
 class EnumerableTest extends TestCase
 {
@@ -596,5 +597,14 @@ class EnumerableTest extends TestCase
             $sum["x{$k}"] = $i;
             return $sum;
         }), 'sum');
+    }
+
+    public function test_groupBy(): void
+    {
+        $this->assertSame([], $this->vec()->groupBy(fn($i) => $i)->all(), 'empty');
+        $this->assertSame([[0, 2], [1, 3]], $this->vec(range(0, 3))->groupBy(fn($i) => $i % 2)->toArrayRecursive(), 'odd/even');
+
+        $this->assertSame([], $this->map()->groupBy(fn($i) => $i)->all(), 'empty');
+        $this->assertSame([1 => ['a' => 1, 'c' => 3], 0 => ['b' => 2]], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->groupBy(fn($i) => $i % 2)->toArrayRecursive(), 'odd/even');
     }
 }
