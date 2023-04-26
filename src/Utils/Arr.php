@@ -1028,11 +1028,16 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
      * @return array<TKey, TValue>
      * An array containing duplicate values.
      */
     public static function duplicates(
         iterable $iterable,
+        ?bool $reindex = null,
     ): array
     {
         $array = [];
@@ -1043,10 +1048,14 @@ final class Arr
             $array[$key] = $val;
         }
 
+        $reindex ??= array_is_list($array);
         $duplicates = [];
         foreach ($refs as $keys) {
             if (count($keys) > 1) {
-                $duplicates[] = $array[$keys[0]];
+                $key = $keys[0];
+                $reindex
+                    ? $duplicates[] = $array[$key]
+                    : $duplicates[$key] = $array[$key];
             }
         }
 
@@ -1085,7 +1094,7 @@ final class Arr
 
     /**
      * Returns a new array with the given keys removed from `$iterable`.
-     * Non-existent keys will be ignored.
+     * Missing keys will be ignored.
      * If `$safe` is set to **true**, `MissingKeyException` will be thrown
      * if a key does not exist in `$iterable`.
      *
@@ -1179,7 +1188,7 @@ final class Arr
     }
 
     /**
-     * Returns the first element in iterable.
+     * Returns the first element in `$iterable`.
      * If `$condition` is set, the first element which meets the condition is returned instead.
      * Throws `NoMatchFoundException` if no condition is met.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
@@ -1221,7 +1230,7 @@ final class Arr
     }
 
     /**
-     * Returns the first index of iterable which meets the given condition.
+     * Returns the first index of `$iterable` which meets the given `$condition`.
      * Throws `NoMatchFoundException` if no condition is met.
      *
      * Example:
@@ -1258,7 +1267,7 @@ final class Arr
     }
 
     /**
-     * Returns the first index of iterable which meets the given condition.
+     * Returns the first index of `$iterable` which meets the given `$condition`.
      * Returns **null** if there were no matches.
      *
      * Example:
@@ -1297,7 +1306,7 @@ final class Arr
     }
 
     /**
-     * Returns the first key of the given iterable which meets the given condition.
+     * Returns the first key of `$iterable` which meets the given `$condition`.
      * Throws `NoMatchFoundException` if no condition is met.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
@@ -1339,7 +1348,7 @@ final class Arr
     }
 
     /**
-     * Returns the first key of the given iterable which meets the given condition.
+     * Returns the first key of `$iterable` which meets the given `$condition`.
      * Returns **null** if the given iterable is empty or if there were no
      * matching conditions.
      *
@@ -1374,7 +1383,7 @@ final class Arr
     }
 
     /**
-     * Returns the first element in iterable.
+     * Returns the first element in `$iterable`.
      * If `$condition` is set, the first element which meets the condition is returned instead.
      * If condition has no matches, value of `$default` is returned.
      *
@@ -1414,7 +1423,7 @@ final class Arr
     }
 
     /**
-     * Returns the first element in iterable.
+     * Returns the first element in `$iterable`.
      * If `$condition` is set, the first element which meets the condition is returned instead.
      * **null** is returned, if no element matches the `$condition` or is empty.
      *
@@ -1469,7 +1478,7 @@ final class Arr
     }
 
     /**
-     * Collapse the given iterable up to the given `$depth` and turn it into a
+     * Collapse `$iterable` up to the given `$depth` and turn it into a
      * single dimensional array.
      *
      * @template TKey of array-key
@@ -1490,7 +1499,7 @@ final class Arr
     }
 
     /**
-     * Flip the given iterable so that keys become values and values become keys.
+     * Flip `$iterable` so that keys become values and values become keys.
      * Throws `InvalidKeyException` if elements contain types other than int|string.
      * Throws `DuplicateKeyException` if there are two values with the same value.
      * Set `$overwrite` to **true** to suppress this error.
@@ -1539,7 +1548,7 @@ final class Arr
     }
 
     /**
-     * Take all the values in given iterable and fold it into a single value.
+     * Take all the values in `$iterable` and fold it into a single value.
      *
      * Example:
      * ```php

@@ -711,7 +711,7 @@ class ArrTest extends TestCase
         self::assertSame([4, 'a'], Arr::duplicates([5, 6, 4, 4, 'a', 'a', 'b']));
 
         // on assoc
-        self::assertSame([1], Arr::duplicates(['a' => 1, 'b' => 1, 'c' => 1, 'd' => 2]));
+        self::assertSame(['a' => 1], Arr::duplicates(['a' => 1, 'b' => 1, 'c' => 1, 'd' => 2]));
 
         // same object instance
         $instance = new stdClass();

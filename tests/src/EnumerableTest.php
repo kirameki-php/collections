@@ -2,18 +2,20 @@
 
 namespace Tests\Kirameki\Collections;
 
+use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
+use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
+use Kirameki\Collections\Map;
+use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Dumper\Config;
 use Kirameki\Dumper\Writer;
-use function dump;
-use function fgets;
-use function file_get_contents;
+use stdClass;
 use function fopen;
 use function fread;
 use function fseek;
-use const PHP_INT_MAX;
 
 class EnumerableTest extends TestCase
 {
@@ -401,15 +403,181 @@ class EnumerableTest extends TestCase
 
     public function test_dump(): void
     {
-        $resource = fopen('php://memory', 'r+');
+        $resource = fopen('php://memory', 'r+') ?: throw new UnreachableException();
         $config = new Config(writer: new Writer($resource), decorator: 'plain');
 
         $original = $this->vec();
         $returned = $original->dump($config);
 
         fseek($resource, 0);
-        $expected = fread($resource, 100);
+        $expected = fread($resource, 100) ?: '';
         $this->assertStringContainsString('items: []', $expected);
         $this->assertSame($original, $returned);
+    }
+
+    public function test_duplicates(): void
+    {
+        $this->assertSame([], $this->vec()->duplicates()->all());
+        $this->assertSame([], $this->vec([1, 2, 3])->duplicates()->all());
+        $this->assertSame([1], $this->vec([1, 1, 2, 3])->duplicates()->all());
+        $this->assertSame([1, 2], $this->vec([1, 1, 1, 2, 2, 3])->duplicates()->all());
+
+        $this->assertSame([], $this->map()->duplicates()->all());
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 1])->duplicates()->all());
+    }
+
+    public function test_each(): void
+    {
+        $this->assertInstanceOf(Vec::class, $this->vec()->each(fn() => null));
+        $this->assertSame([], $this->vec()->each(fn() => null)->all());
+        $this->assertSame([1], $this->vec([1])->each(fn() => null)->all());
+        $obj = new stdClass();
+        $this->vec([1, 2])->each(fn($n, $k) => $obj->{"x{$k}"} = $n);
+        $this->assertSame(['x0' => 1, 'x1' => 2], (array) $obj);
+
+        $this->assertInstanceOf(Map::class, $this->map()->each(fn() => null));
+        $this->assertSame([], $this->map()->each(fn() => null)->all());
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->each(fn() => null)->all());
+        $obj = new stdClass();
+        $this->map(['a' => 1, 'b' => 2])->each(fn($n, $k) => $obj->{"x{$k}"} = $n);
+        $this->assertSame(['xa' => 1, 'xb' => 2], (array) $obj);
+    }
+
+    public function test_except(): void
+    {
+        $this->assertSame([], $this->vec()->except([])->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->except([])->all(), 'remove none');
+        $this->assertSame([1], $this->vec([1, 2])->except([1])->all(), 'remove one');
+        $this->assertSame([], $this->vec([1, 2])->except([0, 1])->all(), 'remove all');
+        $this->assertSame(['a'], $this->vec(['a'])->except([1], false)->all(), 'remove missing unsafe');
+
+        $this->assertSame([], $this->map()->except([])->all(), 'empty');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->except([])->all(), 'remove none');
+        $this->assertSame(['b' => 1], $this->map(['a' => 1, 'b' => 1])->except(['a'])->all(), 'remove one');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 1])->except(['a', 'b'])->all(), 'remove all');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->except(['b'], false)->all(), 'remove missing unsafe');
+    }
+
+    public function test_expect_safe_vec(): void
+    {
+        $this->expectExceptionMessage('Keys: [0, 1] did not exist.');
+        $this->expectException(MissingKeyException::class);
+        $this->vec()->except([0, 1])->all();
+    }
+
+    public function test_expect_safe_map(): void
+    {
+        $this->expectExceptionMessage("Keys: ['a', 'b'] did not exist.");
+        $this->expectException(MissingKeyException::class);
+        $this->map()->except(['a', 'b'])->all();
+    }
+
+    public function test_filter(): void
+    {
+        $this->assertSame([], $this->vec()->filter(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->vec()->filter(fn() => false)->all(), 'empty');
+        $this->assertSame([], $this->vec([1, 2])->filter(fn() => false)->all(), 'no match');
+        $this->assertSame([1, 2], $this->vec([1, 2])->filter(fn() => true)->all(), 'match all');
+        $this->assertSame([2], $this->vec([1, 2])->filter(fn($v) => $v > 1)->all(), 'match some');
+        $this->assertSame([], $this->vec([1, 2])->filter(fn($v) => $v > 2)->all(), 'match none');
+
+        $this->assertSame([], $this->map()->filter(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2])->filter(fn() => false)->all(), 'no match');
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->filter(fn() => true)->all(), 'match all');
+        $this->assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->filter(fn($v) => $v > 1)->all(), 'match some');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2])->filter(fn($v) => $v > 2)->all(), 'match none');
+    }
+
+    public function test_first(): void
+    {
+        $this->assertSame(1, $this->vec([1, 2])->first(), 'first');
+        $this->assertSame(1, $this->vec([1, 2])->first(fn() => true), 'match all');
+        $this->assertSame(2, $this->vec([1, 2, 3])->first(fn($i) => $i > 1), 'match some');
+
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->first(), 'first');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->first(fn() => true), 'match all');
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->first(fn($i) => $i > 1), 'match some');
+    }
+
+    public function test_first_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class) ;
+        $this->vec()->first();
+    }
+
+    public function test_first_no_match(): void
+    {
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        $this->expectException(NoMatchFoundException::class) ;
+        $this->vec([1])->first(fn() => false);
+    }
+
+    public function test_firstIndex(): void
+    {
+        $this->assertSame(0, $this->vec([1, 2])->firstIndex(fn() => true), 'match all');
+        $this->assertSame(1, $this->vec([1, 2, 3])->firstIndex(fn($i) => $i > 1), 'match some');
+
+        $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->firstIndex(fn() => true), 'match all');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->firstIndex(fn($i) => $i > 1), 'match some');
+    }
+
+    public function test_firstIndex_on_empty(): void
+    {
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        $this->expectException(NoMatchFoundException::class) ;
+        $this->vec()->firstIndex(fn() => true);
+    }
+
+    public function test_firstIndex_no_match(): void
+    {
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        $this->expectException(NoMatchFoundException::class) ;
+        $this->vec([1, 2])->firstIndex(fn() => false);
+    }
+
+    public function test_firstIndexOrNull(): void
+    {
+        $this->assertNull($this->vec([])->firstIndexOrNull(fn() => true), 'empty');
+        $this->assertNull($this->vec([1, 2])->firstIndexOrNull(fn() => false), 'match none');
+        $this->assertSame(0, $this->vec([1, 2])->firstIndexOrNull(fn() => true), 'match all');
+        $this->assertSame(1, $this->vec([1, 2, 3])->firstIndexOrNull(fn($i) => $i > 1), 'match some');
+
+        $this->assertNull($this->map([])->firstIndexOrNull(fn() => true), 'empty');
+        $this->assertNull($this->map(['a' => 1, 'b' => 2])->firstIndexOrNull(fn() => false), 'match none');
+        $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->firstIndexOrNull(fn() => true), 'match all');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->firstIndexOrNull(fn($i) => $i > 1), 'match some');
+    }
+
+    public function test_firstOr(): void
+    {
+        $default = '!';
+
+        $this->assertSame($default, $this->vec()->firstOr($default), 'empty');
+        $this->assertSame(1, $this->vec([1, 2])->firstOr($default), 'first');
+        $this->assertSame($default, $this->vec([1, 2])->firstOr($default, fn() => false), 'match none');
+        $this->assertSame(1, $this->vec([1, 2])->firstOr($default, fn() => true), 'match all');
+        $this->assertSame(2, $this->vec([1, 2, 3])->firstOr($default, fn($i) => $i > 1), 'match some');
+
+        $this->assertSame($default, $this->map()->firstOr($default), 'empty');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->firstOr($default), 'first');
+        $this->assertSame($default, $this->map(['a' => 1, 'b' => 2])->firstOr($default, fn() => false), 'match none');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->firstOr($default, fn() => true), 'match all');
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->firstOr($default, fn($i) => $i > 1), 'match some');
+    }
+
+    public function test_firstOrNull(): void
+    {
+        $this->assertNull($this->vec()->firstOrNull(), 'empty');
+        $this->assertSame(1, $this->vec([1, 2])->firstOrNull(), 'first');
+        $this->assertNull($this->vec([1, 2])->firstOrNull(fn() => false), 'match none');
+        $this->assertSame(1, $this->vec([1, 2])->firstOrNull(fn() => true), 'match all');
+        $this->assertSame(2, $this->vec([1, 2, 3])->firstOrNull(fn($i) => $i > 1), 'match some');
+
+        $this->assertNull($this->map()->firstOrNull(), 'empty');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->firstOrNull(), 'first');
+        $this->assertNull($this->map(['a' => 1, 'b' => 2])->firstOrNull(fn() => false), 'match none');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->firstOrNull(fn() => true), 'match all');
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->firstOrNull(fn($i) => $i > 1), 'match some');
     }
 }

@@ -253,6 +253,8 @@ trait Enumerable
     }
 
     /**
+     * Dump the contents of the collection.
+     *
      * @param DumperConfig|null $config
      * @return $this
      */
@@ -263,6 +265,8 @@ trait Enumerable
     }
 
     /**
+     * Returns duplicate values.
+     *
      * @return static
      */
     public function duplicates(): static
@@ -271,6 +275,8 @@ trait Enumerable
     }
 
     /**
+     * Iterates through the collection and invoke `$callback` for each element.
+     *
      * @param Closure(TValue, TKey): mixed $callback
      * @return static
      */
@@ -280,6 +286,10 @@ trait Enumerable
     }
 
     /**
+     * Returns a new instance with the given keys removed. Missing keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if a key does not exist.
+     *
      * @param array<TKey> $keys
      * @param bool $safe
      * @return static
@@ -303,6 +313,11 @@ trait Enumerable
     }
 
     /**
+     * Returns the first element in the collection.
+     * If `$condition` is set, the first element which meets the condition is returned instead.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TValue
      */
@@ -312,6 +327,9 @@ trait Enumerable
     }
 
     /**
+     * Returns the first index of the collection which meets the given `$condition`.
+     * Throws `NoMatchFoundException` if no condition is met.
+     *
      * @param Closure(TValue, TKey):bool $condition
      * @return int
      */
@@ -321,6 +339,9 @@ trait Enumerable
     }
 
     /**
+     * Returns the first index of the collection which meets the given `$condition`.
+     * Returns **null** if there were no matches.
+     *
      * @param Closure(TValue, TKey):bool $condition
      * @return int|null
      */
@@ -330,6 +351,10 @@ trait Enumerable
     }
 
     /**
+     * Returns the first element in the collection.
+     * If `$condition` is set, the first element which meets the condition is returned instead.
+     * If condition has no matches, value of `$default` is returned.
+     *
      * @template TDefault
      * @param TDefault $default
      * @param Closure(TValue, TKey): bool|null $condition
@@ -341,6 +366,10 @@ trait Enumerable
     }
 
     /**
+     * Returns the first element in the collection.
+     * If `$condition` is set, the first element which meets the condition is returned instead.
+     * **null** is returned, if no element matches the `$condition` or is empty.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TValue|null
      */
@@ -418,13 +447,13 @@ trait Enumerable
 
     /**
      * @template TNewKey of string
-     * @param Closure(TValue, TKey): TNewKey $key
+     * @param Closure(TValue, TKey): TNewKey $callback
      * @param bool $overwrite
      * @return Map<TNewKey, TValue>
      */
-    public function keyBy(Closure $key, bool $overwrite = false): Map
+    public function keyBy(Closure $callback, bool $overwrite = false): Map
     {
-        return $this->newMap(Arr::keyBy($this, $key, $overwrite));
+        return $this->newMap(Arr::keyBy($this, $callback, $overwrite));
     }
 
     /**
@@ -446,11 +475,20 @@ trait Enumerable
 
     /**
      * @param Closure(TValue, TKey): bool $condition
-     * @return int|null
+     * @return int
      */
-    public function lastIndex(Closure $condition): ?int
+    public function lastIndex(Closure $condition): int
     {
         return Arr::lastIndex($this, $condition);
+    }
+
+    /**
+     * @param Closure(TValue, TKey): bool $condition
+     * @return int|null
+     */
+    public function lastIndexOrNull(Closure $condition): ?int
+    {
+        return Arr::lastIndexOrNull($this, $condition);
     }
 
     /**
