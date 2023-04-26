@@ -379,6 +379,8 @@ trait Enumerable
     }
 
     /**
+     * Take all the values in the collection and fold it into a single value.
+     *
      * @template U
      * @param U $initial
      * @param Closure(U, TValue, TKey): U $callback

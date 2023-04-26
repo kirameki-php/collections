@@ -580,4 +580,21 @@ class EnumerableTest extends TestCase
         $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->firstOrNull(fn() => true), 'match all');
         $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->firstOrNull(fn($i) => $i > 1), 'match some');
     }
+
+    public function test_fold(): void
+    {
+        $this->assertSame(0, $this->vec()->fold(0, fn($sum, $i) => $sum + $i), 'empty');
+        $this->assertSame(10, $this->vec([1, 2, 3])->fold(4, fn($sum, $i) => $sum + $i), 'sum');
+        $this->assertSame(['a1' => 1, 'a2' => 2], $this->vec([1, 2])->fold([], function($sum, $i) {
+            $sum["a{$i}"] = $i;
+            return $sum;
+        }), 'sum');
+
+        $this->assertSame(0, $this->map()->fold(0, fn($acc, $i) => $acc + $i), 'empty');
+        $this->assertSame(6, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->fold(0, fn($acc, $i) => $acc + $i), 'sum');
+        $this->assertSame(['c' => 3, 'xa' => 1, 'xb' => 2], $this->map(['a' => 1, 'b' => 2])->fold(['c' => 3], function($sum, $i, $k) {
+            $sum["x{$k}"] = $i;
+            return $sum;
+        }), 'sum');
+    }
 }
