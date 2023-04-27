@@ -95,7 +95,7 @@ trait Enumerable
 
     /**
      * Returns the first non-null value.
-     * Returns **null** if `$iterable` is empty or if all elements are **null**.
+     * Returns **null** if collection is empty or if all elements are **null**.
      *
      * @return TValue|null
      */
@@ -317,7 +317,7 @@ trait Enumerable
      * Returns the first element in the collection.
      * If `$condition` is set, the first element which meets the condition is returned instead.
      * Throws `NoMatchFoundException` if no condition is met.
-     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if collection is empty.
      *
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TValue
@@ -471,6 +471,8 @@ trait Enumerable
     }
 
     /**
+     * Returns all the keys as `Vec`.
+     *
      * @return Vec<TKey>
      */
     public function keys(): Vec
@@ -479,7 +481,14 @@ trait Enumerable
     }
 
     /**
+     * Returns the last element in the collection.
+     * If `$condition` is set, the last element which meets the condition is returned instead.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TValue
      */
     public function last(?Closure $condition = null): mixed
@@ -488,27 +497,45 @@ trait Enumerable
     }
 
     /**
-     * @param Closure(TValue, TKey): bool $condition
+     * Returns the last index which meets the given `$condition`.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     *
+     * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return int
      */
-    public function lastIndex(Closure $condition): int
+    public function lastIndex(?Closure $condition = null): int
     {
         return Arr::lastIndex($this, $condition);
     }
 
     /**
-     * @param Closure(TValue, TKey): bool $condition
+     * Returns the last index which meets the given `$condition`.
+     * Returns **null** if there were no matches.
+     *
+     * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return int|null
      */
-    public function lastIndexOrNull(Closure $condition): ?int
+    public function lastIndexOrNull(?Closure $condition = null): ?int
     {
         return Arr::lastIndexOrNull($this, $condition);
     }
 
     /**
+     * Returns the last element in the collection.
+     * If `$condition` is set, the last element which meets the condition is returned instead.
+     * Returns the value of `$default` if no condition met.
+     *
      * @template TDefault
-     * @param Closure(TValue, TKey): bool|null $condition
      * @param TDefault $default
+     * Value that is used when the given `$condition` has no match.
+     * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TValue|TDefault
      */
     public function lastOr(mixed $default, ?Closure $condition = null): mixed
@@ -517,7 +544,13 @@ trait Enumerable
     }
 
     /**
+     * Returns the last element in the collection.
+     * If `$condition` is set, the last element which meets the condition is returned instead.
+     * Returns **null** if no element matches the `$condition` or is empty.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TValue|null
      */
     public function lastOrNull(?Closure $condition = null): mixed
@@ -526,21 +559,38 @@ trait Enumerable
     }
 
     /**
-     * @param Closure(TValue, TKey): mixed|null $callback
+     * Returns the largest element in the collection.
+     * If `$by` is given, each element will be passed to the closure and the
+     * largest value returned from the closure will be returned instead.
+     * Throws `InvalidElementException`, If collection contains NAN.
+     * Throws `EmptyNotAllowedException` if collection is empty.
+     *
+     * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] Called for every element in the collection.
+     * Returned value will be used to determine the largest number.
      * @return TValue
      */
-    public function max(?Closure $callback = null): mixed
+    public function max(?Closure $by = null): mixed
     {
-        return Arr::max($this, $callback);
+        return Arr::max($this, $by);
     }
 
     /**
-     * @param Closure(TValue, TKey): mixed|null $callback
+     * Returns the largest element in the collection.
+     * If `$by` is given, each element will be passed to the closure and the
+     * largest value returned from the closure will be returned instead.
+     * Returns **null** if the collection is empty.
+     * Throws `InvalidElementException` if collection contains NAN.
+     *
+     * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] Called for every element in the collection.
+     * Returned value will be used to determine the largest number.
+     * Must be int or float.
      * @return TValue|null
      */
-    public function maxOrNull(?Closure $callback = null): mixed
+    public function maxOrNull(?Closure $by = null): mixed
     {
-        return Arr::maxOrNull($this, $callback);
+        return Arr::maxOrNull($this, $by);
     }
 
     /**
@@ -563,6 +613,12 @@ trait Enumerable
     }
 
     /**
+     * Returns the smallest element in the collection.
+     * If `$by` is given, each element will be passed to the closure and the
+     * smallest value returned from the closure will be returned instead.
+     * Throws `EmptyNotAllowedException` if collection is empty.
+     * Throws `InvalidElementException` if collection contains NAN.
+     *
      * @param Closure(TValue, TKey): mixed|null $by
      * [Optional] Called for every element in the collection.
      * Returned value will be used to determine the smallest number.
@@ -575,7 +631,16 @@ trait Enumerable
     }
 
     /**
+     * Returns the smallest element in the collection.
+     * If `$by` is given, each element will be passed to the closure and the
+     * smallest value returned from the closure will be returned instead.
+     * Returns **null** if the iterable is empty.
+     * Throws `InvalidElementException` if collection contains NAN.
+     *
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] Called for every element in the collection.
+     * Returned value will be used to determine the smallest number.
+     * Must be int or float.
      * @return TValue|null
      */
     public function minOrNull(?Closure $by = null): mixed
@@ -584,7 +649,15 @@ trait Enumerable
     }
 
     /**
+     * Returns the smallest and largest element from the collection as array{ min: , max: }.
+     * If `$by` is given, each element will be passed to the closure and the
+     * smallest and largest value returned from the closure will be returned instead.
+     * Throws `EmptyNotAllowedException` if collection is empty.
+     * Throws `InvalidElementException` if collection contains NAN.
+     *
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] Called for every element.
+     * Returned value will be used to determine the highest number.
      * @return array<TValue>
      */
     public function minMax(?Closure $by = null): array

@@ -22,6 +22,7 @@ use function fseek;
 use function max;
 use function range;
 use const INF;
+use const NAN;
 
 class EnumerableTest extends TestCase
 {
@@ -787,16 +788,67 @@ class EnumerableTest extends TestCase
         $this->assertSame(['a' => 2, 'b' => 3], $this->map(['a' => 1, 'b' => 2])->map(fn($i) => $i + 1)->toArray(), 'non-empty');
     }
 
+    public function test_max(): void
+    {
+        $this->assertSame(2, $this->vec([1, 2])->max(), 'basic use');
+        $this->assertSame(1, $this->vec([1, -2])->max(), 'contains negative');
+        $this->assertSame(0.2, $this->vec([0.2, 0.1])->max(), 'floats');
+        $this->assertSame(INF, $this->vec([-INF, INF])->max(), 'INF');
+        $this->assertSame(-3, $this->vec([2, -3])->max(fn($i) => -$i), 'with condition');
+        $this->assertSame(1, $this->vec([1, 2])->max(fn($i) => 1), 'all same');
+
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->max(), 'basic use');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => -2])->max(), 'contains negative');
+        $this->assertSame(-3, $this->map(['a' => 2, 'b' => -3])->max(fn($i) => -$i), 'with condition');
+    }
+
+    public function test_max_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class) ;
+        $this->vec()->max();
+    }
+
+    public function test_max_contains_nan(): void
+    {
+        $this->expectExceptionMessage('$iterable cannot contain NAN.');
+        $this->expectException(InvalidElementException::class);
+        $this->vec([1, NAN, 1])->max();
+    }
+
+    public function test_maxOrNull(): void
+    {
+        $this->assertNull($this->vec()->maxOrNull(), 'basic use');
+        $this->assertSame(2, $this->vec([1, 2])->maxOrNull(), 'basic use');
+        $this->assertSame(1, $this->vec([1, -2])->maxOrNull(), 'contains negative');
+        $this->assertSame(0.2, $this->vec([0.2, 0.1])->maxOrNull(), 'floats');
+        $this->assertSame(INF, $this->vec([-INF, INF])->maxOrNull(), 'INF');
+        $this->assertSame(-3, $this->vec([2, -3])->maxOrNull(fn($i) => -$i), 'with condition');
+        $this->assertSame(1, $this->vec([1, 2])->maxOrNull(fn($i) => 1), 'all same');
+
+        $this->assertNull($this->map()->maxOrNull(), 'basic use');
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->maxOrNull(), 'empty');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => -2])->maxOrNull(), 'contains negative');
+        $this->assertSame(-3, $this->map(['a' => 2, 'b' => -3])->maxOrNull(fn($i) => -$i), 'with condition');
+    }
+
+    public function test_maxOrNull_contains_nan(): void
+    {
+        $this->expectExceptionMessage('$iterable cannot contain NAN.');
+        $this->expectException(InvalidElementException::class);
+        $this->vec([1, NAN, 1])->maxOrNull();
+    }
+
     public function test_min(): void
     {
-        $this->assertSame(1, $this->vec([1, 2])->min(), 'empty');
+        $this->assertSame(1, $this->vec([1, 2])->min(), 'basic use');
         $this->assertSame(-2, $this->vec([1, -2])->min(), 'contains negative');
         $this->assertSame(0.1, $this->vec([0.2, 0.1])->min(), 'floats');
         $this->assertSame(-INF, $this->vec([-INF, INF])->min(), 'INF');
         $this->assertSame(2, $this->vec([2, -3])->min(fn($i) => -$i), 'with condition');
         $this->assertSame(1, $this->vec([1, 2])->min(fn($i) => 1), 'all same');
 
-        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->min(), 'empty');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->min(), 'basic use');
         $this->assertSame(-2, $this->map(['a' => 1, 'b' => -2])->min(), 'contains negative');
         $this->assertSame(2, $this->map(['a' => 2, 'b' => -3])->min(fn($i) => -$i), 'with condition');
     }
@@ -804,15 +856,72 @@ class EnumerableTest extends TestCase
     public function test_min_on_empty(): void
     {
         $this->expectExceptionMessage('$iterable must contain at least one element.');
-        $this->expectException(EmptyNotAllowedException::class) ;
+        $this->expectException(EmptyNotAllowedException::class);
         $this->vec()->min();
     }
 
     public function test_min_contains_nan(): void
     {
         $this->expectExceptionMessage('$iterable cannot contain NAN.');
-        $this->expectException(InvalidElementException::class) ;
+        $this->expectException(InvalidElementException::class);
         $this->vec([1, NAN, 1])->min();
+    }
+
+    public function test_minOrNull(): void
+    {
+        $this->assertNull($this->vec()->minOrNull(), 'basic use');
+        $this->assertSame(1, $this->vec([1, 2])->minOrNull(), 'basic use');
+        $this->assertSame(-2, $this->vec([1, -2])->minOrNull(), 'contains negative');
+        $this->assertSame(0.1, $this->vec([0.2, 0.1])->minOrNull(), 'floats');
+        $this->assertSame(-INF, $this->vec([-INF, INF])->minOrNull(), 'INF');
+        $this->assertSame(2, $this->vec([2, -3])->minOrNull(fn($i) => -$i), 'with condition');
+        $this->assertSame(1, $this->vec([1, 2])->minOrNull(fn($i) => 1), 'all same');
+
+        $this->assertNull($this->map()->minOrNull(), 'basic use');
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->minOrNull(), 'empty');
+        $this->assertSame(-2, $this->map(['a' => 1, 'b' => -2])->minOrNull(), 'contains negative');
+        $this->assertSame(2, $this->map(['a' => 2, 'b' => -3])->minOrNull(fn($i) => -$i), 'with condition');
+    }
+
+    public function test_minOrNull_contains_nan(): void
+    {
+        $this->expectExceptionMessage('$iterable cannot contain NAN.');
+        $this->expectException(InvalidElementException::class) ;
+        $this->vec([1, NAN, 1])->minOrNull();
+    }
+
+    public function test_minMax(): void
+    {
+        $this->assertSame(['min' => 1, 'max' => 1], $this->vec([1])->minMax(), 'only one value');
+        $this->assertSame(['min' => 1, 'max' => 2], $this->vec([1, 2])->minMax(), 'basic use');
+        $this->assertSame(['min' => -2, 'max' => 1], $this->vec([1, -2])->minMax(), 'contains negative');
+        $this->assertSame(['min' => 0.1, 'max' => 0.2], $this->vec([0.2, 0.1])->minMax(), 'floats');
+        $this->assertSame(['min' => -INF, 'max' => INF], $this->vec([-INF, INF])->minMax(), 'INF');
+        $this->assertSame(['min' => 2, 'max' => -3], $this->vec([2, -3])->minMax(fn($i) => -$i), 'with condition');
+        $this->assertSame(['min' => 1, 'max' => 1], $this->vec([1, 2])->minMax(fn($i) => 1), 'all same');
+
+        $this->assertSame(['min' => 1, 'max' => 1], $this->map(['a' => 1])->minMax(), 'only one value');
+        $this->assertSame(['min' => 1, 'max' => 2], $this->map(['a' => 1, 'b' => 2])->minMax(), 'basic use');
+        $this->assertSame(['min' => -2, 'max' => 1], $this->map(['a' => 1, 'b' => -2])->minMax(), 'contains negative');
+        $this->assertSame(['min' => 2, 'max' => -3], $this->map(['a' => 2, 'b' => -3])->minMax(fn($i) => -$i), 'with condition');
+    }
+
+    public function test_minMax_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec()->minMax();
+    }
+
+    public function test_pipe(): void
+    {
+        $this->assertSame([1, 1], $this->vec([1])->pipe(fn(Vec $v) => $v->append(1))->all());
+        $this->assertSame(2, $this->vec([1, 2])->pipe(fn($i) => $i->last()));
+        $this->assertSame(0, $this->vec([1, 2])->pipe(fn($i) => 0));
+
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1])->pipe(fn(Map $v) => $v->set('b', 2))->all());
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->pipe(fn($i) => $i->last()));
+        $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->pipe(fn($i) => 0));
     }
 
     public function test_toArray(): void

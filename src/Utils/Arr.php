@@ -2138,7 +2138,7 @@ final class Arr
     }
 
     /**
-     * Returns the last element in iterable.
+     * Returns the last element in `$iterable`.
      * If `$condition` is set, the last element which meets the condition is returned instead.
      * Throws `NoMatchFoundException` if no condition is met.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
@@ -2180,7 +2180,7 @@ final class Arr
     }
 
     /**
-     * Returns the last index of `$iterable` which meets the given condition.
+     * Returns the last index of `$iterable` which meets the given `$condition`.
      * Throws `NoMatchFoundException` if no condition is met.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
@@ -2221,7 +2221,7 @@ final class Arr
     }
 
     /**
-     * Returns the last index of iterable which meets the given condition.
+     * Returns the last index of `$iterable` which meets the given `$condition`.
      * Returns **null** if there were no matches.
      *
      * Example:
@@ -2543,12 +2543,15 @@ final class Arr
                 $maxResult = $result;
                 $maxVal = $val;
             }
-        }
 
-        if (is_float($maxVal) && is_nan($maxVal)) {
-            throw new InvalidElementException('$iterable cannot contain NAN.', [
-                'iterable' => $iterable,
-            ]);
+            if (is_nan($result)) {
+                throw new InvalidElementException('$iterable cannot contain NAN.', [
+                    'iterable' => $iterable,
+                    'result' => $result,
+                    'maxResult' => $maxResult,
+                    'maxVal' => $maxVal,
+                ]);
+            }
         }
 
         return $maxVal;
@@ -2668,7 +2671,6 @@ final class Arr
      * Returns the smallest element from the given array.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
-     * Throws `NoMatchFoundException` if no condition is met.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
@@ -2712,7 +2714,7 @@ final class Arr
      * Returns the smallest element from `$iterable`.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
-     * Returns **null** if the iterable is empty.
+     * Returns **null** if `$iterable` is empty.
      * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
@@ -2756,6 +2758,8 @@ final class Arr
                 throw new InvalidElementException('$iterable cannot contain NAN.', [
                     'iterable' => $iterable,
                     'result' => $result,
+                    'minResult' => $minResult,
+                    'minVal' => $minVal,
                 ]);
             }
         }
@@ -2767,7 +2771,6 @@ final class Arr
      * Returns the smallest and largest element from `$iterable` as array{ min: , max: }.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
-     * Throws `NoMatchFoundException` if no condition is met.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
@@ -2794,10 +2797,7 @@ final class Arr
     {
         $result = self::minMaxOrNull($iterable, $by);
         if ($result === null) {
-            $exception = ($by !== null)
-                ? new NoMatchFoundException('Failed to find matching condition.')
-                : new EmptyNotAllowedException('$iterable must contain at least one element.');
-            throw $exception->setContext([
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
                 'iterable' => $iterable,
                 'condition' => $by,
             ]);
@@ -2809,7 +2809,7 @@ final class Arr
      * Returns the smallest and largest element from the given array.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest and largest value returned from the closure will be returned instead.
-     * If the iterable is empty, **null** will be returned.
+     * If the `$iterable` is empty, **null** will be returned.
      * Throws `InvalidElementException` if `$iterable` contains NAN.
      *
      * Example:
@@ -2851,16 +2851,21 @@ final class Arr
                 $maxResult = $result;
                 $maxVal = $val;
             }
+
+            if (is_nan($result)) {
+                throw new InvalidElementException('$iterable cannot contain NAN.', [
+                    'iterable' => $iterable,
+                    'result' => $result,
+                    'minResult' => $minResult,
+                    'minVal' => $minVal,
+                    'maxResult' => $maxResult,
+                    'maxVal' => $maxVal,
+                ]);
+            }
         }
 
         if ($minVal === null || $maxVal === null) {
             return null;
-        }
-
-        if ((is_float($minVal) && is_nan($minVal)) || (is_float($maxVal) && is_nan($maxVal))) {
-            throw new InvalidElementException('$iterable cannot contain NAN.', [
-                'iterable' => $iterable,
-            ]);
         }
 
         return [
@@ -2880,7 +2885,7 @@ final class Arr
 
     /**
      * Returns a new array which only contain the elements that has matching
-     * keys in the given iterable. Non-existent keys will be ignored.
+     * keys in `$iterable`. Non-existent keys will be ignored.
      * If `$safe` is set to **true**, `MissingKeyException` will be thrown
      * if a key does not exist in `$iterable`.
      *
@@ -3128,7 +3133,7 @@ final class Arr
 
     /**
      * Prepend value(s) to the front of `$iterable`.
-     * The iterable must be convertible to a list.
+     * `$iterable` must be convertible to a list.
      * Throws `TypeMismatchException` if map is given.
      *
      * Example:
@@ -3482,7 +3487,7 @@ final class Arr
      * Second argument contains the current value.
      * Third argument contains the current key.
      * @param TDefault $default
-     * Value that is used when iterable is empty.
+     * Value that is used when `$iterable` is empty.
      * @return TValue|TDefault
      */
     public static function reduceOr(
@@ -3639,7 +3644,7 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param int<0, max> $times
-     * Number of times the given iterable will be repeated.
+     * Number of times `$iterable` will be repeated.
      * @return array<int, TValue>
      */
     public static function repeat(
@@ -4004,7 +4009,7 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be sampled.
      * @param TDefault $default
-     * Value that is used when iterable is empty.
+     * Value that is used when `$iterable` is empty.
      * @param Randomizer|null $randomizer
      * [Optional] Randomizer to be used.
      * Secure randomizer will be used if **null**.
@@ -4056,9 +4061,9 @@ final class Arr
     }
 
     /**
-     * Runs the condition though each element of the given iterable and
-     * will return **true** if all iterations that run through the condition
-     * returned **true** or if the given iterable is empty, **false** otherwise.
+     * Runs the condition though each element of `$iterable` and will return **true**
+     * if all iterations that run through the condition returned **true** or if
+     * `$iterable` is empty, **false** otherwise.
      *
      * Example:
      * ```php
@@ -4089,9 +4094,9 @@ final class Arr
     }
 
     /**
-     * Runs the condition though each element of the given iterable and
-     * will return **true** if any iterations that run through the condition
-     * returned **true**, **false** otherwise (including empty iterable).
+     * Runs the condition though each element of `$iterable` and will return **true**
+     * if any iterations that run through the `$condition` returned **true**,
+     * **false** otherwise (including empty iterable).
      *
      * Example:
      * ```php
@@ -4122,9 +4127,9 @@ final class Arr
     }
 
     /**
-     * Runs the condition though each element of the given iterable and
-     * will return **true** if all the iterations that run through the condition
-     * returned **false**. **false** otherwise.
+     * Runs the condition though each element of `$iterable` and will return **true**
+     * if all the iterations that run through the `$condition` returned **false**.
+     * **false** otherwise.
      *
      * Example:
      * ```php
@@ -4155,9 +4160,9 @@ final class Arr
     }
 
     /**
-     * Runs the condition though each element of the given iterable and
-     * will return **true** if iterations that run through the condition
-     * returned **true** only once, **false** otherwise (including empty iterable).
+     * Runs the condition though each element of `$iterable` and will return **true**
+     * if iterations that run through the `$condition` returned **true** only once,
+     * **false** otherwise (including empty iterable).
      *
      * Example:
      * ```php
@@ -4192,7 +4197,7 @@ final class Arr
     }
 
     /**
-     * Add or update an entry in the given array.
+     * Add or update an entry in the `$array`.
      *
      * Example:
      * ```php
@@ -4221,8 +4226,7 @@ final class Arr
     }
 
     /**
-     * Set an entry in the given array only if the entry already exists
-     * in the array.
+     * Set an entry in the `&$array` only if the entry already exists.
      *
      * Example:
      * ```php
@@ -4256,8 +4260,7 @@ final class Arr
     }
 
     /**
-     * Set an entry in the given array only if the entry does not exist
-     * in the array.
+     * Set an entry in the `&$array` only if the entry does not exist.
      *
      * Example:
      * ```php

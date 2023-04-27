@@ -1686,13 +1686,6 @@ class ArrTest extends TestCase
         Arr::minMax([]);
     }
 
-    public function test_minMax_no_match_with_empty(): void
-    {
-        $this->expectException(NoMatchFoundException::class);
-        $this->expectExceptionMessage('Failed to find matching condition.');
-        Arr::minMax([], fn() => true);
-    }
-
     public function test_minMaxOrNull(): void
     {
         self::assertSame(
