@@ -6,6 +6,7 @@ use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Map;
+use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
@@ -603,6 +604,13 @@ class MapTest extends TestCase
 
         $map = $this->map(['a' => 1, 'b' => 2, 'c' => 'a']);
         self::assertSame('x%5Ba%5D=1&x%5Bb%5D=2&x%5Bc%5D=a', $map->toUrlQuery('x'), 'mixed types with namespace');
+    }
+
+    public function test_values(): void
+    {
+        $this->assertInstanceOf(Vec::class, $this->map()->values());
+        $this->assertSame([], $this->map()->values()->all());
+        $this->assertSame([1, 2], $this->map(['a' => 1, 'b' => 2])->values()->all());
     }
 
     public function test_reindex(): void

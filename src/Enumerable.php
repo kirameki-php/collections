@@ -6,6 +6,7 @@ use Closure;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Json;
 use Kirameki\Dumper\Config as DumperConfig;
 use Random\Randomizer;
 use function dump;
@@ -406,6 +407,8 @@ trait Enumerable
     }
 
     /**
+     * Create a new instance of the collection with the given `$items`.
+     *
      * @param iterable<TKey, TValue> $items
      * @return static
      */
@@ -415,6 +418,8 @@ trait Enumerable
     }
 
     /**
+     * Returns the intersection of collection's values.
+     *
      * @param iterable<TKey, TValue> $items
      * @return static
      */
@@ -424,6 +429,8 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if empty, **false** otherwise.
+     *
      * @return bool
      */
     public function isEmpty(): bool
@@ -432,6 +439,8 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if not empty, **false** otherwise.
+     *
      * @return bool
      */
     public function isNotEmpty(): bool
@@ -902,20 +911,23 @@ trait Enumerable
     }
 
     /**
+     * @param int<1, max> $depth
      * @return array<TKey, TValue>
      */
-    public function toArray(): array
+    public function toArray(int $depth = PHP_INT_MAX): array
     {
-        return $this->all();
+        return $this->asArrayRecursive($this, $depth, true);
     }
 
     /**
-     * @param int<1, max>|null $depth
-     * @return array<TKey, TValue>
+     * @param bool $pretty
+     * [Optional] Whether to format the JSON as human-readable format.
+     * Defaults to **false**.
+     * @return string
      */
-    public function toArrayRecursive(?int $depth = null): array
+    public function toJson(bool $pretty = false): string
     {
-        return $this->asArrayRecursive($this, $depth ?? PHP_INT_MAX, true);
+        return Json::encode($this, $pretty);
     }
 
     /**
@@ -925,14 +937,6 @@ trait Enumerable
     public function unique(?Closure $by = null): static
     {
         return $this->instantiate(Arr::unique($this, $by, $this->reindex()));
-    }
-
-    /**
-     * @return Vec<TValue>
-     */
-    public function values(): Vec
-    {
-        return $this->newVec(Iter::values($this));
     }
 
     /**
@@ -1007,7 +1011,7 @@ trait Enumerable
     protected function asArrayRecursive(iterable $items, int $depth, bool $validate = false): array
     {
         if ($validate && $depth < 1) {
-            throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}", [
+            throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}.", [
                 'this' => $this,
                 'items' => $items,
                 'depth' => $depth,

@@ -10,6 +10,7 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
+use Kirameki\Core\Json;
 use Random\Randomizer;
 use function assert;
 use function count;

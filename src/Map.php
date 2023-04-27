@@ -6,6 +6,7 @@ use ArrayAccess;
 use Closure;
 use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
+use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
 use function assert;
 use function is_array;
@@ -271,6 +272,14 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function toUrlQuery(?string $namespace = null): string
     {
         return Arr::toUrlQuery($this, $namespace);
+    }
+
+    /**
+     * @return Vec<TValue>
+     */
+    public function values(): Vec
+    {
+        return $this->newVec(Iter::values($this));
     }
 
     /**

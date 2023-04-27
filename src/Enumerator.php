@@ -65,15 +65,6 @@ abstract class Enumerator implements Countable, IteratorAggregate
     }
 
     /**
-     * @param iterable<TKey, TValue> $items
-     * @return static
-     */
-    public function instantiate(mixed $items): static
-    {
-        return new static($items);
-    }
-
-    /**
      * @return static
      */
     public function eager(): static
@@ -82,6 +73,8 @@ abstract class Enumerator implements Countable, IteratorAggregate
     }
 
     /**
+     * Returns **true** if collection is lazy. **false** otherwise.
+     *
      * @return bool
      */
     public function isLazy(): bool
@@ -90,6 +83,8 @@ abstract class Enumerator implements Countable, IteratorAggregate
     }
 
     /**
+     * Returns **false** if collection is lazy. **true** otherwise.
+     *
      * @return bool
      */
     public function isEager(): bool
@@ -98,6 +93,9 @@ abstract class Enumerator implements Countable, IteratorAggregate
     }
 
     /**
+     * Returns a new instance which collection is iterated lazily for
+     * some functions like `chunk`, `each`, `map`, and `filter`.
+     *
      * @return static
      */
     public function lazy(): static
@@ -106,7 +104,9 @@ abstract class Enumerator implements Countable, IteratorAggregate
     }
 
     /**
-     * @param Closure(static): mixed $callback
+     * Invokes `$callback` with `$this` as argument and returns `$this`.
+     *
+     * @param Closure($this): mixed $callback
      * @return $this
      */
     public function tap(Closure $callback): static
