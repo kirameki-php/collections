@@ -1641,18 +1641,11 @@ class ArrTest extends TestCase
         Arr::min([]);
     }
 
-    public function test_min_no_match_with_empty(): void
-    {
-        $this->expectException(NoMatchFoundException::class);
-        $this->expectExceptionMessage('Failed to find matching condition.');
-        Arr::min([], fn() => true);
-    }
-
     public function test_min_with_NAN(): void
     {
         $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
-        Arr::min([NAN, -INF, INF]);
+        Arr::min([0, 1, NAN, -INF, INF]);
     }
 
     public function test_minMax(): void

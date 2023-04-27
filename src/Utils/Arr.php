@@ -38,6 +38,7 @@ use function arsort;
 use function asort;
 use function count;
 use function current;
+use function dump;
 use function end;
 use function get_resource_id;
 use function gettype;
@@ -2698,10 +2699,7 @@ final class Arr
         $minVal = self::minOrNull($iterable, $by);
 
         if ($minVal === null) {
-            $exception = ($by !== null)
-                ? new NoMatchFoundException('Failed to find matching condition.')
-                : new EmptyNotAllowedException('$iterable must contain at least one element.');
-            throw $exception->setContext([
+            throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
                 'iterable' => $iterable,
                 'condition' => $by,
             ]);
@@ -2753,12 +2751,13 @@ final class Arr
                 $minResult = $result;
                 $minVal = $val;
             }
-        }
 
-        if (is_float($minVal) && is_nan($minVal)) {
-            throw new InvalidElementException('$iterable cannot contain NAN.', [
-                'iterable' => $iterable,
-            ]);
+            if (is_nan($result)) {
+                throw new InvalidElementException('$iterable cannot contain NAN.', [
+                    'iterable' => $iterable,
+                    'result' => $result,
+                ]);
+            }
         }
 
         return $minVal;
@@ -2998,7 +2997,8 @@ final class Arr
     /**
      * Returns list with two array elements.
      * All elements in `$iterable` evaluated to be **true** will be pushed to
-     * the first array and all elements in that were evaluated as **false**.
+     * the first array. Elements evaluated to be **false** will be pushed to
+     * the second array.
      *
      * Example:
      * ```php
@@ -3009,7 +3009,9 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition
+     * Closure to evaluate each element.
      * @return array{ array<TKey, TValue>, array<TKey, TValue> }
      */
     public static function partition(

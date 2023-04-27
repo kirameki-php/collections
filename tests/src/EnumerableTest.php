@@ -4,6 +4,7 @@ namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
+use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
@@ -14,10 +15,13 @@ use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Dumper\Config;
 use Kirameki\Dumper\Writer;
 use stdClass;
+use function dump;
 use function fopen;
 use function fread;
 use function fseek;
+use function max;
 use function range;
+use const INF;
 
 class EnumerableTest extends TestCase
 {
@@ -772,6 +776,43 @@ class EnumerableTest extends TestCase
         $this->assertNull($this->map(['a' => 1, 'b' => 2])->lastOrNull(fn() => false), 'match none');
         $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->lastOrNull(fn() => true), 'match all');
         $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->lastOrNull(fn($i) => $i < 3), 'match some');
+    }
+
+    public function test_map(): void
+    {
+        $this->assertSame([], $this->vec()->map(fn() => 1)->toArray(), 'empty');
+        $this->assertSame([2, 3], $this->vec([1, 2])->map(fn($i) => $i + 1)->toArray(), 'non-empty');
+
+        $this->assertSame([], $this->map()->map(fn() => 1)->toArray(), 'empty');
+        $this->assertSame(['a' => 2, 'b' => 3], $this->map(['a' => 1, 'b' => 2])->map(fn($i) => $i + 1)->toArray(), 'non-empty');
+    }
+
+    public function test_min(): void
+    {
+        $this->assertSame(1, $this->vec([1, 2])->min(), 'empty');
+        $this->assertSame(-2, $this->vec([1, -2])->min(), 'contains negative');
+        $this->assertSame(0.1, $this->vec([0.2, 0.1])->min(), 'floats');
+        $this->assertSame(-INF, $this->vec([-INF, INF])->min(), 'INF');
+        $this->assertSame(2, $this->vec([2, -3])->min(fn($i) => -$i), 'with condition');
+        $this->assertSame(1, $this->vec([1, 2])->min(fn($i) => 1), 'all same');
+
+        $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->min(), 'empty');
+        $this->assertSame(-2, $this->map(['a' => 1, 'b' => -2])->min(), 'contains negative');
+        $this->assertSame(2, $this->map(['a' => 2, 'b' => -3])->min(fn($i) => -$i), 'with condition');
+    }
+
+    public function test_min_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class) ;
+        $this->vec()->min();
+    }
+
+    public function test_min_contains_nan(): void
+    {
+        $this->expectExceptionMessage('$iterable cannot contain NAN.');
+        $this->expectException(InvalidElementException::class) ;
+        $this->vec([1, NAN, 1])->min();
     }
 
     public function test_toArray(): void

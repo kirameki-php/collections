@@ -526,16 +526,6 @@ trait Enumerable
     }
 
     /**
-     * @template TMapValue
-     * @param Closure(TValue, TKey): TMapValue $callback
-     * @return self<TKey, TMapValue>
-     */
-    public function map(Closure $callback): self
-    {
-        return new static(Iter::map($this, $callback));
-    }
-
-    /**
      * @param Closure(TValue, TKey): mixed|null $callback
      * @return TValue
      */
@@ -573,30 +563,33 @@ trait Enumerable
     }
 
     /**
-     * @param Closure(TValue, TKey): mixed|null $callback
+     * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] Called for every element in the collection.
+     * Returned value will be used to determine the smallest number.
+     * Must be int or float.
      * @return TValue
      */
-    public function min(?Closure $callback = null): mixed
+    public function min(?Closure $by = null): mixed
     {
-        return Arr::min($this, $callback);
+        return Arr::min($this, $by);
     }
 
     /**
-     * @param Closure(TValue, TKey): mixed|null $callback
+     * @param Closure(TValue, TKey): mixed|null $by
      * @return TValue|null
      */
-    public function minOrNull(?Closure $callback = null): mixed
+    public function minOrNull(?Closure $by = null): mixed
     {
-        return Arr::minOrNull($this, $callback);
+        return Arr::minOrNull($this, $by);
     }
 
     /**
-     * @param Closure(TValue, TKey): mixed|null $callback
+     * @param Closure(TValue, TKey): mixed|null $by
      * @return array<TValue>
      */
-    public function minMax(?Closure $callback = null): array
+    public function minMax(?Closure $by = null): array
     {
-        return Arr::minMax($this, $callback);
+        return Arr::minMax($this, $by);
     }
 
     /**
@@ -611,6 +604,7 @@ trait Enumerable
 
     /**
      * @param Closure(TValue, TKey): bool $condition
+     * Closure to evaluate each element.
      * @return array{ static, static }
      */
     public function partition(Closure $condition): array
@@ -638,6 +632,7 @@ trait Enumerable
      * Move items that match condition to the top of the array.
      *
      * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
      * @return static
      */
     public function prioritize(Closure $condition): static
@@ -647,6 +642,9 @@ trait Enumerable
 
     /**
      * @param Closure(TValue, TValue, TKey): TValue $callback
+     * First argument contains the reduced value.
+     * Second argument contains the current value.
+     * Third argument contains the current key.
      * @return TValue
      */
     public function reduce(Closure $callback): mixed
@@ -657,7 +655,11 @@ trait Enumerable
     /**
      * @template TDefault
      * @param Closure(TValue, TValue, TKey): TValue $callback
+     * First argument contains the reduced value.
+     * Second argument contains the current value.
+     * Third argument contains the current key.
      * @param TDefault $default
+     * Value that is used when iterable is empty.
      * @return TValue
      */
     public function reduceOr(Closure $callback, mixed $default): mixed
@@ -667,6 +669,9 @@ trait Enumerable
 
     /**
      * @param Closure(TValue, TValue, TKey): TValue $callback
+     * First argument contains the reduced value.
+     * Second argument contains the current value.
+     * Third argument contains the current key.
      * @return TValue|null
      */
     public function reduceOrNull(Closure $callback): mixed
@@ -911,7 +916,10 @@ trait Enumerable
     }
 
     /**
+     * Converts the collection to an array recursively up to the given `$depth`.
+     *
      * @param int<1, max> $depth
+     * [Optional] Defaults to INT_MAX
      * @return array<TKey, TValue>
      */
     public function toArray(int $depth = PHP_INT_MAX): array
@@ -920,6 +928,8 @@ trait Enumerable
     }
 
     /**
+     * Converts the collection to a JSON string.
+     *
      * @param bool $pretty
      * [Optional] Whether to format the JSON as human-readable format.
      * Defaults to **false**.
