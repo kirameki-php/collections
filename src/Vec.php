@@ -10,7 +10,6 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
-use Kirameki\Core\Json;
 use Random\Randomizer;
 use function assert;
 use function count;
@@ -39,7 +38,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param iterable<int, mixed> $items
+     * @param iterable<int, TValue> $items
      */
     public function __construct(iterable $items = [])
     {
