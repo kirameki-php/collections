@@ -195,6 +195,11 @@ final class Arr
             $index = count($iterable) + $index;
         }
 
+        // If the iterable is a list, we can access the index directly.
+        if (is_array($iterable) && array_is_list($iterable)) {
+            return $iterable[$index] ?? $default;
+        }
+
         $count = 0;
         foreach ($iterable as $val) {
             if ($count === $index) {
