@@ -119,7 +119,7 @@ trait Enumerable
     /**
      * Returns **true** if value exists, **false** otherwise.
      *
-     * @param mixed $value
+     * @param TValue $value
      * Value to be searched.
      * @return bool
      */
@@ -198,7 +198,7 @@ trait Enumerable
     /**
      * Returns **false** if value exists, **true** otherwise.
      *
-     * @param mixed $value
+     * @param TValue $value
      * Value to be searched.
      * @return bool
      */
