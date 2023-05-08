@@ -127,6 +127,24 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @param int $index
+     * @return int|string
+     */
+    public function keyAt(int $index): int|string
+    {
+        return Arr::keyAt($this, $index);
+    }
+
+    /**
+     * @param int $index
+     * @return string|int|null
+     */
+    public function keyAtOrNull(int $index): string|int|null
+    {
+        return Arr::keyAtOrNull($this, $index);
+    }
+
+    /**
      * @param iterable<TKey, TValue> $items
      * @return static
      */
@@ -154,7 +172,6 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @inheritDoc
      * @template TMapValue
      * @param Closure(TValue, TKey): TMapValue $callback
      * @return self<TKey, TMapValue>

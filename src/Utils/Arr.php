@@ -2076,6 +2076,81 @@ final class Arr
     }
 
     /**
+     * Returns the key at the given index.
+     * Throws `IndexOutOfBoundsException` if the index does not exist.
+     *
+     * Example:
+     * ```php
+     * Arr::keyAt(['a' => 1, 'b' => 2], 1); // "b"
+     * Arr::keyAt(['a' => 1, 'b' => 2], 2); // throws IndexOutOfBoundsException
+     * Arr::keyAt(['a' => 1, 'b' => 2], -2); // "a"
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param int $index
+     * @return int|string
+     */
+    public static function keyAt(
+        iterable $iterable,
+        int $index,
+    ): int|string
+    {
+        $result = self::keyAtOrNull($iterable, $index);
+
+        if ($result === null) {
+            throw new IndexOutOfBoundsException("\$iterable did not contain the given index: {$index}.", [
+                'iterable' => $iterable,
+                'index' => $index,
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the key at the given index.
+     * Returns **null** if the index does not exist.
+     *
+     * Example:
+     * ```php
+     * Arr::keyAtOrNull(['a' => 1, 'b' => 2], 1); // "b"
+     * Arr::keyAtOrNull(['a' => 1, 'b' => 2], 2); // null
+     * Arr::keyAtOrNull(['a' => 1, 'b' => 2], -2); // "a"
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param int $index
+     * @return int|string|null
+     */
+    public static function keyAtOrNull(
+        iterable $iterable,
+        int $index,
+    ): int|string|null
+    {
+        if (is_array($iterable) && $index >= count($iterable)) {
+            return null;
+        }
+
+        if ($index < 0) {
+            $iterable = Arr::from($iterable);
+            $index += count($iterable);
+        }
+
+        $count = 0;
+        foreach ($iterable as $key => $ignored) {
+            if ($count === $index) {
+                return $key;
+            }
+            $count++;
+        }
+        return null;
+    }
+
+    /**
      * Return an array which contains values from `$iterable` with the keys
      * being the results of running `$callback($val, $key)` on each element.
      *

@@ -4,8 +4,10 @@ namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
+use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Map;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Random\Engine\Xoshiro256StarStar;
@@ -236,6 +238,49 @@ class MapTest extends TestCase
         self::assertSame([], $map->intersectKeys(['c' => 3])->all(), 'non-existing keys');
         self::assertSame(['b' => 2], $map->intersectKeys(['b' => 8, 'c' => 9])->all(), 'some existing keys');
         self::assertSame(['a' => 1, 'b' => 2], $map->intersectKeys(['a' => 7, 'b' => 8, 'c' => 9])->all(), 'all existing keys');
+    }
+
+    public function test_keyAt(): void
+    {
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame('a', $map->keyAt(0), 'first key');
+        self::assertSame('b', $map->keyAt(1), 'second key');
+        self::assertSame('b', $map->keyAt(-1), 'second key from negative');
+        self::assertSame('a', $map->keyAt(-2), 'first key from negative');
+    }
+
+    public function test_keyAt_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable did not contain the given index: 0.');
+        $this->expectException(IndexOutOfBoundsException::class);
+        $this->map()->keyAt(0);
+    }
+
+    public function test_keyAt_out_of_bounds_positive(): void
+    {
+        $this->expectExceptionMessage('$iterable did not contain the given index: 2.');
+        $this->expectException(IndexOutOfBoundsException::class);
+        $this->map(['a' => 1, 'b' => 2])->keyAt(2);
+    }
+
+    public function test_keyAt_out_of_bounds_negative(): void
+    {
+        $this->expectExceptionMessage('$iterable did not contain the given index: -3.');
+        $this->expectException(IndexOutOfBoundsException::class);
+        $this->map(['a' => 1, 'b' => 2])->keyAt(-3);
+    }
+
+    public function test_keyAtOrNull(): void
+    {
+        self::assertNull($this->map()->keyAtOrNull(0), 'empty');
+
+        $map = $this->map(['a' => 1, 'b' => 2]);
+        self::assertSame('a', $map->keyAtOrNull(0), 'first key');
+        self::assertSame('b', $map->keyAtOrNull(1), 'second key');
+        self::assertSame('b', $map->keyAtOrNull(-1), 'second key from negative');
+        self::assertSame('a', $map->keyAtOrNull(-2), 'first key from negative');
+        self::assertNull($map->keyAtOrNull(2), 'out of bounds positive');
+        self::assertNull($map->keyAtOrNull(-3), 'out of bounds negative');
     }
 
     public function test_lastKey(): void

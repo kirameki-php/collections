@@ -17,8 +17,6 @@ use const SORT_REGULAR;
 /**
  * @template TKey of array-key|class-string
  * @template TValue
- *
- * TODO keyAt, keyAtOr, keyAtOrNull
  */
 trait Enumerable
 {

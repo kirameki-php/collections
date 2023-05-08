@@ -1314,6 +1314,48 @@ class ArrTest extends TestCase
         self::assertSame('[1, 2]', Arr::join($assoc, ', ', '[', ']'));
     }
 
+    public function test_keyAt(): void
+    {
+        $assoc = ['a' => 1, 'b' => 2];
+        self::assertSame('a', Arr::keyAt($assoc, 0), 'first');
+        self::assertSame('b', Arr::keyAt($assoc, 1), 'last');
+        self::assertSame('b', Arr::keyAt($assoc, -1), 'last from negative');
+        self::assertSame('a', Arr::keyAt($assoc, -2), 'last from negative');
+    }
+
+    public function test_keyAt_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable did not contain the given index: 1.');
+        $this->expectException(IndexOutOfBoundsException::class);
+        Arr::keyAt([], 1);
+    }
+
+    public function test_keyAt_out_of_bounds_positive(): void
+    {
+        $this->expectExceptionMessage('$iterable did not contain the given index: 1.');
+        $this->expectException(IndexOutOfBoundsException::class);
+        Arr::keyAt(['a' => 1], 1);
+    }
+
+    public function test_keyAt_out_of_bounds_negative(): void
+    {
+        $this->expectExceptionMessage('$iterable did not contain the given index: -2.');
+        $this->expectException(IndexOutOfBoundsException::class);
+        Arr::keyAt(['a' => 1], -2);
+    }
+
+    public function test_keyAtOrNull(): void
+    {
+        $assoc = ['a' => 1, 'b' => 2];
+        self::assertNull(Arr::keyAtOrNull([], 0), 'empty');
+        self::assertSame('a', Arr::keyAtOrNull($assoc, 0), 'first');
+        self::assertSame('b', Arr::keyAtOrNull($assoc, 1), 'last');
+        self::assertSame('b', Arr::keyAtOrNull($assoc, -1), 'last from negative');
+        self::assertSame('a', Arr::keyAtOrNull($assoc, -2), 'last from negative');
+        self::assertNull(Arr::keyAtOrNull($assoc, 2), 'out of bounds positive');
+        self::assertNull(Arr::keyAtOrNull($assoc, -3), 'out of bounds negative');
+    }
+
     public function test_keyBy(): void
     {
         $assoc = Arr::keyBy([1, 2], static fn($v) => 'a' . $v);
