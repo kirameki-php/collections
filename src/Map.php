@@ -11,7 +11,7 @@ use Random\Randomizer;
 use const SORT_REGULAR;
 
 /**
- * @template TKey of array-key|class-string
+ * @template TKey of array-key
  * @template TValue
  * @extends Enumerator<TKey, TValue>
  * @implements ArrayAccess<TKey, TValue>

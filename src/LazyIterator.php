@@ -6,7 +6,7 @@ use IteratorAggregate;
 use Traversable;
 
 /**
- * @template TKey of array-key|class-string
+ * @template TKey of array-key
  * @template TValue
  * @implements IteratorAggregate<TKey, TValue>
  */
