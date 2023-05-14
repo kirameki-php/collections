@@ -704,11 +704,13 @@ trait Enumerable
      *
      * @param Closure(TValue, TKey): bool $condition
      * User defined condition callback. The callback must return a boolean value.
+     * @param int|null $limit
+     * [Optional] Limits the number of items to prioritize.
      * @return static
      */
-    public function prioritize(Closure $condition): static
+    public function prioritize(Closure $condition, ?int $limit = null): static
     {
-        return $this->instantiate(Arr::prioritize($this, $condition, $this->reindex()));
+        return $this->instantiate(Arr::prioritize($this, $condition, $limit, $this->reindex()));
     }
 
     /**

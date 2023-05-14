@@ -1017,11 +1017,14 @@ class EnumerableTest extends TestCase
         $this->assertSame([], $this->vec()->prioritize(fn($i) => $i > 1)->all(), 'empty');
         $this->assertSame([1], $this->vec([1])->prioritize(fn($i) => $i > 1)->all(), 'one');
         $this->assertSame([2, 3, 0, 1], $this->vec([0, 1, 2, 3])->prioritize(fn($i) => $i > 1)->all(), 'different priority');
-        $this->assertSame([1, 1, 0, 0], $this->vec([0, 0, 1, 1])->prioritize(fn($i) => $i > 0)->all(), 'same priority');
+        $this->assertSame([1, 1, 0, 2], $this->vec([0, 1, 1, 2])->prioritize(fn($i) => $i === 1)->all(), 'same priority');
+        $this->assertSame([1, 0, 1, 2], $this->vec([0, 1, 1, 2])->prioritize(fn($i) => $i === 1, 1)->all(), 'one');
 
         $this->assertSame([], $this->map()->prioritize(fn($i) => $i > 1)->all(), 'empty');
         $this->assertSame(['a' => 1], $this->map(['a' => 1])->prioritize(fn($i) => $i > 1)->all(), 'one');
         $this->assertSame(['c' => 2, 'a' => 0, 'b' => 1], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 1)->all(), 'different priority');
+        $this->assertSame(['b' => 1, 'c' => 2, 'a' => 0], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 0)->all(), 'one');
+        $this->assertSame(['b' => 1, 'a' => 0, 'c' => 2], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 0, 1)->all(), 'one');
     }
 
     public function test_toArray(): void

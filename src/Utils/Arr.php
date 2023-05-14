@@ -3259,6 +3259,8 @@ final class Arr
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition
      * User defined condition callback. The callback must return a boolean value.
+     * @param int|null $limit
+     * [Optional] Limits the number of items to prioritize.
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
@@ -3268,6 +3270,7 @@ final class Arr
     public static function prioritize(
         iterable $iterable,
         Closure $condition,
+        ?int $limit = null,
         ?bool $reindex = null,
     ): array
     {
@@ -3277,11 +3280,14 @@ final class Arr
 
         $prioritized = [];
         $remains = [];
+        $count = 0;
+        $limit ??= PHP_INT_MAX;
         foreach ($array as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if ($count < $limit && self::verify($condition, $key, $val)) {
                 $isList
                     ? $prioritized[] = $val
                     : $prioritized[$key] = $val;
+                $count++;
             } else {
                 $isList
                     ? $remains[] = $val

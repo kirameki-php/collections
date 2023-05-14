@@ -1956,6 +1956,9 @@ class ArrTest extends TestCase
         $prioritized = Arr::prioritize([1, 2, 3], static fn(int $i) => $i === 2);
         self::assertSame([2, 1, 3], $prioritized, 'list');
 
+        $prioritized = Arr::prioritize([1, 2, 2, 2], static fn(int $i) => $i === 2, 2);
+        self::assertSame([2, 2, 1, 2], $prioritized, 'limit');
+
         $prioritized = Arr::prioritize(['a' => 1, 'bc' => 2, 'de' => 2, 'b' => 2], static fn($_, string $k) => strlen($k) > 1);
         self::assertSame(['bc', 'de', 'a', 'b'], Arr::keys($prioritized), 'assoc');
 
@@ -1964,6 +1967,9 @@ class ArrTest extends TestCase
 
         $prioritized = Arr::prioritize([1, 2, 3, 4], static fn($_, int $k) => $k > 1, reindex: true);
         self::assertSame([0, 1, 2, 3], Arr::keys($prioritized), 'reindex: false');
+
+        $prioritized = Arr::prioritize(['a' => 0, 'b' => 1, 'c' => 2], fn($i) => $i > 0, 1, false);
+        $this->assertSame(['b', 'a', 'c'], Arr::keys($prioritized), 'reindex: false, limit: 1');
     }
 
     public function test_pull(): void
