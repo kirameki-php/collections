@@ -8,8 +8,6 @@ use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
-use function assert;
-use function is_array;
 use const SORT_REGULAR;
 
 /**
@@ -305,14 +303,5 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     protected function reindex(): bool
     {
         return false;
-    }
-
-    /**
-     * @return array<TKey, TValue>
-     */
-    protected function &getItemsAsRef(): array
-    {
-        assert(is_array($this->items));
-        return $this->items;
     }
 }

@@ -224,15 +224,6 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
         return true;
     }
 
-    /**
-     * @return array<int, TValue>
-     */
-    protected function &getItemsAsRef(): array
-    {
-        assert(is_array($this->items));
-        return $this->items;
-    }
-
     protected function ensureOffsetIsIndex(mixed $offset): ?int
     {
         if (is_int($offset) || is_null($offset)) {

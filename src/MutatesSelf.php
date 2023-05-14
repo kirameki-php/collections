@@ -4,20 +4,17 @@ namespace Kirameki\Collections;
 
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\NotSupportedException;
 use function gettype;
+use function is_array;
 use function Kirameki\Core\is_not_array_key;
 
 /**
- * @template TKey of array-key|class-string
+ * @template TKey of array-key
  * @template TValue
  */
 trait MutatesSelf
 {
-    /**
-     * @return array<TKey, TValue>
-     */
-    abstract protected function &getItemsAsRef(): array;
-
     /**
      * @param iterable<TKey, TValue> $iterable
      * @return static
@@ -28,6 +25,17 @@ trait MutatesSelf
      * @return bool
      */
     abstract protected function reindex(): bool;
+
+    /**
+     * @return array<TKey, TValue>
+     */
+    protected function &getItemsAsRef(): array
+    {
+        if (is_array($this->items)) {
+            return $this->items;
+        }
+        throw new NotSupportedException();
+    }
 
     /**
      * @param TKey $offset
