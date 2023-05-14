@@ -2,9 +2,11 @@
 
 namespace Tests\Kirameki\Collections;
 
+use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidElementException;
+use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
@@ -15,11 +17,9 @@ use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Dumper\Config;
 use Kirameki\Dumper\Writer;
 use stdClass;
-use function dump;
 use function fopen;
 use function fread;
 use function fseek;
-use function max;
 use function range;
 use const INF;
 use const NAN;
@@ -667,12 +667,65 @@ class EnumerableTest extends TestCase
     {
         $this->assertTrue($this->vec()->isEmpty(), 'empty');
         $this->assertFalse($this->vec([1])->isEmpty(), 'not empty');
+        $this->assertTrue($this->map()->isEmpty(), 'empty');
+        $this->assertFalse($this->map(['a' => 1])->isEmpty(), 'not empty');
     }
 
     public function test_isNotEmpty(): void
     {
+        $this->assertFalse($this->vec()->isNotEmpty(), 'empty');
+        $this->assertTrue($this->vec([1])->isNotEmpty(), 'not empty');
         $this->assertFalse($this->map()->isNotEmpty(), 'empty');
         $this->assertTrue($this->map(['a' => 1])->isNotEmpty(), 'not empty');
+    }
+
+    public function test_join(): void
+    {
+        $this->assertSame('', $this->vec()->join('|'), 'empty');
+        $this->assertSame('1', $this->vec([1])->join('|'), 'single');
+        $this->assertSame('1|2|3', $this->vec([1, 2, 3])->join('|'), 'join');
+        $this->assertSame('<1', $this->vec([1])->join('|', '<'), 'single with prefix');
+        $this->assertSame('<1|2|3', $this->vec([1, 2, 3])->join('|', '<'), 'multi with prefix');
+        $this->assertSame('<>', $this->vec()->join('|', '<', '>'), 'empty with *fix');
+        $this->assertSame('<1>', $this->vec([1])->join('|', '<', '>'), 'single with *fix');
+        $this->assertSame('<1|2|3>', $this->vec([1, 2, 3])->join('|', '<', '>'), 'multi with *fix');
+
+        $this->assertSame('', $this->map()->join('|'), 'empty');
+        $this->assertSame('1', $this->map(['a' => 1])->join('|'), 'single');
+        $this->assertSame('1|2|3', $this->map(['a' => 1, 'b' => 2, 'c' => 3])->join('|'), 'join');
+        $this->assertSame('<1', $this->map(['a' => 1])->join('|', '<'), 'single with prefix');
+        $this->assertSame('<1|2|3', $this->map(['a' => 1, 'b' => 2, 'c' => 3])->join('|', '<'), 'multi with prefix');
+        $this->assertSame('<>', $this->map()->join('|', '<', '>'), 'empty with *fix');
+        $this->assertSame('<1>', $this->map(['a' => 1])->join('|', '<', '>'), 'single with *fix');
+        $this->assertSame('<1|2|3>', $this->map(['a' => 1, 'b' => 2, 'c' => 3])->join('|', '<', '>'), 'multi with *fix');
+    }
+
+    public function test_keyBy(): void
+    {
+        $this->assertSame([], $this->vec()->keyBy(fn() => null)->all(), 'empty');
+        $this->assertSame([2 => 1], $this->vec([1])->keyBy(fn(int $i) => $i * 2)->all(), 'multiply');
+        $this->assertSame(['_1' => 1, '_2' => 2], $this->vec([1, 2])->keyBy(fn(int $i) => "_{$i}")->all(), 'string');
+        $this->assertSame([1 => 1], $this->vec([1, 1])->keyBy(fn(int $i) => "{$i}", true)->all(), 'overwrite');
+
+        $this->assertSame([], $this->map()->keyBy(fn() => null)->all(), 'empty');
+        $this->assertSame([2 => 1], $this->map(['a' => 1])->keyBy(fn(int $i) => $i * 2)->all(), 'multiply');
+        $this->assertSame(['_1' => 1], $this->map(['a' => 1])->keyBy(fn(int $i) => "_{$i}")->all(), 'string');
+        $this->assertSame(['_a' => 1], $this->map(['a' => 1])->keyBy(fn(int $v, string $k) => "_{$k}")->all(), 'string');
+        $this->assertSame(['1' => 1], $this->map([1 => 1, 2 => 1])->keyBy(fn(int $i) => "{$i}", true)->all(), 'overwrite');
+    }
+
+    public function test_keyBy_wrong_key_type(): void
+    {
+        $this->expectExceptionMessage('Expected: key of type int|string. NULL given.');
+        $this->expectException(InvalidKeyException::class);
+        $this->vec([1])->keyBy(fn() => null)->all();
+    }
+
+    public function test_keyBy_duplicate_keys(): void
+    {
+        $this->expectExceptionMessage('Tried to overwrite existing key: 1.');
+        $this->expectException(DuplicateKeyException::class);
+        $this->vec([1, 1])->keyBy(fn(int $i) => "{$i}")->all();
     }
 
     public function test_keys(): void

@@ -5,7 +5,6 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\LazyIterator;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Traversable;
-use function current;
 
 class LazyIteratorTest extends TestCase
 {

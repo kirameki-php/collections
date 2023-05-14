@@ -458,7 +458,7 @@ trait Enumerable
     }
 
     /**
-     * @template TNewKey of string
+     * @template TNewKey of array-key
      * @param Closure(TValue, TKey): TNewKey $callback
      * @param bool $overwrite
      * @return Map<TNewKey, TValue>
