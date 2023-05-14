@@ -15,7 +15,7 @@ use const PHP_INT_MAX;
 use const SORT_REGULAR;
 
 /**
- * @template TKey of array-key|class-string
+ * @template TKey of array-key
  * @template TValue
  */
 trait Enumerable
