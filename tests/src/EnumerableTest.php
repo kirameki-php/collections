@@ -545,12 +545,12 @@ class EnumerableTest extends TestCase
 
     public function test_firstIndexOrNull(): void
     {
-        $this->assertNull($this->vec([])->firstIndexOrNull(fn() => true), 'empty');
+        $this->assertNull($this->vec()->firstIndexOrNull(fn() => true), 'empty');
         $this->assertNull($this->vec([1, 2])->firstIndexOrNull(fn() => false), 'match none');
         $this->assertSame(0, $this->vec([1, 2])->firstIndexOrNull(fn() => true), 'match all');
         $this->assertSame(1, $this->vec([1, 2, 3])->firstIndexOrNull(fn($i) => $i > 1), 'match some');
 
-        $this->assertNull($this->map([])->firstIndexOrNull(fn() => true), 'empty');
+        $this->assertNull($this->map()->firstIndexOrNull(fn() => true), 'empty');
         $this->assertNull($this->map(['a' => 1, 'b' => 2])->firstIndexOrNull(fn() => false), 'match none');
         $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->firstIndexOrNull(fn() => true), 'match all');
         $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->firstIndexOrNull(fn($i) => $i > 1), 'match some');
@@ -789,12 +789,12 @@ class EnumerableTest extends TestCase
 
     public function test_lastIndexOrNull(): void
     {
-        $this->assertNull($this->vec([])->lastIndexOrNull(fn() => true), 'empty');
+        $this->assertNull($this->vec()->lastIndexOrNull(fn() => true), 'empty');
         $this->assertNull($this->vec([1, 2])->lastIndexOrNull(fn() => false), 'match none');
         $this->assertSame(1, $this->vec([1, 2])->lastIndexOrNull(fn() => true), 'match all');
         $this->assertSame(1, $this->vec([1, 2, 3])->lastIndexOrNull(fn($i) => $i < 3), 'match some');
 
-        $this->assertNull($this->map([])->lastIndexOrNull(fn() => true), 'empty');
+        $this->assertNull($this->map()->lastIndexOrNull(fn() => true), 'empty');
         $this->assertNull($this->map(['a' => 1, 'b' => 2])->lastIndexOrNull(fn() => false), 'match none');
         $this->assertSame(1, $this->map(['a' => 1, 'b' => 2])->lastIndexOrNull(fn() => true), 'match all');
         $this->assertSame(1, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->lastIndexOrNull(fn($i) => $i < 3), 'match some');
@@ -964,6 +964,41 @@ class EnumerableTest extends TestCase
         $this->expectExceptionMessage('$iterable must contain at least one element.');
         $this->expectException(EmptyNotAllowedException::class);
         $this->vec()->minMax();
+    }
+
+    public function test_partition(): void
+    {
+        $split = $this->vec()->partition(fn($i) => $i > 0);
+        $this->assertSame([], $split[0]->all(), 'empty');
+        $this->assertSame([], $split[1]->all(), 'empty');
+
+        $split = $this->vec([0, 1, 2])->partition(fn($i) => $i > 0);
+        $this->assertSame([1, 2], $split[0]->all(), 'split');
+        $this->assertSame([0], $split[1]->all(), 'split');
+
+        $split = $this->vec([0, 1, 2])->partition(fn($i) => $i >= 0);
+        $this->assertSame([0, 1, 2], $split[0]->all(), 'no false');
+        $this->assertSame([], $split[1]->all(), 'no false');
+
+        $split = $this->vec([0, 1, 2])->partition(fn($i) => $i < 0);
+        $this->assertSame([], $split[0]->all(), 'no true');
+        $this->assertSame([0, 1, 2], $split[1]->all(), 'no true');
+
+        $split = $this->map()->partition(fn($i) => $i > 0);
+        $this->assertSame([], $split[0]->all(), 'empty');
+        $this->assertSame([], $split[1]->all(), 'empty');
+
+        $split = $this->map(['a' => 0, 'b' => 1])->partition(fn($i) => $i > 0);
+        $this->assertSame(['b' => 1], $split[0]->all(), 'split');
+        $this->assertSame(['a' => 0], $split[1]->all(), 'split');
+
+        $split = $this->map(['a' => 0, 'b' => 1])->partition(fn($i) => $i >= 0);
+        $this->assertSame(['a' => 0, 'b' => 1], $split[0]->all(), 'no false');
+        $this->assertSame([], $split[1]->all(), 'no false');
+
+        $split = $this->map(['a' => 0, 'b' => 1])->partition(fn($i) => $i < 0);
+        $this->assertSame([], $split[0]->all(), 'no true');
+        $this->assertSame(['a' => 0, 'b' => 1], $split[1]->all(), 'no true');
     }
 
     public function test_pipe(): void
