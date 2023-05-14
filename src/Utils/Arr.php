@@ -72,9 +72,6 @@ use const PHP_INT_MAX;
 use const PHP_QUERY_RFC3986;
 use const SORT_REGULAR;
 
-/**
- * TODO insertAfter/insertBefore
- */
 final class Arr
 {
     private const EMPTY = [];

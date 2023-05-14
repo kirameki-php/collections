@@ -11,7 +11,6 @@ use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Random\Randomizer;
-use function assert;
 use function count;
 use function gettype;
 use function is_array;
