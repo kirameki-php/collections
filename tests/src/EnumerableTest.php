@@ -1012,6 +1012,18 @@ class EnumerableTest extends TestCase
         $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->pipe(fn($i) => 0));
     }
 
+    public  function test_prioritize(): void
+    {
+        $this->assertSame([], $this->vec()->prioritize(fn($i) => $i > 1)->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->prioritize(fn($i) => $i > 1)->all(), 'one');
+        $this->assertSame([2, 3, 0, 1], $this->vec([0, 1, 2, 3])->prioritize(fn($i) => $i > 1)->all(), 'different priority');
+        $this->assertSame([1, 1, 0, 0], $this->vec([0, 0, 1, 1])->prioritize(fn($i) => $i > 0)->all(), 'same priority');
+
+        $this->assertSame([], $this->map()->prioritize(fn($i) => $i > 1)->all(), 'empty');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->prioritize(fn($i) => $i > 1)->all(), 'one');
+        $this->assertSame(['c' => 2, 'a' => 0, 'b' => 1], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 1)->all(), 'different priority');
+    }
+
     public function test_toArray(): void
     {
         $this->assertSame([], $this->vec()->toArray(), 'empty');
