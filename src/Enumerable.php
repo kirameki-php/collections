@@ -700,7 +700,7 @@ trait Enumerable
     }
 
     /**
-     * Move items that match condition to the top of the array.
+     * Move items which match the condition to the front of the collection.
      *
      * @param Closure(TValue, TKey): bool $condition
      * User defined condition callback. The callback must return a boolean value.
