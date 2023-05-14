@@ -140,7 +140,6 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
      * @template TMapValue
      * @param Closure(TValue, int): TMapValue $callback
      * @return self<TMapValue>
