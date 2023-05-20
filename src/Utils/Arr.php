@@ -3756,6 +3756,9 @@ final class Arr
      * The value to replace.
      * @param TValue $replacement
      * Replacement for the searched value.
+     * @param int|null $limit
+     * [Optional] Sets a limit to number of times a replacement can take place.
+     * Defaults to **null**.
      * @param int &$count
      * [Optional][Reference] Sets the number of times replacements occurred.
      * Any value previously set will be reset.
@@ -3765,11 +3768,12 @@ final class Arr
         iterable $iterable,
         mixed $search,
         mixed $replacement,
+        ?int $limit = null,
         int &$count = 0,
     ): array
     {
         return iterator_to_array(
-            Iter::replace($iterable, $search, $replacement, $count),
+            Iter::replace($iterable, $search, $replacement, $limit, $count),
         );
     }
 

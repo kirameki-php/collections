@@ -2276,16 +2276,27 @@ class ArrTest extends TestCase
         self::assertSame(['a' => 2], Arr::replace(['a' => 1], 1, 2), 'assoc');
 
         $count = 0;
-        self::assertSame([1, 2], Arr::replace([1, 2], 5, 0, $count), 'with count empty');
+        self::assertSame([1, 2], Arr::replace([1, 2], 5, 0, null, $count), 'with count empty');
         self::assertSame(0, $count);
 
         $count = 0;
-        self::assertSame([0, 2, 0], Arr::replace([1, 2, 1], 1, 0, $count), 'with count 2 match');
+        self::assertSame([0, 2, 0], Arr::replace([1, 2, 1], 1, 0, null, $count), 'with count 2 match');
         self::assertSame(2, $count);
 
         $count = 5;
-        self::assertSame([1, 2], Arr::replace([1, 2], 5, 0, $count), 'check count reset');
+        self::assertSame([1, 2], Arr::replace([1, 2], 5, 0, null, $count), 'check count reset');
         self::assertSame(0, $count);
+
+        $count = 0;
+        self::assertSame([0, 2, 1], Arr::replace([1, 2, 1], 1, 0, 1, $count), 'with count 2 match limit 1');
+        self::assertSame(1, $count);
+    }
+
+    public function test_replace_negative_limit(): void
+    {
+        $this->expectExceptionMessage('Expected: $limit >= 0. Got: -1.');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::replace([1, 2, 1], 1, 0, -1);
     }
 
     public function test_reverse(): void

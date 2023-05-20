@@ -757,14 +757,17 @@ trait Enumerable
      * The value to replace.
      * @param TValue $replacement
      * Replacement for the searched value.
+     * @param int|null $limit
+     * [Optional] Sets a limit to number of times a replacement can take place.
+     * Defaults to **null**.
      * @param int &$count
      * [Optional][Reference] Sets the number of times replacements occurred.
      * Any value previously set will be reset.
      * @return static
      */
-    public function replace(mixed $search, mixed $replacement, int &$count = 0): static
+    public function replace(mixed $search, mixed $replacement, ?int $limit = null, int &$count = 0): static
     {
-        return $this->instantiate(Iter::replace($this, $search, $replacement, $count));
+        return $this->instantiate(Iter::replace($this, $search, $replacement, $limit, $count));
     }
 
     /**

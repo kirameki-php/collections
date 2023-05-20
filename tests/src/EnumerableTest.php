@@ -11,6 +11,7 @@ use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Map;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\UnreachableException;
@@ -1096,6 +1097,39 @@ class EnumerableTest extends TestCase
             return $carry + $i;
         }), 'multiple');
         $this->assertSame(1, $count, 'multiple count');
+    }
+
+    public function test_replace(): void
+    {
+        $this->assertSame([], $this->vec()->replace(1, 3)->all(), 'empty');
+        $this->assertSame([3, 2], $this->vec([1, 2])->replace(1, 3)->all(), 'one');
+        $this->assertSame([3, 2, 1], $this->vec([1, 2, 1])->replace(1, 3, 1)->all(), 'with limit');
+        $count = 0;
+        $this->assertSame([1, 2, 1], $this->vec([1, 2, 1])->replace(0, 3, 1, $count)->all(), 'no match');
+        $this->assertSame(0, $count);
+        $this->assertSame([3, 2, 1], $this->vec([1, 2, 1])->replace(1, 3, 1, $count)->all(), 'with count and limit (hit limit)');
+        $this->assertSame(1, $count);
+        $this->assertSame([3, 2, 3], $this->vec([1, 2, 1])->replace(1, 3, 10, $count)->all(), 'with count and limit (not hit limit)');
+        $this->assertSame(2, $count);
+
+        $this->assertSame([], $this->map()->replace(1, 3)->all(), 'empty');
+        $this->assertSame(['a' => 3, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->replace(1, 3)->all(), 'one');
+        $this->assertSame(['a' => 3, 'b' => 2, 'c' => 1], $this->map(['a' => 1, 'b' => 2, 'c' => 1])->replace(1, 3, 1)->all(), 'with limit');
+        $count = 0;
+        $this->assertSame(['a' => 1, 'b' => 2, 'c' => 1], $this->map(['a' => 1, 'b' => 2, 'c' => 1])->replace(0, 3, 1, $count)->all(), 'no match');
+        $this->assertSame(0, $count);
+        $this->assertSame(['a' => 3, 'b' => 2, 'c' => 1], $this->map(['a' => 1, 'b' => 2, 'c' => 1])->replace(1, 3, 1, $count)->all(), 'with count and limit (hit limit)');
+        $this->assertSame(1, $count);
+        $this->assertSame(['a' => 3, 'b' => 2, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 1])->replace(1, 3, 10, $count)->all(), 'with count and limit (not hit limit)');
+        $this->assertSame(2, $count);
+
+    }
+
+    public function test_replace_negative_limit(): void
+    {
+        $this->expectExceptionMessage('Expected: $limit >= 0. Got: -1.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1, 2, 1])->replace(1, 0, -1);
     }
 
     public function test_toArray(): void
