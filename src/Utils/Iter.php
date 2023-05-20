@@ -28,7 +28,7 @@ final class Iter
     public static function chunk(iterable $iterable, int $size, bool $reindex = false): Generator
     {
         if ($size < 1) {
-            throw new InvalidArgumentException("Expected: \$size >= 1. Got: {$size}", [
+            throw new InvalidArgumentException("Expected: \$size >= 1. Got: {$size}.", [
                 'iterable' => $iterable,
                 'size' => $size,
             ]);
@@ -250,7 +250,7 @@ final class Iter
     public static function flatten(iterable $iterable, int $depth = 1): Generator
     {
         if ($depth <= 0) {
-            throw new InvalidArgumentException("Expected: \$depth > 0. Got: {$depth}", [
+            throw new InvalidArgumentException("Expected: \$depth > 0. Got: {$depth}.", [
                 'iterable' => $iterable,
                 'depth' => $depth,
             ]);
@@ -364,7 +364,7 @@ final class Iter
     public static function repeat(iterable $iterable, int $times): Generator
     {
         if ($times < 0) {
-            throw new InvalidArgumentException("Expected: \$times >= 0. Got: {$times}", [
+            throw new InvalidArgumentException("Expected: \$times >= 0. Got: {$times}.", [
                 'iterable' => $iterable,
                 'times' => $times,
             ]);
@@ -446,7 +446,7 @@ final class Iter
     public static function takeFirst(iterable $iterable, int $amount): Generator
     {
         if ($amount < 0) {
-            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}", [
+            throw new InvalidArgumentException("Expected: \$amount >= 0. Got: {$amount}.", [
                 'iterable' => $iterable,
                 'amount' => $amount,
             ]);

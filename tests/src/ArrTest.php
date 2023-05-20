@@ -185,7 +185,7 @@ class ArrTest extends TestCase
     public function test_chunk_invalid_size(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $size >= 1. Got: 0');
+        $this->expectExceptionMessage('Expected: $size >= 1. Got: 0.');
         Arr::chunk([1], 0);
     }
 
@@ -289,14 +289,14 @@ class ArrTest extends TestCase
     public function test_compact_zero_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0');
+        $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0.');
         Arr::compact([], 0);
     }
 
     public function test_compact_negative_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1');
+        $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1.');
         Arr::compact([], -1);
     }
 
@@ -591,7 +591,7 @@ class ArrTest extends TestCase
     public function test_dropLast_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         Arr::dropLast(['a' => 1], -1);
     }
 
@@ -1030,14 +1030,14 @@ class ArrTest extends TestCase
     public function test_flatten_zero_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth > 0. Got: 0');
+        $this->expectExceptionMessage('Expected: $depth > 0. Got: 0.');
         self::assertSame([1, 2], Arr::flatten([1, 2], 0));
     }
 
     public function test_flatten_negative_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth > 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $depth > 0. Got: -1.');
         self::assertSame([1, 2], Arr::flatten([1, 2], -1));
     }
 
@@ -1052,7 +1052,7 @@ class ArrTest extends TestCase
     public function test_flip_invalid_key_type(): void
     {
         $this->expectException(InvalidKeyException::class);
-        $this->expectExceptionMessage('Expected: array value of type int|string. Got: boolean');
+        $this->expectExceptionMessage('Expected: array value of type int|string. Got: boolean.');
         Arr::flip([true, false]);
     }
 
@@ -1129,7 +1129,7 @@ class ArrTest extends TestCase
     public function test_groupBy_missing_key(): void
     {
         $this->expectException(InvalidKeyException::class);
-        $this->expectExceptionMessage('Expected: Grouping key of type int|string. Got: double');
+        $this->expectExceptionMessage('Expected: Grouping key of type int|string. Got: double.');
         Arr::groupBy([['dummy' => 3]], fn() => 1.1);
     }
 
@@ -1895,7 +1895,7 @@ class ArrTest extends TestCase
     public function test_popMany_zero_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0.');
         $list = [1, 2];
         self::assertSame([], Arr::popMany($list, 0));
     }
@@ -1903,7 +1903,7 @@ class ArrTest extends TestCase
     public function test_popMany_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1.');
         $list = [1, 2];
         self::assertSame([], Arr::popMany($list, -1));
     }
@@ -2262,7 +2262,7 @@ class ArrTest extends TestCase
     public function test_repeat_negative_times(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $times >= 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $times >= 0. Got: -1.');
         self::assertSame([], Arr::repeat([1], -1));
     }
 
@@ -2895,7 +2895,7 @@ class ArrTest extends TestCase
     public function test_shiftMany_zero_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0.');
         $list = [1, 2];
         self::assertSame([], Arr::shiftMany($list, 0));
     }
@@ -2903,7 +2903,7 @@ class ArrTest extends TestCase
     public function test_shiftMany_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1.');
         $list = [1, 2];
         self::assertSame([], Arr::shiftMany($list, -1));
     }
@@ -3217,7 +3217,7 @@ class ArrTest extends TestCase
     public function test_takeFirst_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         Arr::takeFirst(['a' => 1], -1);
     }
 
@@ -3242,7 +3242,7 @@ class ArrTest extends TestCase
     public function test_takeLast_fail_on_negative_amount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         Arr::takeLast(['a' => 1], -1);
     }
 

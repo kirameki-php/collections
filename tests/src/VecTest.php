@@ -66,7 +66,7 @@ class VecTest extends TestCase
 
     public function test_offsetExists_non_int_access(): void
     {
-        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string');
+        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
         $this->expectException(InvalidKeyException::class);
         isset($this->vec([1, 2])['0']);
     }
@@ -81,7 +81,7 @@ class VecTest extends TestCase
 
     public function test_offsetGet_non_int_access(): void
     {
-        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string');
+        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
         $this->expectException(InvalidKeyException::class);
         $this->vec([1, 2])['0'];
     }
@@ -107,7 +107,7 @@ class VecTest extends TestCase
 
     public function test_offsetSet_non_int_access(): void
     {
-        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string');
+        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
         $this->expectException(InvalidKeyException::class);
         $this->vec([1, 2])['0'] = 3;
     }
@@ -142,7 +142,7 @@ class VecTest extends TestCase
 
     public function test_offsetUnset_non_int_access(): void
     {
-        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string');
+        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
         $this->expectException(InvalidKeyException::class);
         unset($this->vec([1, 2])['0']);
     }
@@ -193,7 +193,7 @@ class VecTest extends TestCase
 
     public function test_repeat_negative(): void
     {
-        $this->expectExceptionMessage('Expected: $times >= 0. Got: -1');
+        $this->expectExceptionMessage('Expected: $times >= 0. Got: -1.');
         $this->expectException(InvalidArgumentException::class);
         $this->vec([1])->repeat(-1);
     }

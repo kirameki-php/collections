@@ -163,14 +163,14 @@ class EnumerableTest extends TestCase
     public function test_compact_zero_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0');
+        $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0.');
         $this->vec()->compact(0);
     }
 
     public function test_compact_negative_depth(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1');
+        $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1.');
         $this->vec()->compact(-1);
     }
 

@@ -230,7 +230,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
         }
 
         $type = gettype($offset);
-        throw new InvalidKeyException("Expected: \$offset's type to be int|null. Got: {$type}", [
+        throw new InvalidKeyException("Expected: \$offset's type to be int|null. Got: {$type}.", [
             'this' => $this,
             'offset' => $offset,
             'type' => $type,
