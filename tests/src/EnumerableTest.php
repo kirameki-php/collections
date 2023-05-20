@@ -1027,6 +1027,77 @@ class EnumerableTest extends TestCase
         $this->assertSame(['b' => 1, 'a' => 0, 'c' => 2], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 0, 1)->all(), 'one');
     }
 
+    public function test_reduce(): void
+    {
+        $this->assertSame(1, $this->vec([1])->reduce(fn($carry, $i) => $carry + $i), 'one');
+        $count = 0;
+        $this->assertSame(3, $this->vec([1, 2])->reduce(function($carry, $i) use (&$count) {
+            $count++;
+            return $carry + $i;
+        }), 'multiple');
+        $this->assertSame(1, $count, 'multiple count');
+
+        $this->assertSame(1, $this->map(['a' => 1])->reduce(fn($carry, $i) => $carry + $i), 'one');
+        $this->assertSame('bc', $this->map(['a' => 'b', 'c' => 'd'])->reduce(fn($carry, $i, $k) => "{$carry}{$k}"), 'with key');
+        $count = 0;
+        $this->assertSame(3, $this->map(['a' => 1, 'b' => 2])->reduce(function($carry, $i) use (&$count) {
+            $count++;
+            return $carry + $i;
+        }), 'multiple');
+        $this->assertSame(1, $count, 'multiple count');
+    }
+
+    public function test_reduce_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec()->reduce(fn($carry, $i) => $carry + $i);
+    }
+
+    public function test_reduceOr(): void
+    {
+        $this->assertSame(INF, $this->vec()->reduceOr(fn($carry, $i) => $carry + $i, INF), 'empty');
+        $this->assertSame(1, $this->vec([1])->reduceOr(fn($carry, $i) => $carry + $i, INF), 'one');
+        $count = 0;
+        $this->assertSame(3, $this->vec([1, 2])->reduceOr(function($carry, $i) use (&$count) {
+            $count++;
+            return $carry + $i;
+        }, INF), 'multiple');
+        $this->assertSame(1, $count, 'multiple count');
+
+        $this->assertSame(INF, $this->map()->reduceOr(fn($carry, $i) => $carry + $i, INF), 'empty');
+        $this->assertSame(1, $this->map(['a' => 1])->reduceOr(fn($carry, $i) => $carry + $i, INF), 'one');
+        $this->assertSame('bc', $this->map(['a' => 'b', 'c' => 'd'])->reduceOr(fn($carry, $i, $k) => "{$carry}{$k}", INF), 'with key');
+        $count = 0;
+        $this->assertSame(3, $this->map(['a' => 1, 'b' => 2])->reduceOr(function($carry, $i) use (&$count) {
+            $count++;
+            return $carry + $i;
+        }, INF), 'multiple');
+        $this->assertSame(1, $count, 'multiple count');
+    }
+
+    public function test_reduceOrNull(): void
+    {
+        $this->assertNull($this->vec()->reduceOrNull(fn($carry, $i) => $carry + $i), 'empty');
+        $this->assertSame(1, $this->vec([1])->reduceOrNull(fn($carry, $i) => $carry + $i), 'one');
+        $count = 0;
+        $this->assertSame(3, $this->vec([1, 2])->reduceOrNull(function($carry, $i) use (&$count) {
+            $count++;
+            return $carry + $i;
+        }), 'multiple');
+        $this->assertSame(1, $count, 'multiple count');
+
+        $this->assertNull($this->map()->reduceOrNull(fn($carry, $i) => $carry + $i), 'empty');
+        $this->assertSame(1, $this->map(['a' => 1])->reduceOrNull(fn($carry, $i) => $carry + $i), 'one');
+        $this->assertSame('bc', $this->map(['a' => 'b', 'c' => 'd'])->reduceOrNull(fn($carry, $i, $k) => "{$carry}{$k}"), 'with key');
+        $count = 0;
+        $this->assertSame(3, $this->map(['a' => 1, 'b' => 2])->reduceOrNull(function($carry, $i) use (&$count) {
+            $count++;
+            return $carry + $i;
+        }), 'multiple');
+        $this->assertSame(1, $count, 'multiple count');
+    }
+
     public function test_toArray(): void
     {
         $this->assertSame([], $this->vec()->toArray(), 'empty');
