@@ -1132,6 +1132,15 @@ class EnumerableTest extends TestCase
         $this->vec([1, 2, 1])->replace(1, 0, -1);
     }
 
+    public function test_reverse(): void
+    {
+        $this->assertSame([], $this->vec()->reverse()->all(), 'empty');
+        $this->assertSame([2, 1], $this->vec([1, 2])->reverse()->all(), 'multiple');
+
+        $this->assertSame([], $this->map()->reverse()->all(), 'empty');
+        $this->assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->reverse()->all(), 'multiple');
+    }
+
     public function test_toArray(): void
     {
         $this->assertSame([], $this->vec()->toArray(), 'empty');

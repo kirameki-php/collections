@@ -2290,6 +2290,9 @@ class ArrTest extends TestCase
         $count = 0;
         self::assertSame([0, 2, 1], Arr::replace([1, 2, 1], 1, 0, 1, $count), 'with count 2 match limit 1');
         self::assertSame(1, $count);
+        $count = 0;
+        self::assertSame([0, 2, 0], Arr::replace([1, 2, 1], 1, 0, 5, $count), 'with count 2 match limit 5');
+        self::assertSame(2, $count);
     }
 
     public function test_replace_negative_limit(): void
