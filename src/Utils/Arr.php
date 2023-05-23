@@ -38,7 +38,6 @@ use function arsort;
 use function asort;
 use function count;
 use function current;
-use function dump;
 use function end;
 use function get_resource_id;
 use function gettype;
@@ -58,7 +57,6 @@ use function is_string;
 use function iterator_to_array;
 use function json_encode;
 use function key;
-use function Kirameki\Core\is_not_array_key;
 use function krsort;
 use function ksort;
 use function max;
@@ -1530,7 +1528,7 @@ final class Arr
     {
         $flipped = [];
         foreach ($iterable as $key => $val) {
-            if (is_not_array_key($val)) {
+            if (!is_int($val) && !is_string($val)) {
                 throw new InvalidKeyException('Expected: array value of type int|string. Got: ' . gettype($val) . '.', [
                     'iterable' => $iterable,
                     'key' => $key,
@@ -1743,7 +1741,7 @@ final class Arr
         $map = [];
         foreach ($iterable as $key => $val) {
             $groupKey = $callback($val, $key);
-            if (is_not_array_key($groupKey)) {
+            if (!is_int($groupKey) && !is_string($groupKey)) {
                 $type = gettype($groupKey);
                 throw new InvalidKeyException("Expected: Grouping key of type int|string. Got: {$type}.", [
                     'iterable' => $iterable,

@@ -7,7 +7,7 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use function gettype;
 use function is_array;
-use function Kirameki\Core\is_not_array_key;
+use function is_int;
 
 /**
  * @template TKey of array-key
@@ -71,7 +71,7 @@ trait MutatesSelf
             return;
         }
 
-        if (is_not_array_key($offset)) {
+        if (!is_int($offset) && !is_string($offset)) {
             throw new InvalidArgumentException('Expected: $offset\'s type to be int|string. Got: ' . gettype($offset) . '.', [
                 'this' => $this,
                 'offset' => $offset,
