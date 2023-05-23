@@ -10,6 +10,7 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
+use Kirameki\Collections\Utils\Range;
 use Random\Randomizer;
 use function count;
 use function gettype;
@@ -64,6 +65,17 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
             }
         })($times);
         return new static(new LazyIterator($generator));
+    }
+
+    /**
+     * @param int $start
+     * @param int $end
+     * @param bool $includeEnd
+     * @return self<int>
+     */
+    public static function range(int $start, int $end, bool $includeEnd = true): Vec
+    {
+        return new static(new Range($start, $end, $includeEnd));
     }
 
     /**

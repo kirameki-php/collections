@@ -50,6 +50,36 @@ class VecTest extends TestCase
         self::assertSame([0, 1, 2], $vec->all());
     }
 
+    public function test_range(): void
+    {
+        self::assertSame([1], Vec::range(1, 1)->all());
+        self::assertSame([1, 2, 3], Vec::range(1, 3)->all());
+        self::assertSame([-2, -1, 0], Vec::range(-2, 0)->all());
+        self::assertSame([1], Vec::range(1, 2, false)->all());
+        self::assertSame([0, 1], Vec::range(0, 2, false)->all());
+    }
+
+    public function test_range_with_smaller_end_positive(): void
+    {
+        $this->expectExceptionMessage('$start must be <= $end. Got: 1 -> 0');
+        $this->expectException(InvalidArgumentException::class);
+        Vec::range(1, 0);
+    }
+
+    public function test_range_with_smaller_end_negative(): void
+    {
+        $this->expectExceptionMessage('$start must be <= $end. Got: -1 -> -2');
+        $this->expectException(InvalidArgumentException::class);
+        Vec::range(-1, -2);
+    }
+
+    public function test_range_with_same_num(): void
+    {
+        $this->expectExceptionMessage('$start must be < $end when end is not included. Got: 1 -> 1');
+        $this->expectException(InvalidArgumentException::class);
+        Vec::range(1, 1, false);
+    }
+
     public function test_jsonSerialize(): void
     {
         self::assertSame([1, 2], $this->vec([1, 2])->jsonSerialize());
