@@ -16,6 +16,9 @@ jobs:
         configuration: phpunit.xml
         php_extensions: mbstring pcntl xdebug
         args: --coverage-clover ./coverage.xml
+    - uses: php-actions/phpstan@v3
+      with:
+        memory_limit: 1G
     - uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
