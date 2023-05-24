@@ -13,7 +13,7 @@ use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use stdClass;
 
-class MapTest extends TestCase
+final class MapTest extends TestCase
 {
     public function test_constructor(): void
     {

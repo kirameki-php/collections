@@ -5,7 +5,7 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\Enumerator;
 use Kirameki\Collections\LazyIterator;
 
-class EnumeratorTest extends TestCase
+final class EnumeratorTest extends TestCase
 {
     /**
      * @template TValue

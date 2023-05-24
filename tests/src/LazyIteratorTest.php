@@ -6,7 +6,7 @@ use Kirameki\Collections\LazyIterator;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Traversable;
 
-class LazyIteratorTest extends TestCase
+final class LazyIteratorTest extends TestCase
 {
     public function test_constructor_list(): void
     {

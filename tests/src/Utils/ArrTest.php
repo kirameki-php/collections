@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Kirameki\Collections;
+namespace Tests\Kirameki\Collections\Utils;
 
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
@@ -18,6 +18,7 @@ use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use stdClass;
 use Tests\Kirameki\Collections\References\FixedNumEngine;
+use Tests\Kirameki\Collections\TestCase;
 use TypeError;
 use function array_keys;
 use function array_values;
@@ -33,7 +34,7 @@ use function urlencode;
 use const INF;
 use const NAN;
 
-class ArrTest extends TestCase
+final class ArrTest extends TestCase
 {
     public function test_append(): void
     {

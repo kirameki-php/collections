@@ -11,7 +11,6 @@ use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Map;
-use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\UnreachableException;
@@ -27,7 +26,7 @@ use function range;
 use const INF;
 use const NAN;
 
-class EnumerableTest extends TestCase
+final class EnumerableTest extends TestCase
 {
     public function test_all(): void
     {
