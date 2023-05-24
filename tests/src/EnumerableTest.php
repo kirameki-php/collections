@@ -17,6 +17,8 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Dumper\Config;
 use Kirameki\Dumper\Writer;
+use Random\Engine\Mt19937;
+use Random\Randomizer;
 use stdClass;
 use function fopen;
 use function fread;
@@ -1139,6 +1141,89 @@ class EnumerableTest extends TestCase
 
         $this->assertSame([], $this->map()->reverse()->all(), 'empty');
         $this->assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->reverse()->all(), 'multiple');
+    }
+
+    public function test_rotate(): void
+    {
+        $this->assertSame([], $this->vec()->rotate(1)->all(), 'empty');
+        $this->assertSame([], $this->vec()->rotate(-1)->all(), 'empty');
+        $this->assertSame([2, 3, 1], $this->vec([1, 2, 3])->rotate(1)->all(), 'empty');
+        $this->assertSame([3, 1, 2], $this->vec([1, 2, 3])->rotate(-1)->all(), 'empty');
+
+        $this->assertSame([], $this->map()->rotate(1)->all(), 'empty');
+        $this->assertSame([], $this->map()->rotate(-1)->all(), 'empty');
+        $this->assertSame(['b' => 2, 'c' => 3, 'a' => 1], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->rotate(1)->all(), 'empty');
+        $this->assertSame(['c' => 3, 'a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->rotate(-1)->all(), 'empty');
+    }
+
+    public function test_sample(): void
+    {
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame(1, $this->vec([1])->sample(), 'one');
+        $this->assertSame(2, $this->vec([1, 2])->sample($randomizer), 'many');
+        $this->assertSame(1, $this->map(['a' => 1])->sampleOr('a', $randomizer), 'one');
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->sample($randomizer), 'one');
+    }
+
+    public function test_sample_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec()->sample()->all();
+    }
+
+    public function test_sampleMany(): void
+    {
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame([1, 3], $this->vec([1, 2, 3])->sampleMany(2, false, $randomizer)->all(), 'vec: no replace');
+        $randomizer = new Randomizer(new Mt19937(5));
+        $this->assertSame([2, 1], $this->vec([1, 2, 3])->sampleMany(2, false, $randomizer)->all(), 'vec: no replace (out of order)');
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame([2, 3, 1, 3], $this->vec([1, 2, 3])->sampleMany(4, true, $randomizer)->all(), 'vec: amount > size w/replace (out of order)');
+        $randomizer = new Randomizer(new Mt19937(2));
+        $this->assertSame([1, 1, 3], $this->vec([1, 2, 3])->sampleMany(3, true, $randomizer)->all(), 'vec: exact size w/replace');
+
+        $randomizer = new Randomizer(new Mt19937(5));
+        $this->assertSame([2, 1], $this->map(['a' => 1, 'b' => 2])->sampleMany(2, true, $randomizer)->all(), 'map: exact size w/replace (out of order)');
+        $randomizer = new Randomizer(new Mt19937(2));
+        $this->assertSame([1, 2, 2], $this->map(['a' => 1, 'b' => 2])->sampleMany(3, true, $randomizer)->all(), 'map: amount > size w/replace');
+    }
+
+    public function test_sampleMany_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec()->sampleMany(1)->all();
+    }
+
+    public function test_sampleMany_amount_gt_size_no_replace(): void
+    {
+        $this->expectExceptionMessage('$amount must be between 0 and size of $iterable.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1])->sampleMany(2)->all();
+    }
+
+    public function test_sampleOr(): void
+    {
+        $this->assertSame('a', $this->vec()->sampleOr('a'), 'empty');
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame(1, $this->vec([1])->sampleOr('a'), 'one');
+        $this->assertSame(2, $this->vec([1, 2])->sampleOr('a', $randomizer), 'many');
+        $this->assertSame(1, $this->map(['a' => 1])->sampleOr('a', $randomizer), 'one');
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->sampleOr('a', $randomizer), 'many');
+    }
+
+    public function test_sampleOrNull(): void
+    {
+        $this->assertNull($this->vec()->sampleOrNull(), 'empty');
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame(1, $this->vec([1])->sampleOrNull(), 'one');
+        $this->assertSame(2, $this->vec([1, 2])->sampleOrNull($randomizer), 'many');
+        $this->assertSame(1, $this->map(['a' => 1])->sampleOrNull($randomizer), 'one');
+        $randomizer = new Randomizer(new Mt19937(1));
+        $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->sampleOrNull($randomizer), 'many');
     }
 
     public function test_toArray(): void
