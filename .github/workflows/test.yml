@@ -6,6 +6,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: php-actions/composer@v6
+      with:
+        php_extensions: pcntl
     - uses: php-actions/phpunit@v3
       env:
         XDEBUG_MODE: coverage
