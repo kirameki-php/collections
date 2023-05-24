@@ -12,7 +12,6 @@ use Random\Randomizer;
 use function dump;
 use function is_iterable;
 use const PHP_INT_MAX;
-use const SORT_ASC;
 use const SORT_REGULAR;
 
 /**
