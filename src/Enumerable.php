@@ -12,6 +12,7 @@ use Random\Randomizer;
 use function dump;
 use function is_iterable;
 use const PHP_INT_MAX;
+use const SORT_ASC;
 use const SORT_REGULAR;
 
 /**
@@ -233,6 +234,7 @@ trait Enumerable
      * Returns a new instance with the values dropped until the condition returns **true**.
      *
      * @param Closure(TValue, TKey): bool $condition
+     * A condition that should return a boolean value.
      * @return static
      */
     public function dropUntil(Closure $condition): static
@@ -244,6 +246,7 @@ trait Enumerable
      * Returns a new instance with the values dropped while the condition returns **true**.
      *
      * @param Closure(TValue, TKey): bool $condition
+     * A condition that should return a boolean value.
      * @return static
      */
     public function dropWhile(Closure $condition): static
@@ -255,6 +258,7 @@ trait Enumerable
      * Dump the contents of the collection.
      *
      * @param DumperConfig|null $config
+     * Config used for the dumper.
      * @return $this
      */
     public function dump(?DumperConfig $config = null): static
@@ -277,6 +281,7 @@ trait Enumerable
      * Iterates through the collection and invoke `$callback` for each element.
      *
      * @param Closure(TValue, TKey): mixed $callback
+     * Callback which is called for every element of the collection.
      * @return static
      */
     public function each(Closure $callback): static
@@ -289,8 +294,13 @@ trait Enumerable
      * If `$safe` is set to **true**, `MissingKeyException` will be thrown
      * if a key does not exist.
      *
-     * @param array<TKey> $keys
+     * @param array<int, TKey> $keys
+     * Keys to be excluded.
      * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in the collection.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
      * @return static
      */
     public function except(iterable $keys, bool $safe = true): static
@@ -318,6 +328,8 @@ trait Enumerable
      * Throws `EmptyNotAllowedException` if collection is empty.
      *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TValue
      */
     public function first(?Closure $condition = null): mixed
@@ -330,6 +342,7 @@ trait Enumerable
      * Throws `NoMatchFoundException` if no condition is met.
      *
      * @param Closure(TValue, TKey):bool $condition
+     * User defined condition callback. The callback must return a boolean value.
      * @return int
      */
     public function firstIndex(Closure $condition): ?int
@@ -342,6 +355,7 @@ trait Enumerable
      * Returns **null** if there were no matches.
      *
      * @param Closure(TValue, TKey):bool $condition
+     * User defined condition callback. The callback must return a boolean value.
      * @return int|null
      */
     public function firstIndexOrNull(Closure $condition): ?int
@@ -356,7 +370,10 @@ trait Enumerable
      *
      * @template TDefault
      * @param TDefault $default
+     * Value that is used when the given `$condition` has no match.
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TValue|null
      */
     public function firstOr(mixed $default, ?Closure $condition = null): mixed
@@ -370,6 +387,8 @@ trait Enumerable
      * **null** is returned, if no element matches the `$condition` or is empty.
      *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TValue|null
      */
     public function firstOrNull(?Closure $condition = null): mixed
@@ -382,7 +401,11 @@ trait Enumerable
      *
      * @template U
      * @param U $initial
+     * The initial value passed to the first Closure as result.
      * @param Closure(U, TValue, TKey): U $callback
+     * Callback which is called for every key-value pair in the collection.
+     * The callback arguments are `(mixed $result, mixed $value, mixed $key)`.
+     * The returned value would be used as $result for the subsequent call.
      * @return U
      */
     public function fold(mixed $initial, Closure $callback): mixed
@@ -408,6 +431,8 @@ trait Enumerable
      * Create a new instance of the collection with the given `$items`.
      *
      * @param iterable<TKey, TValue> $items
+     * Iterable elements to be used in collection.
+     *
      * @return static
      */
     public function instantiate(mixed $items): static
@@ -419,6 +444,7 @@ trait Enumerable
      * Returns the intersection of collection's values.
      *
      * @param iterable<TKey, TValue> $items
+     * Iterable to be intersected.
      * @return static
      */
     public function intersect(iterable $items): static
@@ -447,9 +473,16 @@ trait Enumerable
     }
 
     /**
+     * Concatenates all the elements in the collection into a single
+     * string using the provided `$glue`. Optional prefix and suffix can
+     * also be added to the result string.
+     *
      * @param string $glue
+     * String used to join the elements.
      * @param string|null $prefix
+     * [Optional] Prefix added to the joined string.
      * @param string|null $suffix
+     * [Optional] Suffix added to the joined string.
      * @return string
      */
     public function join(string $glue, ?string $prefix = null, ?string $suffix = null): string
@@ -458,9 +491,19 @@ trait Enumerable
     }
 
     /**
+     * Returns a map which contains values from the collection with the keys
+     * being the results of running `$callback($val, $key)` on each element.
+     *
+     * Throws `DuplicateKeyException` when the value returned by `$callback`
+     * already exist in `$array` as a key. Set `$overwrite` to **true** to
+     * suppress this error.
+     *
      * @template TNewKey of array-key
      * @param Closure(TValue, TKey): TNewKey $callback
+     * Callback which returns the key for the new map.
      * @param bool $overwrite
+     * [Optional] If **true**, duplicate keys will be overwritten.
+     * If **false**, exception will be thrown on duplicate keys.
      * @return Map<TNewKey, TValue>
      */
     public function keyBy(Closure $callback, bool $overwrite = false): Map
@@ -482,7 +525,7 @@ trait Enumerable
      * Returns the last element in the collection.
      * If `$condition` is set, the last element which meets the condition is returned instead.
      * Throws `NoMatchFoundException` if no condition is met.
-     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if collection is empty.
      *
      * @param Closure(TValue, TKey): bool|null $condition
      * [Optional] User defined condition callback. The callback must return a boolean value.
@@ -497,7 +540,7 @@ trait Enumerable
     /**
      * Returns the last index which meets the given `$condition`.
      * Throws `NoMatchFoundException` if no condition is met.
-     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     * Throws `EmptyNotAllowedException` if collection is empty.
      *
      * @param Closure(TValue, TKey): bool|null $condition
      * [Optional] User defined condition callback. The callback must return a boolean value.
@@ -592,17 +635,35 @@ trait Enumerable
     }
 
     /**
+     * Merges one or more iterables into a single collection.
+     *
+     * If the given keys are numeric, the keys will be re-numbered with
+     * an incremented number from the last number in the new collection.
+     *
+     * If the two iterables have the same keys, the value inside the
+     * iterable that comes later will overwrite the value in the key.
+     *
+     * This method will only merge the key value pairs of the root depth.
+     *
      * @param iterable<TKey, TValue> $iterable
+     * Iterable(s) to be merged.
      * @return static
      */
-    public function merge(iterable $iterable): static
+    public function merge(iterable ...$iterable): static
     {
-        return $this->instantiate(Arr::merge($this, $iterable));
+        return $this->instantiate(Arr::merge($this, ...$iterable));
     }
 
     /**
+     * Merges one or more iterables recursively into a single collection.
+     * Will merge recursively up to the given depth.
+     *
+     * @see merge for details on how keys and values are merged.
+     *
      * @param iterable<TKey, TValue> $iterable
+     * Iterable to be merged.
      * @param int<1, max> $depth
+     * [Optional] Depth of recursion. Defaults to **PHP_INT_MAX**.
      * @return static
      */
     public function mergeRecursive(iterable $iterable, int $depth = PHP_INT_MAX): static
@@ -632,7 +693,7 @@ trait Enumerable
      * Returns the smallest element in the collection.
      * If `$by` is given, each element will be passed to the closure and the
      * smallest value returned from the closure will be returned instead.
-     * Returns **null** if the iterable is empty.
+     * Returns **null** if the collection is empty.
      * Throws `InvalidElementException` if collection contains NAN.
      *
      * @param Closure(TValue, TKey): mixed|null $by
@@ -664,8 +725,18 @@ trait Enumerable
     }
 
     /**
+     * Returns a new collection which only contains the elements that has matching
+     * keys in the collection. Non-existent keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if a key does not exist in the collection.
+     *
      * @param iterable<TKey> $keys
+     * Keys to be included.
      * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in the collection.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
      * @return static
      */
     public function only(iterable $keys, bool $safe = true): static
@@ -674,6 +745,11 @@ trait Enumerable
     }
 
     /**
+     * Returns a list with two collection elements.
+     * All elements in the collection evaluated to be **true** will be pushed to
+     * the first collection. Elements evaluated to be **false** will be pushed to
+     * the second collection.
+     *
      * @param Closure(TValue, TKey): bool $condition
      * Closure to evaluate each element.
      * @return array{ static, static }
@@ -688,10 +764,13 @@ trait Enumerable
     }
 
     /**
-     * Passes $this to the given callback and returns the result.
+     * Passes `$this` to the given callback and returns the result,
+     * so it can be used in a chain.
      *
      * @template TPipe
      * @param Closure($this): TPipe $callback
+     * Callback which will receive $this as argument.
+     * The result of the callback will be returned.
      * @return TPipe
      */
     public function pipe(Closure $callback)
@@ -714,6 +793,10 @@ trait Enumerable
     }
 
     /**
+     * Iteratively reduce collection to a single value by invoking
+     * `$callback($reduced, $val, $key)`.
+     * Throws `EmptyNotAllowedException` if the collection is empty.
+     *
      * @param Closure(TValue, TValue, TKey): TValue $callback
      * First argument contains the reduced value.
      * Second argument contains the current value.
@@ -726,6 +809,10 @@ trait Enumerable
     }
 
     /**
+     * Iteratively reduce collection to a single value by invoking
+     * `$callback($reduced, $val, $key)`.
+     * Returns `$default` if the collection is empty.
+     *
      * @template TDefault
      * @param Closure(TValue, TValue, TKey): TValue $callback
      * First argument contains the reduced value.
@@ -741,6 +828,10 @@ trait Enumerable
     }
 
     /**
+     * Iteratively reduce collection to a single value by invoking
+     * `$callback($reduced, $val, $key)`.
+     * Returns **null** if the collection is empty.
+     *
      * @param Closure(TValue, TValue, TKey): TValue $callback
      * First argument contains the reduced value.
      * Second argument contains the current value.
@@ -753,6 +844,9 @@ trait Enumerable
     }
 
     /**
+     * Returns a new collection which contains keys and values from the collection
+     * but with the `$search` value replaced with the `$replacement` value.
+     *
      * @param TValue $search
      * The value to replace.
      * @param TValue $replacement
@@ -771,6 +865,9 @@ trait Enumerable
     }
 
     /**
+     * Returns a new collection which contain all elements of the collection
+     * in reverse order.
+     *
      * @return static
      */
     public function reverse(): static
@@ -779,16 +876,27 @@ trait Enumerable
     }
 
     /**
-     * @param int $count
+     * Converts the collection to an array and rotate the array to the right
+     * by `$steps`. If `$steps` is a negative value, the array will rotate
+     * to the left instead.
+     *
+     * @param int $steps
+     * Number of times the key/value will be rotated.
      * @return static
      */
-    public function rotate(int $count): static
+    public function rotate(int $steps): static
     {
-        return $this->instantiate(Arr::rotate($this, $count, $this->reindex()));
+        return $this->instantiate(Arr::rotate($this, $steps, $this->reindex()));
     }
 
     /**
+     * Returns a random element from the collection.
+     * Throws `EmptyNotAllowedException` if the collection is empty.
+     *
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Secure randomizer will be used if **null**.
+     * Defaults to **null**.
      * @return TValue
      */
     public function sample(?Randomizer $randomizer = null): mixed
@@ -797,9 +905,19 @@ trait Enumerable
     }
 
     /**
+     * Returns a list of random elements picked from the collection.
+     * If `$replace` is set to **false**, each key will be chosen only once.
+     * Throws `InvalidArgumentException` if `$amount` is larger than the collection's size.
+     *
      * @param int $amount
+     * Amount of items to sample.
      * @param bool $replace
+     * If **true**, same elements can be chosen more than once.
+     * Defaults to **false**.
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return Vec<TValue>
      */
     public function sampleMany(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
@@ -808,9 +926,16 @@ trait Enumerable
     }
 
     /**
+     * Returns a random element from the collection.
+     * Returns `$default` if the collection is empty.
+     *
      * @template TDefault
      * @param TDefault $default
+     * Value that is used when the collection is empty.
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return TValue|TDefault
      */
     public function sampleOr(mixed $default, ?Randomizer $randomizer = null): mixed
@@ -819,7 +944,13 @@ trait Enumerable
     }
 
     /**
+     * Returns a random element from the collection.
+     * Returns **null** if the collection is empty.
+     *
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Secure randomizer will be used if **null**.
+     * Defaults to **null**.
      * @return TValue|null
      */
     public function sampleOrNull(?Randomizer $randomizer = null): mixed
@@ -828,7 +959,12 @@ trait Enumerable
     }
 
     /**
+     * Runs the condition though each element of the collection and will return **true**
+     * if all iterations that run through the condition returned **true** or if
+     * the collection is empty, **false** otherwise.
+     *
      * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
      * @return bool
      */
     public function satisfyAll(Closure $condition): bool
@@ -837,7 +973,12 @@ trait Enumerable
     }
 
     /**
+     * Runs the condition though each element of the collection and will return **true**
+     * if any iterations that run through the `$condition` returned **true**,
+     * **false** otherwise (including empty iterable).
+     *
      * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
      * @return bool
      */
     public function satisfyAny(Closure $condition): bool
@@ -846,7 +987,12 @@ trait Enumerable
     }
 
     /**
+     * Runs the condition though each element of the collection and will return **true**
+     * if all the iterations that run through the `$condition` returned **false**.
+     * **false** otherwise.
+     *
      * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
      * @return bool
      */
     public function satisfyNone(Closure $condition): bool
@@ -855,7 +1001,12 @@ trait Enumerable
     }
 
     /**
+     * Runs the condition though each element of the collection and will return **true**
+     * if iterations that run through the `$condition` returned **true** only once,
+     * **false** otherwise (including empty iterable).
+     *
      * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
      * @return bool
      */
     public function satisfyOnce(Closure $condition): bool
@@ -864,7 +1015,12 @@ trait Enumerable
     }
 
     /**
+     * Shuffles the elements of the collection.
+     *
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return static
      */
     public function shuffle(?Randomizer $randomizer = null): static
@@ -873,8 +1029,16 @@ trait Enumerable
     }
 
     /**
+     * Returns a shallow copy of a portion of the collection into a new collection.
+     *
      * @param int $offset
+     * If offset is non-negative, the sequence will start at that offset.
+     * If offset is negative, the sequence will start that far from the end.
      * @param int $length
+     * If length is given and is positive, then the sequence will have up to that many elements in it.
+     * If the iterable is shorter than the length, then only the available array elements will be present.
+     * If length is given and is negative then the sequence will stop that many elements from the end.
+     * If it is omitted, then the sequence will have everything from offset up until the end.
      * @return static
      */
     public function slice(int $offset, int $length = PHP_INT_MAX): static
@@ -883,7 +1047,16 @@ trait Enumerable
     }
 
     /**
+     * Returns the only element in the collection.
+     * If a condition is also given, the sole element of a sequence that satisfies a specified
+     * condition is returned instead.
+     * Throws `InvalidArgumentException` if there are more than one element in `$iterable`.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TValue
      */
     public function sole(?Closure $condition = null): mixed
@@ -892,19 +1065,32 @@ trait Enumerable
     }
 
     /**
+     * Sort the collection by value in the given order.
+     *
+     * @param int $order
+     * Order of the sort. Must be `SORT_ASC` or `SORT_DESC`.
      * @param Closure(TValue, TKey): mixed|null $by
-     * @param bool $ascending
+     * [Optional] User defined comparison callback.
+     * The value returned will be used to sort the array.
      * @param int $flag
+     * Sort flag to change the behavior of the sort.
+     * Defaults to `SORT_REGULAR`.
      * @return static
      */
-    public function sort(bool $ascending, ?Closure $by = null, int $flag = SORT_REGULAR): static
+    public function sort(int $order, ?Closure $by = null, int $flag = SORT_REGULAR): static
     {
-        return $this->instantiate(Arr::sort($this, $ascending, $by, $flag, $this->reindex()));
+        return $this->instantiate(Arr::sort($this, $order, $by, $flag, $this->reindex()));
     }
 
     /**
+     * Sort the `$iterable` by value in ascending order.
+     *
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] User defined comparison callback.
+     * The value returned will be used to sort the array.
      * @param int $flag
+     * Sort flag to change the behavior of the sort.
+     * Defaults to `SORT_REGULAR`.
      * @return static
      */
     public function sortAsc(?Closure $by = null, int $flag = SORT_REGULAR): static
@@ -913,8 +1099,14 @@ trait Enumerable
     }
 
     /**
+     * Sort the `$iterable` by value in descending order.
+     *
      * @param Closure(TValue, TKey): mixed|null $by
+     * [Optional] User defined comparison callback.
+     * The value returned will be used to sort the array.
      * @param int $flag
+     * Sort flag to change the behavior of the sort.
+     * Defaults to `SORT_REGULAR`.
      * @return static
      */
     public function sortDesc(?Closure $by = null, int $flag = SORT_REGULAR): static
@@ -923,7 +1115,11 @@ trait Enumerable
     }
 
     /**
+     * Sorts the collection by value using the provided `$comparison` function.
+     *
      * @param Closure(TValue, TValue): int $comparison
+     * The comparison function to use.
+     * Utilize the spaceship operator (`<=>`) to easily compare two values.
      * @return static
      */
     public function sortWith(Closure $comparison): static
@@ -932,7 +1128,10 @@ trait Enumerable
     }
 
     /**
+     * Splits the collection into chunks of the given size.
+     *
      * @param int<1, max> $size
+     * Size of each chunk. Must be >= 1.
      * @return Vec<static>
      */
     public function split(int $size): Vec

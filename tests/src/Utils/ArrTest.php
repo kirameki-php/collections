@@ -7,6 +7,7 @@ use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Exceptions\InvalidOrderException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
@@ -30,9 +31,14 @@ use function ord;
 use function range;
 use function strlen;
 use function substr;
+use function tmpfile;
 use function urlencode;
 use const INF;
 use const NAN;
+use const PHP_INT_MAX;
+use const SORT_ASC;
+use const SORT_DESC;
+use const SORT_NATURAL;
 
 final class ArrTest extends TestCase
 {
@@ -3028,6 +3034,26 @@ final class ArrTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected only one element in result. 2 given.');
         Arr::sole([1, 2]);
+    }
+
+    public function test_sort(): void
+    {
+        self::assertSame([1, 2, 3, 4], Arr::sort([4, 2, 1, 3], SORT_ASC));
+        self::assertSame([4, 3, 2, 1], Arr::sort([4, 2, 1, 3], SORT_DESC));
+    }
+
+    public function test_sort_invalid_order(): void
+    {
+        $this->expectExceptionMessage('Order must be SORT_ASC (4) or SORT_DESC (3). 0 given.');
+        $this->expectException(InvalidOrderException::class);
+        Arr::sort([4], 0);
+    }
+
+    public function test_sort_invalid_order_with_callback(): void
+    {
+        $this->expectExceptionMessage('Order must be SORT_ASC (4) or SORT_DESC (3). 0 given.');
+        $this->expectException(InvalidOrderException::class);
+        Arr::sort([4], 0, fn() => 0);
     }
 
     public function test_sortAsc(): void

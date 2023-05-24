@@ -30,6 +30,7 @@ abstract class Enumerator implements Countable, IteratorAggregate
 
     /**
      * @param iterable<TKey, TValue> $items
+     * Iterable elements to be used in collection.
      */
     public function __construct(
         iterable $items = [],

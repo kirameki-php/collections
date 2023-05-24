@@ -22,6 +22,7 @@ use stdClass;
 use function fopen;
 use function fread;
 use function fseek;
+use function is_string;
 use function range;
 use const INF;
 use const NAN;
@@ -1223,6 +1224,42 @@ final class EnumerableTest extends TestCase
         $this->assertSame(1, $this->map(['a' => 1])->sampleOrNull($randomizer), 'one');
         $randomizer = new Randomizer(new Mt19937(1));
         $this->assertSame(2, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->sampleOrNull($randomizer), 'many');
+    }
+
+    public function test_satisfyAll(): void
+    {
+        $this->assertTrue($this->vec()->satisfyAll(fn() => true), 'empty');
+        $this->assertFalse($this->vec([1, 2])->satisfyAll(fn() => false), 'all false');
+        $this->assertTrue($this->vec([1, 2])->satisfyAll(fn() => true), 'all true');
+        $this->assertFalse($this->vec([1, 2])->satisfyAll(fn($i) => $i > 1), 'one true one false');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->satisfyAll(fn($i, $k) => is_string($k)), 'all true');
+    }
+
+    public function test_satisfyAny(): void
+    {
+        $this->assertFalse($this->vec()->satisfyAny(fn() => true), 'empty');
+        $this->assertFalse($this->vec([1, 2])->satisfyAny(fn() => false), 'all false');
+        $this->assertTrue($this->vec([1, 2])->satisfyAny(fn() => true), 'all true');
+        $this->assertTrue($this->vec([1, 2])->satisfyAny(fn($i) => $i > 1), 'one true one false');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->satisfyAny(fn($i, $k) => is_string($k)), 'all true');
+    }
+
+    public function test_satisfyNone(): void
+    {
+        $this->assertTrue($this->vec()->satisfyNone(fn() => true), 'empty');
+        $this->assertTrue($this->vec([1, 2])->satisfyNone(fn() => false), 'all false');
+        $this->assertFalse($this->vec([1, 2])->satisfyNone(fn() => true), 'all true');
+        $this->assertFalse($this->vec([1, 2])->satisfyNone(fn($i) => $i > 1), 'one true one false');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->satisfyNone(fn($i, $k) => !is_string($k)), 'all true');
+    }
+
+    public function test_satisfyOnce(): void
+    {
+        $this->assertFalse($this->vec()->satisfyOnce(fn() => true), 'empty');
+        $this->assertFalse($this->vec([1, 2])->satisfyOnce(fn() => false), 'all false');
+        $this->assertFalse($this->vec([1, 2])->satisfyOnce(fn() => true), 'all true');
+        $this->assertTrue($this->vec([1, 2])->satisfyOnce(fn($i) => $i > 1), 'one true one false');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->satisfyOnce(fn($i) => $i > 1), 'map: one true');
     }
 
     public function test_toArray(): void

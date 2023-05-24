@@ -9,6 +9,7 @@ use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Exceptions\InvalidOrderException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Exceptions\TypeMismatchException;
@@ -68,6 +69,8 @@ use function uksort;
 use const JSON_THROW_ON_ERROR;
 use const PHP_INT_MAX;
 use const PHP_QUERY_RFC3986;
+use const SORT_ASC;
+use const SORT_DESC;
 use const SORT_REGULAR;
 
 final class Arr
@@ -2035,7 +2038,7 @@ final class Arr
     }
 
     /**
-     * Concatenates all the elements in the given array into a single
+     * Concatenates all the elements in `$iterable` into a single
      * string using the provided `$glue`. Optional prefix and suffix can
      * also be added to the result string.
      *
@@ -2048,6 +2051,7 @@ final class Arr
      * @param iterable<array-key, mixed> $iterable
      * Iterable to be traversed.
      * @param string $glue
+     * String used to join the elements.
      * @param string|null $prefix
      * [Optional] Prefix added to the joined string.
      * @param string|null $suffix
@@ -2146,7 +2150,7 @@ final class Arr
     }
 
     /**
-     * Return an array which contains values from `$iterable` with the keys
+     * Returns an array which contains values from `$iterable` with the keys
      * being the results of running `$callback($val, $key)` on each element.
      *
      * Throws `DuplicateKeyException` when the value returned by `$callback`
@@ -2164,6 +2168,7 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): TNewKey $callback
+     * Callback which returns the key for the new map.
      * @param bool $overwrite
      * [Optional] If **true**, duplicate keys will be overwritten.
      * If **false**, exception will be thrown on duplicate keys.
@@ -2633,9 +2638,9 @@ final class Arr
     }
 
     /**
-     * Merge one or more iterables into a single array and returns it.
+     * Merges one or more iterables into a single array.
      *
-     * If the given key is numeric, the keys will be renumbered with
+     * If the given keys are numeric, the keys will be re-numbered with
      * an incremented number from the last number in the new array.
      *
      * If the two iterables have the same keys, the value inside the
@@ -2658,7 +2663,7 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> ...$iterable
-     * Iterable to be merged.
+     * Iterable(s) to be merged.
      * @return array<TKey, TValue>
      */
     public static function merge(
@@ -2682,7 +2687,7 @@ final class Arr
     }
 
     /**
-     * Merge one or more iterables recursively into a single array and returns it.
+     * Merges one or more iterables recursively into a single array.
      * Will merge recursively up to the given depth.
      *
      * @see merge for details on how keys and values are merged.
@@ -3075,7 +3080,7 @@ final class Arr
     }
 
     /**
-     * Returns list with two array elements.
+     * Returns a list with two array elements.
      * All elements in `$iterable` evaluated to be **true** will be pushed to
      * the first array. Elements evaluated to be **false** will be pushed to
      * the second array.
@@ -4475,7 +4480,7 @@ final class Arr
     }
 
     /**
-     * Converts iterable to array and shuffles the array.
+     * Converts `$iterable` to array and shuffles the array.
      *
      * @template TKey of array-key
      * @template TValue
@@ -4550,8 +4555,8 @@ final class Arr
     }
 
     /**
-     * Returns the only element in the given iterable.
-     * If a condition is also given, the sole element of a sequence that satisfies a specified
+     * Returns the only element in the `$iterable`.
+     * If `$condition` is also given, the sole element of a sequence that satisfies a specified
      * condition is returned instead.
      * Throws `InvalidArgumentException` if there are more than one element in `$iterable`.
      * Throws `NoMatchFoundException` if no condition is met.
@@ -4609,17 +4614,18 @@ final class Arr
     }
 
     /**
-     * Sort the given iterable by value in the given order.
+     * Sort the `$iterable` by value in the given order.
      *
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param bool $ascending
-     * Sort by ascending order if **true**, descending order if **false**.
+     * @param int $order
+     * Order of the sort. Must be `SORT_ASC` or `SORT_DESC`.
      * @param Closure(TValue, TKey): mixed|null $by
      * [Optional] User defined comparison callback.
      * The value returned will be used to sort the array.
      * @param int $flag
      * Sort flag to change the behavior of the sort.
+     * Defaults to `SORT_REGULAR`.
      * @param bool|null $reindex
      * Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
@@ -4633,7 +4639,7 @@ final class Arr
      */
     public static function sort(
         iterable $iterable,
-        bool $ascending,
+        int $order,
         ?Closure $by = null,
         int $flag = SORT_REGULAR,
         ?bool $reindex = null,
@@ -4644,15 +4650,19 @@ final class Arr
 
         if ($by !== null) {
             $refs = self::map($copy, $by);
-            $ascending
-                ? asort($refs, $flag)
-                : arsort($refs, $flag);
+            match ($order) {
+                SORT_ASC => asort($refs, $flag),
+                SORT_DESC => arsort($refs, $flag),
+                default => throw new InvalidOrderException("Order must be SORT_ASC (4) or SORT_DESC (3). {$order} given."),
+            };
             $sorted = self::map($refs, fn($val, $key) => $copy[$key]);
         } else {
             $sorted = $copy;
-            $ascending
-                ? asort($sorted, $flag)
-                : arsort($sorted, $flag);
+            match ($order) {
+                SORT_ASC => asort($sorted, $flag),
+                SORT_DESC => arsort($sorted, $flag),
+                default => throw new InvalidOrderException("Order must be SORT_ASC (4) or SORT_DESC (3). {$order} given."),
+            };
         }
 
         return $reindex
@@ -4693,7 +4703,7 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return self::sort($iterable, true, $by, $flag, $reindex);
+        return self::sort($iterable, SORT_ASC, $by, $flag, $reindex);
     }
 
     /**
@@ -4780,7 +4790,7 @@ final class Arr
     }
 
     /**
-     * Sort the given iterable by value in descending order.
+     * Sort the `$iterable` by value in descending order.
      *
      * Example:
      * ```php
@@ -4810,11 +4820,11 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return self::sort($iterable, false, $by, $flag, $reindex);
+        return self::sort($iterable, SORT_DESC, $by, $flag, $reindex);
     }
 
     /**
-     * Sorts the given iterable by value using the provided comparison function.
+     * Sorts the `$iterable` by value using the provided `$comparison` function.
      *
      * Example:
      * ```php
@@ -4826,6 +4836,8 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TValue): int $comparison
+     * The comparison function to use.
+     * Utilize the spaceship operator (`<=>`) to easily compare two values.
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
