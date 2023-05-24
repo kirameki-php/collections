@@ -16,3 +16,7 @@ parameters:
         message: '#^Unable to resolve the template type TKey in call to method static method Kirameki\\Collections\\Utils\\Arr\:\:compact\(\)$#'
         count: 1
         path: src/Utils/Arr.php
+    -
+        message: '#^Result of \&\& is always false\.$#'
+        count: 2
+        path: src/Utils/Arr.php

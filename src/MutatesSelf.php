@@ -58,7 +58,7 @@ trait MutatesSelf
     }
 
     /**
-     * @param int|null $offset
+     * @param int|string|null $offset
      * @param TValue $value
      * @return void
      */
