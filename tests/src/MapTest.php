@@ -572,10 +572,14 @@ final class MapTest extends TestCase
         self::assertSame([], $map->setIfExists('c', 3)->all(), 'set on empty');
 
         $map = $this->map(['a' => 1]);
-        self::assertSame(['a' => 1], $map->setIfExists('b', 2)->all(), 'key does not exist');
+        $result = false;
+        self::assertSame(['a' => 1], $map->setIfExists('b', 2, $result)->all(), 'key does not exist');
+        self::assertFalse($result, 'result');
 
         $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 3], $map->setIfExists('b', 3)->all(), 'key exists');
+        $result = false;
+        self::assertSame(['a' => 1, 'b' => 3], $map->setIfExists('b', 3, $result)->all(), 'key exists');
+        self::assertTrue($result, 'result');
     }
 
     public function test_setIfNotExists(): void

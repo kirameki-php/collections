@@ -224,22 +224,24 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     /**
      * @param TKey $key
      * @param TValue $value
+     * @param bool $result
      * @return $this
      */
-    public function setIfExists(int|string $key, mixed $value): static
+    public function setIfExists(int|string $key, mixed $value, bool &$result = false): static
     {
-        Arr::setIfExists($this->items, $key, $value);
+        $result = Arr::setIfExists($this->items, $key, $value);
         return $this;
     }
 
     /**
      * @param TKey $key
      * @param TValue $value
+     * @param bool $result
      * @return $this
      */
-    public function setIfNotExists(int|string $key, mixed $value): static
+    public function setIfNotExists(int|string $key, mixed $value, bool &$result = false): static
     {
-        Arr::setIfNotExists($this->items, $key, $value);
+        $result = Arr::setIfNotExists($this->items, $key, $value);
         return $this;
     }
 

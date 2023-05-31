@@ -484,6 +484,7 @@ final class Iter
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition
+     * A break condition that should return false when loop should stop.
      * @return Generator<TKey, TValue>
      */
     public static function takeUntil(iterable $iterable, Closure $condition): Generator

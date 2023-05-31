@@ -418,6 +418,7 @@ trait Enumerable
      *
      * @template TGroupKey of array-key
      * @param Closure(TValue, TKey): TGroupKey $callback
+     * Callback to determine the group of the element.
      * @return Map<TGroupKey, static>
      */
     public function groupBy(Closure $callback): Map
@@ -430,8 +431,7 @@ trait Enumerable
      * Create a new instance of the collection with the given `$items`.
      *
      * @param iterable<TKey, TValue> $items
-     * Iterable elements to be used in collection.
-     *
+     * Iterable elements to be used in collection
      * @return static
      */
     public function instantiate(mixed $items): static
@@ -1144,8 +1144,17 @@ trait Enumerable
     }
 
     /**
+     * Returns the symmetric difference between collection and `$items`.
+     * Throws `TypeMismatchException` if comparing a map to a list.
+     *
      * @param iterable<TKey, TValue> $items
+     * Iterable to be traversed and compared to.
      * @param Closure(TValue, TValue): int<-1, 1>|null $by
+     * [Optional] User defined comparison callback.
+     * Return 1 if first argument is greater than the 2nd.
+     * Return 0 if first argument is equal to the 2nd.
+     * Return -1 if first argument is less than the 2nd.
+     * Defaults to **null**.
      * @return static
      */
     public function symDiff(iterable $items, Closure $by = null): static
@@ -1154,7 +1163,11 @@ trait Enumerable
     }
 
     /**
+     * Take the first n elements from the collection and return a new instance
+     * with those elements.
+     *
      * @param int $amount
+     * Amount of elements to take. Must be >= 0.
      * @return static
      */
     public function takeFirst(int $amount): static
@@ -1163,7 +1176,11 @@ trait Enumerable
     }
 
     /**
+     * Take the last n elements from the collection and return a new instance
+     * with those elements.
+     *
      * @param int $amount
+     * Amount of items to be dropped from the end. Must be >= 0.
      * @return static
      */
     public function takeLast(int $amount): static
@@ -1172,7 +1189,11 @@ trait Enumerable
     }
 
     /**
+     * Takes elements in the collection until `$condition` returns **true**.
+     *
      * @param Closure(TValue, TKey): bool $condition
+     * A break condition callback that should return **false** to stop the
+     * taking of elements from the collection.
      * @return static
      */
     public function takeUntil(Closure $condition): static
@@ -1181,7 +1202,11 @@ trait Enumerable
     }
 
     /**
+     * Takes elements in the collection while `$condition` returns **true**.
+     *
      * @param Closure(TValue, TKey): bool $condition
+     * A break condition callback that should return **false** to stop the
+     * taking of elements from the collection.
      * @return static
      */
     public function takeWhile(Closure $condition): static
@@ -1215,7 +1240,17 @@ trait Enumerable
     }
 
     /**
+     * Removes duplicate values from `$iterable` and returns it as an array.
+     *
+     * This differs from `array_unique` in that, this does not do a
+     * string conversion before comparing.
+     * For example, `array_unique([1, true])` will result in: `[1]` but
+     * doing `Arr::unique([1, true])` will result in: `[1, true]`.
+     *
      * @param Closure(TValue, TKey): bool|null $by
+     * [Optional] Called for every element in `$iterable`.
+     * Returned value will be used to check for duplicates.
+     * [Optional] Defaults to **null**.
      * @return static
      */
     public function unique(?Closure $by = null): static
@@ -1224,9 +1259,15 @@ trait Enumerable
     }
 
     /**
+     * Calls `$callback` for every element in the collection if `$bool`
+     * is **true**, calls `$fallback` otherwise.
+     *
      * @param bool|Closure($this): bool $bool
+     * Bool or callback to determine whether to execute `$callback` or `$fallback`.
      * @param Closure($this): static $callback
+     * Callback to be called if `$bool` is **true**.
      * @param Closure($this): static|null $fallback
+     * [Optional] Callback to be called if `$bool` is **false**.
      * @return static
      */
     public function when(
@@ -1247,8 +1288,13 @@ trait Enumerable
     }
 
     /**
+     * Calls `$callback` for every element in the collection if collection is empty,
+     * calls `$fallback` otherwise.
+     *
      * @param Closure($this): static $callback
+     * Callback to be called if `$bool` is **true**.
      * @param Closure($this): static|null $fallback
+     * [Optional] Callback to be called if `$bool` is **false**.
      * @return static
      */
     public function whenEmpty(
@@ -1260,8 +1306,13 @@ trait Enumerable
     }
 
     /**
+     * Calls `$callback` for every element in the collection if collection is not
+     * empty, calls `$fallback` otherwise.
+     *
      * @param Closure($this): static $callback
+     * Callback to be called if `$bool` is **true**.
      * @param Closure($this): static|null $fallback
+     * [Optional] Callback to be called if `$bool` is **false**.
      * @return static
      */
     public function whenNotEmpty(
@@ -1273,7 +1324,10 @@ trait Enumerable
     }
 
     /**
+     * Converts the collection to an overlapping sub-slices of `$size`.
+     *
      * @param int $size
+     * Size of the window. Must be >= 1.
      * @return Vec<static>
      */
     public function windows(int $size): Vec

@@ -1726,6 +1726,7 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): TGroupKey $callback
+     * Callback to determine the group of the element.
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
@@ -4996,7 +4997,7 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param int $amount
-     * Amount of items to be taken from the front. Must be a positive integer.
+     * Amount of elements to take. Must be >= 0.
      * @return array<TKey, TValue>
      */
     public static function takeFirst(
@@ -5061,7 +5062,7 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition
-     * User defined condition callback. The callback must return a boolean value.
+     * A break condition callback that should return false when loop should stop.
      * @return array<TKey, TValue>
      */
     public static function takeUntil(
@@ -5073,7 +5074,7 @@ final class Arr
     }
 
     /**
-     * Takes elements in iterable while `$condition` returns **true**.
+     * Takes elements in `$iterable` while `$condition` returns **true**.
      *
      * Example:
      * ```php
@@ -5127,8 +5128,7 @@ final class Arr
     }
 
     /**
-     * Removes duplicate values from the given iterable and returns it
-     * as an array.
+     * Removes duplicate values from `$iterable` and returns it as an array.
      *
      * This differs from `array_unique` in that, this does not do a
      * string conversion before comparing.
