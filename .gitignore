@@ -4,7 +4,6 @@
 
 # PHPUnit
 /.coverage
-/.phpunit.result.cache
 
 # OS related files
 .DS_Store
