@@ -3307,6 +3307,43 @@ final class Arr
     }
 
     /**
+     * Get the sum of the elements inside `$iterable`.
+     * The elements must be af type int or float.
+     * Returns `1` if empty.
+     * Throws `InvalidElementException` if the iterable contains NAN.
+     *
+     * Example:
+     * ```php
+     * Arr::product([1, 2, 3, 4]); // 24
+     * Arr::product(['b' => 1, 'a' => 2]); // 2
+     * Arr::product([]) // 1
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue of int|float
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @return TValue
+     */
+    public static function product(
+        iterable $iterable,
+    ): mixed
+    {
+        $product = 1;
+        foreach ($iterable as $val) {
+            $product *= $val;
+        }
+
+        if (is_float($product) && is_nan($product)) {
+            throw new InvalidElementException('$iterable cannot contain NAN.', [
+                'iterable' => $iterable,
+            ]);
+        }
+
+        return $product;
+    }
+
+    /**
      * Removes the given key from `&$array` and returns the pulled value.
      * If the given array is a list, the list will be re-indexed.
      * Throws `InvalidKeyException` if the given key is not found.
@@ -4888,8 +4925,9 @@ final class Arr
     }
 
     /**
-     * Get the sum of the elements inside iterable.
+     * Get the sum of the elements inside `$iterable`.
      * The elements must be af type int or float.
+     * Returns `0` if empty.
      * Throws `InvalidElementException` if the iterable contains NAN.
      *
      * Example:

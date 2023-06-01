@@ -1979,6 +1979,14 @@ final class ArrTest extends TestCase
         $this->assertSame(['b', 'a', 'c'], Arr::keys($prioritized), 'reindex: false, limit: 1');
     }
 
+    public function test_product(): void
+    {
+        self::assertSame(1, Arr::product([]), 'empty');
+        self::assertSame(8, Arr::product([2, 2, 2]), 'int');
+        self::assertEqualsWithDelta(0.04, Arr::product([0.2, 0.2]), 0.00000000001, 'float');
+        self::assertSame(6, Arr::product(['b' => 1, 'a' => 3, 'c' => 2]), 'assoc');
+    }
+
     public function test_pull(): void
     {
         // list
