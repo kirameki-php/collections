@@ -1389,6 +1389,23 @@ final class EnumerableTest extends TestCase
         $this->vec([1, 2])->takeLast(-1);
     }
 
+    public function test_takeWhile(): void
+    {
+        $this->assertSame([], $this->vec()->takeWhile(fn() => true)->all(), 'take empty');
+        $this->assertSame([], $this->vec([1, 2])->takeWhile(fn() => false)->all(), 'take none');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeWhile(fn() => true)->all(), 'take all');
+        $this->assertSame([1, 1], $this->vec([1, 1, 2, 1])->takeWhile(fn($i) => $i === 1)->all(), 'take check');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 2])->takeWhile(fn($i) => $i === 1)->all(), 'take map');
+    }
+
+    public function test_takeUntil(): void
+    {
+        $this->assertSame([], $this->vec([1, 2])->takeUntil(fn() => true)->all(), 'take none');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeUntil(fn() => false)->all(), 'take all');
+        $this->assertSame([1, 1], $this->vec([1, 1, 2, 1])->takeUntil(fn($i) => $i === 2)->all(), 'take check');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 2])->takeUntil(fn($i) => $i === 2)->all(), 'take map');
+    }
+
     public function test_toArray(): void
     {
         $this->assertSame([], $this->vec()->toArray(), 'empty');
