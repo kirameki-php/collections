@@ -26,6 +26,9 @@ use function is_string;
 use function range;
 use const INF;
 use const NAN;
+use const SORT_ASC;
+use const SORT_DESC;
+use const SORT_STRING;
 
 final class EnumerableTest extends TestCase
 {
@@ -1321,6 +1324,69 @@ final class EnumerableTest extends TestCase
         $this->expectExceptionMessage('Expected only one element in result. 2 given.');
         $this->expectException(InvalidArgumentException::class);
         $this->vec([0, 1, 1, 2])->sole(fn($i) => $i === 1);
+    }
+
+    public function test_sort(): void
+    {
+        $this->assertSame([], $this->vec()->sort(SORT_ASC)->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->sort(SORT_ASC)->all(), 'one');
+        $this->assertSame([1, 2], $this->vec([2, 1])->sort(SORT_ASC)->all(), 'sort asc');
+        $this->assertSame([2, 1], $this->vec([1, 2])->sort(SORT_DESC)->all(), 'sort desc');
+        $this->assertSame([1, 2, 3], $this->vec([2, 1, 3])->sort(SORT_ASC, fn($a) => $a)->all(), 'with by');
+        $this->assertSame(["2", "10"], $this->vec(["10", "2"])->sort(SORT_ASC)->all(), 'sort regular');
+        $this->assertSame(["10", "2"], $this->vec(["2", "10"])->sort(SORT_ASC, flag: SORT_STRING)->all(), 'with flag');
+    }
+
+    public function test_sortAsc(): void
+    {
+        $this->assertSame([], $this->vec()->sortAsc()->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->sortAsc()->all(), 'one');
+        $this->assertSame([1, 2], $this->vec([2, 1])->sortAsc()->all(), 'sort asc');
+        $this->assertSame([3, 2, 1], $this->vec([2, 1, 3])->sortAsc(fn($a) => -$a)->all(), 'with by');
+        $this->assertSame(["2", "10"], $this->vec(["10", "2"])->sortAsc()->all(), 'sort regular');
+        $this->assertSame(["10", "2"], $this->vec(["2", "10"])->sortAsc(flag: SORT_STRING)->all(), 'with flag');
+    }
+
+    public function test_sortDesc(): void
+    {
+        $this->assertSame([], $this->vec()->sortDesc()->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->sortDesc()->all(), 'one');
+        $this->assertSame([2, 1], $this->vec([1, 2])->sortDesc()->all(), 'sort desc');
+        $this->assertSame([1, 2, 3], $this->vec([2, 1, 3])->sortDesc(fn($a) => -$a)->all(), 'with by');
+        $this->assertSame(["10", "2"], $this->vec(["2", "10"])->sortDesc()->all(), 'sort regular');
+        $this->assertSame(["2", "10"], $this->vec(["10", "2"])->sortDesc(flag: SORT_STRING)->all(), 'with flag');
+    }
+
+    public function test_takeFirst(): void
+    {
+        $this->assertSame([], $this->vec([1, 2])->takeFirst(0)->all(), 'take none');
+        $this->assertSame([1], $this->vec([1, 2])->takeFirst(1)->all(), 'take one');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeFirst(2)->all(), 'two');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeFirst(3)->all(), 'overflow');
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->takeFirst(2)->all(), 'retain keys');
+    }
+
+    public function test_takeFirst_negative_amount(): void
+    {
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1, 2])->takeFirst(-1);
+    }
+
+    public function test_takeLast(): void
+    {
+        $this->assertSame([], $this->vec([1, 2])->takeLast(0)->all(), 'take none');
+        $this->assertSame([2], $this->vec([1, 2])->takeLast(1)->all(), 'take one');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeLast(2)->all(), 'two');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeLast(3)->all(), 'overflow');
+        $this->assertSame(['b' => 2, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->takeLast(2)->all(), 'retain keys');
+    }
+
+    public function test_takeLast_negative_amount(): void
+    {
+        $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1, 2])->takeLast(-1);
     }
 
     public function test_toArray(): void

@@ -3272,20 +3272,11 @@ final class ArrTest extends TestCase
 
     public function test_takeLast(): void
     {
-        // empty
-        self::assertSame([], Arr::takeLast([], 1));
-
-        // zero take
-        self::assertSame([], Arr::takeLast([2, 3, 4], 0));
-
-        // list
-        self::assertSame([3, 4], Arr::takeLast([2, 3, 4], 2));
-
-        // assoc
-        self::assertSame(['c' => 2], Arr::takeLast(['b' => 1, 'a' => 3, 'c' => 2], 1));
-
-        // amount over count
-        self::assertSame([1, 2], Arr::takeLast([1, 2], 100));
+        self::assertSame([], Arr::takeLast([], 1), 'empty');
+        self::assertSame([], Arr::takeLast([2, 3, 4], 0), 'zero take');
+        self::assertSame([3, 4], Arr::takeLast([2, 3, 4], 2), 'list');
+        self::assertSame([1, 2], Arr::takeLast([1, 2], 3), 'overflow amount');
+        self::assertSame(['c' => 2], Arr::takeLast(['b' => 1, 'a' => 3, 'c' => 2], 1), 'assoc');
     }
 
     public function test_takeLast_fail_on_negative_amount(): void

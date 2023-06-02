@@ -5083,7 +5083,8 @@ final class Arr
         $array = self::from($iterable);
         $length = count($array);
         $reindex ??= array_is_list($array);
-        return iterator_to_array(Iter::slice($array, $length - $amount, PHP_INT_MAX, $reindex));
+        $offset = max(0, $length - $amount);
+        return iterator_to_array(Iter::slice($array, $offset, PHP_INT_MAX, $reindex));
     }
 
     /**
