@@ -1262,6 +1262,67 @@ final class EnumerableTest extends TestCase
         $this->assertTrue($this->map(['a' => 1, 'b' => 2])->satisfyOnce(fn($i) => $i > 1), 'map: one true');
     }
 
+    public function test_shuffle(): void
+    {
+        $this->assertSame([], $this->vec()->shuffle()->all(), 'empty');
+        $this->assertSame([2], $this->vec([2])->shuffle()->all(), 'one');
+        $randomizer = new Randomizer(new Mt19937(2));
+        $this->assertSame([2, 1], $this->vec([1, 2])->shuffle($randomizer)->all(), 'one');
+        $randomizer = new Randomizer(new Mt19937(2));
+        $this->assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->shuffle($randomizer)->all(), 'map');
+    }
+
+    public function test_slice(): void
+    {
+        $this->assertSame([], $this->vec()->slice(0)->all(), 'empty');
+        $this->assertSame([], $this->vec()->slice(0, 1)->all(), 'empty with length');
+        $this->assertSame([], $this->vec()->slice(0, -1)->all(), 'empty with negative length');
+        $this->assertSame([1], $this->vec([1])->slice(0)->all(), 'same');
+        $this->assertSame([1], $this->vec([1])->slice(0, 1)->all(), 'length == size');
+        $this->assertSame([1], $this->vec([1])->slice(0, 3)->all(), 'length > size');
+        $this->assertSame([], $this->vec([1])->slice(1)->all(), 'offset == size');
+        $this->assertSame([], $this->vec([1])->slice(2)->all(), 'offset > size');
+        $this->assertSame([2], $this->vec([1, 2])->slice(1)->all(), 'positive offset');
+        $this->assertSame([2], $this->vec([1, 2])->slice(-1)->all(), 'negative offset');
+        $this->assertSame([2], $this->vec([1, 2])->slice(1)->all(), 'positive offset');
+        $this->assertSame([2], $this->vec([1, 2, 3])->slice(-2, 1)->all(), 'negative offset with length');
+        $this->assertSame([2, 3], $this->vec([1, 2, 3, 4])->slice(-3, -2)->all(), 'negative length');
+    }
+
+    public function test_sole(): void
+    {
+        $this->assertSame(2, $this->vec([2])->sole(), 'no condition');
+        $this->assertSame(2, $this->vec([1, 2, 3])->sole(fn($i) => $i === 2), 'with condition');
+    }
+
+    public function test_sole_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec()->sole();
+    }
+
+    public function test_sole_no_match(): void
+    {
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        $this->expectException(NoMatchFoundException::class);
+        $this->vec([1, 2])->sole(fn() => false);
+    }
+
+    public function test_sole_multi(): void
+    {
+        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1, 1])->sole();
+    }
+
+    public function test_sole_multi_condition(): void
+    {
+        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([0, 1, 1, 2])->sole(fn($i) => $i === 1);
+    }
+
     public function test_toArray(): void
     {
         $this->assertSame([], $this->vec()->toArray(), 'empty');
