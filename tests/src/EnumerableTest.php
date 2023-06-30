@@ -1431,4 +1431,19 @@ final class EnumerableTest extends TestCase
         $this->assertSame('{"a":{"b":1}}', $this->map(['a' => $this->map(['b' => 1])])->toJson(), 'depth max');
         $this->assertSame("{\n    \"a\": 1\n}", $this->map(['a' => 1])->toJson(true), 'pretty');
     }
+
+    public function test_unique(): void
+    {
+        $this->assertSame([], $this->vec()->unique()->toArray(), 'empty');
+        $this->assertSame([1], $this->vec([1])->unique()->toArray(), 'one');
+        $this->assertSame([1, 2], $this->vec([1, 1, 2, 1])->unique()->toArray(), 'keep first occurrence');
+        $this->assertSame([null, 1], $this->vec([null, null, 1, 1])->unique()->toArray(), 'can handle null');
+        $this->assertSame([true, false, 1, 0, null, ''], $this->vec([true, false, 1, 0, null, ''])->unique()->toArray(), 'strict');
+        $this->assertSame([INF], $this->vec([INF, INF])->unique()->toArray(), 'one');
+        $this->assertNan($this->vec([NAN, NAN])->unique()->sole(), 'one');
+
+        $this->assertSame([], $this->map()->unique()->toArray(), 'empty');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->unique()->toArray(), 'one');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 1])->unique()->toArray(), 'keep first occurrence');
+    }
 }
