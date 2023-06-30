@@ -188,7 +188,10 @@ trait Enumerable
      * [Optional] Callback which can be used for comparison of items.
      * @return static
      */
-    public function diff(iterable $items, ?Closure $by = null): static
+    public function diff(
+        iterable $items,
+        ?Closure $by = null,
+    ): static
     {
         return $this->instantiate(Arr::diff($this, $items, $by, $this->reindex()));
     }
@@ -505,7 +508,10 @@ trait Enumerable
      * If **false**, exception will be thrown on duplicate keys.
      * @return Map<TNewKey, TValue>
      */
-    public function keyBy(Closure $callback, bool $overwrite = false): Map
+    public function keyBy(
+        Closure $callback,
+        bool $overwrite = false,
+    ): Map
     {
         return $this->newMap(Arr::keyBy($this, $callback, $overwrite));
     }
@@ -578,7 +584,10 @@ trait Enumerable
      * Defaults to **null**.
      * @return TValue|TDefault
      */
-    public function lastOr(mixed $default, ?Closure $condition = null): mixed
+    public function lastOr(
+        mixed $default,
+        ?Closure $condition = null,
+    ): mixed
     {
         return Arr::lastOr($this, $default, $condition);
     }
@@ -665,7 +674,10 @@ trait Enumerable
      * [Optional] Depth of recursion. Defaults to **PHP_INT_MAX**.
      * @return static
      */
-    public function mergeRecursive(iterable $iterable, int $depth = PHP_INT_MAX): static
+    public function mergeRecursive(
+        iterable $iterable,
+        int $depth = PHP_INT_MAX,
+    ): static
     {
         return $this->instantiate(Arr::mergeRecursive($this, $iterable, $depth));
     }
@@ -786,7 +798,10 @@ trait Enumerable
      * [Optional] Limits the number of items to prioritize.
      * @return static
      */
-    public function prioritize(Closure $condition, ?int $limit = null): static
+    public function prioritize(
+        Closure $condition,
+        ?int $limit = null,
+    ): static
     {
         return $this->instantiate(Arr::prioritize($this, $condition, $limit, $this->reindex()));
     }
@@ -821,7 +836,10 @@ trait Enumerable
      * Value that is used when iterable is empty.
      * @return TValue
      */
-    public function reduceOr(Closure $callback, mixed $default): mixed
+    public function reduceOr(
+        Closure $callback,
+        mixed $default,
+    ): mixed
     {
         return Arr::reduceOr($this, $callback, $default);
     }
@@ -858,7 +876,12 @@ trait Enumerable
      * Any value previously set will be reset.
      * @return static
      */
-    public function replace(mixed $search, mixed $replacement, ?int $limit = null, int &$count = 0): static
+    public function replace(
+        mixed $search,
+        mixed $replacement,
+        ?int $limit = null,
+        int &$count = 0,
+    ): static
     {
         return $this->instantiate(Iter::replace($this, $search, $replacement, $limit, $count));
     }
@@ -919,7 +942,11 @@ trait Enumerable
      * Defaults to **null**.
      * @return Vec<TValue>
      */
-    public function sampleMany(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
+    public function sampleMany(
+        int $amount,
+        bool $replace = false,
+        ?Randomizer $randomizer = null,
+    ): Vec
     {
         return $this->newVec(Arr::sampleMany($this, $amount, $replace, $randomizer));
     }
@@ -937,7 +964,10 @@ trait Enumerable
      * Defaults to **null**.
      * @return TValue|TDefault
      */
-    public function sampleOr(mixed $default, ?Randomizer $randomizer = null): mixed
+    public function sampleOr(
+        mixed $default,
+        ?Randomizer $randomizer = null,
+    ): mixed
     {
         return Arr::sampleOr($this, $default, $randomizer);
     }
@@ -1076,7 +1106,11 @@ trait Enumerable
      * Defaults to `SORT_REGULAR`.
      * @return static
      */
-    public function sort(int $order, ?Closure $by = null, int $flag = SORT_REGULAR): static
+    public function sort(
+        int $order,
+        ?Closure $by = null,
+        int $flag = SORT_REGULAR,
+    ): static
     {
         return $this->instantiate(Arr::sort($this, $order, $by, $flag, $this->reindex()));
     }
@@ -1092,7 +1126,10 @@ trait Enumerable
      * Defaults to `SORT_REGULAR`.
      * @return static
      */
-    public function sortAsc(?Closure $by = null, int $flag = SORT_REGULAR): static
+    public function sortAsc(
+        ?Closure $by = null,
+        int $flag = SORT_REGULAR,
+    ): static
     {
         return $this->instantiate(Arr::sortAsc($this, $by, $flag, $this->reindex()));
     }
@@ -1108,7 +1145,10 @@ trait Enumerable
      * Defaults to `SORT_REGULAR`.
      * @return static
      */
-    public function sortDesc(?Closure $by = null, int $flag = SORT_REGULAR): static
+    public function sortDesc(
+        ?Closure $by = null,
+        int $flag = SORT_REGULAR,
+    ): static
     {
         return $this->instantiate(Arr::sortDesc($this, $by, $flag, $this->reindex()));
     }
@@ -1157,7 +1197,10 @@ trait Enumerable
      * Defaults to **null**.
      * @return static
      */
-    public function symDiff(iterable $items, Closure $by = null): static
+    public function symDiff(
+        iterable $items,
+        Closure $by = null,
+    ): static
     {
         return $this->instantiate(Arr::symDiff($this, $items, $by, $this->reindex()));
     }
@@ -1346,7 +1389,11 @@ trait Enumerable
      * @param bool $validate
      * @return array<TKey, TValue>
      */
-    protected function asArrayRecursive(iterable $items, int $depth, bool $validate = false): array
+    protected function asArrayRecursive(
+        iterable $items,
+        int $depth,
+        bool $validate = false,
+    ): array
     {
         if ($validate && $depth < 1) {
             throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}.", [

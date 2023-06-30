@@ -73,7 +73,11 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * @param bool $includeEnd
      * @return self<int>
      */
-    public static function range(int $start, int $end, bool $includeEnd = true): Vec
+    public static function range(
+        int $start,
+        int $end,
+        bool $includeEnd = true,
+    ): Vec
     {
         return new static(new Range($start, $end, $includeEnd));
     }
@@ -222,7 +226,11 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * @param Randomizer|null $randomizer
      * @return self<int>
      */
-    public function sampleIndexes(int $amount, bool $replace = false, ?Randomizer $randomizer = null): self
+    public function sampleIndexes(
+        int $amount,
+        bool $replace = false,
+        ?Randomizer $randomizer = null,
+    ): self
     {
         return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
     }

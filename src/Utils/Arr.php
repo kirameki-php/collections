@@ -5262,7 +5262,11 @@ final class Arr
      * If **null**, the result will be re-indexed only if it's a list.
      * @return array<int, array<TKey, TValue>>
      */
-    public static function windows(iterable $iterable, int $size, ?bool $reindex = null): array
+    public static function windows(
+        iterable $iterable,
+        int $size,
+        ?bool $reindex = null,
+    ): array
     {
         if ($reindex === null) {
             $iterable = self::from($iterable);

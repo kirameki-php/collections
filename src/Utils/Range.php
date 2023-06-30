@@ -21,7 +21,8 @@ final readonly class Range implements Countable, IteratorAggregate
         private int $start,
         private int $end,
         private bool $includeEnd = true,
-    ) {
+    )
+    {
         if ($this->min() > $this->max()) {
             $message = $includeEnd
                 ? '$start must be <= $end.'
