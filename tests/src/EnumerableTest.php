@@ -1441,6 +1441,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([true, false, 1, 0, null, ''], $this->vec([true, false, 1, 0, null, ''])->unique()->toArray(), 'strict');
         $this->assertSame([INF], $this->vec([INF, INF])->unique()->toArray(), 'one');
         $this->assertNan($this->vec([NAN, NAN])->unique()->sole(), 'one');
+        $this->assertSame([1, 2], $this->vec([1, 2, 3, 4])->unique(fn($n) => $n % 2 === 0)->toArray(), 'with callback');
 
         $this->assertSame([], $this->map()->unique()->toArray(), 'empty');
         $this->assertSame(['a' => 1], $this->map(['a' => 1])->unique()->toArray(), 'one');
