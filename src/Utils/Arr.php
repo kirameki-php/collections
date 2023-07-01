@@ -5018,6 +5018,10 @@ final class Arr
             $diff2 = array_values($diff2);
         }
 
+        /**
+         * @var array<TKey, TValue> $diff1
+         * @var array<TKey, TValue> $diff2
+         */
         return self::merge($diff1, $diff2);
     }
 

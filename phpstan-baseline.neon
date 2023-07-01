@@ -9,8 +9,3 @@ parameters:
 			message: "#^Parameter \\#3 \\$fallback of method Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\),TValue\\>\\:\\:when\\(\\) expects \\(Closure\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey, TValue\\>\\)\\: TReturn\\)\\|null, \\(Closure\\(\\$this\\)\\: TReturn\\)\\|null given\\.$#"
 			count: 2
 			path: src/Enumerator.php
-
-		-
-			message: "#^Unable to resolve the template type TKey in call to method static method Kirameki\\\\Collections\\\\Utils\\\\Arr\\:\\:merge\\(\\)$#"
-			count: 1
-			path: src/Utils/Arr.php

@@ -1463,5 +1463,37 @@ final class EnumerableTest extends TestCase
 
         $this->assertSame([1], $this->vec()->when(fn() => true, $callback, $fallback)->all(), 'when callback true');
         $this->assertSame([2], $this->vec()->when(fn() => false, $callback, $fallback)->all(), 'when callback false');
+
+        $this->assertSame(['a' => 1], $this->map()->when(true, fn(Map $s) => $s->set('a', 1))->all(), 'used on map');
+    }
+
+    public function test_when_with_wrong_bool_return_type(): void
+    {
+        $this->expectExceptionMessage('Expected $bool (Closure) to return bool, integer given.');
+        $this->expectException(TypeMismatchException::class);
+        $this->vec()->when(fn() => 1, fn($s) => $s);
+    }
+
+    public function test_whenEmpty(): void
+    {
+        $callback = fn(Vec $s) => $s->append(1);
+        $fallback = fn(Vec $s) => $s->append(2);
+
+        $this->assertSame([1], $this->vec()->whenEmpty($callback)->all(), 'when empty');
+        $this->assertSame([1], $this->vec([1])->whenEmpty($callback)->all(), 'when non-empty no fallback');
+        $this->assertSame([1, 2], $this->vec([1])->whenEmpty($callback, $fallback)->all(), 'when non-empty with fallback');
+        $this->assertSame(['a' => 1], $this->map()->whenEmpty(fn(Map $s) => $s->set('a', 1))->all(), 'used on map');
+    }
+
+    public function test_whenNotEmpty(): void
+    {
+        $callback = fn(Vec $s) => $s->append(1);
+        $fallback = fn(Vec $s) => $s->append(2);
+
+        $this->assertSame([], $this->vec()->whenNotEmpty($callback)->all(), 'when not empty no fallback');
+        $this->assertSame([2], $this->vec()->whenNotEmpty($callback, $fallback)->all(), 'when not empty with fallback');
+        $this->assertSame([1, 1], $this->vec([1])->whenNotEmpty($callback, $fallback)->all(), 'when non-empty no fallback');
+        $this->assertSame(['a' => 1, 'b' => 1], $this->map(['a' => 1])->whenNotEmpty(fn(Map $s) => $s->set('b', 1))->all(), 'map callback');
+        $this->assertSame(['a' => 1], $this->map()->whenNotEmpty(fn($s) => $s, fn(Map $s) => $s->set('a', 1))->all(), 'map fallback');
     }
 }
