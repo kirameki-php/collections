@@ -6,8 +6,8 @@ use IteratorAggregate;
 use Traversable;
 
 /**
- * @template TKey of array-key
- * @template TValue
+ * @template-covariant TKey of array-key
+ * @template-covariant TValue
  * @implements IteratorAggregate<TKey, TValue>
  */
 class LazyIterator implements IteratorAggregate
