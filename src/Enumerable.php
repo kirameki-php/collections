@@ -6,6 +6,7 @@ use Closure;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Json;
 use Kirameki\Dumper\Config as DumperConfig;
 use Random\Randomizer;
@@ -1305,22 +1306,32 @@ trait Enumerable
      * Calls `$callback` for every element in the collection if `$bool`
      * is **true**, calls `$fallback` otherwise.
      *
+     * @template TReturn
      * @param bool|Closure($this): bool $bool
      * Bool or callback to determine whether to execute `$callback` or `$fallback`.
-     * @param Closure($this): static $callback
+     * @param Closure($this): TReturn $callback
      * Callback to be called if `$bool` is **true**.
-     * @param Closure($this): static|null $fallback
+     * @param Closure($this): TReturn|null $fallback
      * [Optional] Callback to be called if `$bool` is **false**.
-     * @return static
+     * @return TReturn
      */
     public function when(
         bool|Closure $bool,
         Closure $callback,
         ?Closure $fallback = null,
-    ): static
+    ): mixed
     {
         if ($bool instanceof Closure) {
             $bool = $bool($this);
+            if (!is_bool($bool)) {
+                $type = gettype($bool);
+                throw new TypeMismatchException("Expected \$bool (Closure) to return bool, {$type} given.", [
+                    'this' => $this,
+                    'bool' => $bool,
+                    'callback' => $callback,
+                    'fallback' => $fallback,
+                ]);
+            }
         }
 
         $fallback ??= static fn($self): static => $self;
@@ -1334,16 +1345,17 @@ trait Enumerable
      * Calls `$callback` for every element in the collection if collection is empty,
      * calls `$fallback` otherwise.
      *
-     * @param Closure($this): static $callback
+     * @template TReturn
+     * @param Closure($this): TReturn $callback
      * Callback to be called if `$bool` is **true**.
-     * @param Closure($this): static|null $fallback
+     * @param Closure($this): TReturn|null $fallback
      * [Optional] Callback to be called if `$bool` is **false**.
-     * @return static
+     * @return TReturn
      */
     public function whenEmpty(
         Closure $callback,
         ?Closure $fallback = null,
-    ): static
+    ): mixed
     {
         return $this->when($this->isEmpty(), $callback, $fallback);
     }
@@ -1352,16 +1364,17 @@ trait Enumerable
      * Calls `$callback` for every element in the collection if collection is not
      * empty, calls `$fallback` otherwise.
      *
-     * @param Closure($this): static $callback
+     * @template TReturn
+     * @param Closure($this): TReturn $callback
      * Callback to be called if `$bool` is **true**.
-     * @param Closure($this): static|null $fallback
+     * @param Closure($this): TReturn|null $fallback
      * [Optional] Callback to be called if `$bool` is **false**.
-     * @return static
+     * @return TReturn
      */
     public function whenNotEmpty(
         Closure $callback,
         ?Closure $fallback = null,
-    ): static
+    ): mixed
     {
         return $this->when($this->isNotEmpty(), $callback, $fallback);
     }

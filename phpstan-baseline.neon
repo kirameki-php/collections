@@ -1,11 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#2 \\$callback of method Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\),TValue\\>\\:\\:when\\(\\) expects Closure\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>\\)\\: Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>, Closure\\(\\$this\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>\\)\\)\\: static\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>\\) given\\.$#"
+			message: "#^Parameter \\#2 \\$callback of method Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\),TValue\\>\\:\\:when\\(\\) expects Closure\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey, TValue\\>\\)\\: TReturn, Closure\\(\\$this\\)\\: TReturn given\\.$#"
 			count: 2
 			path: src/Enumerator.php
 
 		-
-			message: "#^Parameter \\#3 \\$fallback of method Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\),TValue\\>\\:\\:when\\(\\) expects \\(Closure\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>\\)\\: Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>\\)\\|null, \\(Closure\\(\\$this\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>\\)\\)\\: static\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\), TValue\\>\\)\\)\\|null given\\.$#"
+			message: "#^Parameter \\#3 \\$fallback of method Kirameki\\\\Collections\\\\Enumerator\\<TKey of \\(int\\|string\\),TValue\\>\\:\\:when\\(\\) expects \\(Closure\\(Kirameki\\\\Collections\\\\Enumerator\\<TKey, TValue\\>\\)\\: TReturn\\)\\|null, \\(Closure\\(\\$this\\)\\: TReturn\\)\\|null given\\.$#"
 			count: 2
 			path: src/Enumerator.php
+
+		-
+			message: "#^Unable to resolve the template type TKey in call to method static method Kirameki\\\\Collections\\\\Utils\\\\Arr\\:\\:merge\\(\\)$#"
+			count: 1
+			path: src/Utils/Arr.php

@@ -9,10 +9,10 @@ use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
-use Kirameki\Collections\Exceptions\TypeMismatchException;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Dumper\Config;
 use Kirameki\Dumper\Writer;
@@ -1434,17 +1434,34 @@ final class EnumerableTest extends TestCase
 
     public function test_unique(): void
     {
-        $this->assertSame([], $this->vec()->unique()->toArray(), 'empty');
-        $this->assertSame([1], $this->vec([1])->unique()->toArray(), 'one');
-        $this->assertSame([1, 2], $this->vec([1, 1, 2, 1])->unique()->toArray(), 'keep first occurrence');
-        $this->assertSame([null, 1], $this->vec([null, null, 1, 1])->unique()->toArray(), 'can handle null');
-        $this->assertSame([true, false, 1, 0, null, ''], $this->vec([true, false, 1, 0, null, ''])->unique()->toArray(), 'strict');
-        $this->assertSame([INF], $this->vec([INF, INF])->unique()->toArray(), 'one');
+        $this->assertSame([], $this->vec()->unique()->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->unique()->all(), 'one');
+        $this->assertSame([1, 2], $this->vec([1, 1, 2, 1])->unique()->all(), 'keep first occurrence');
+        $this->assertSame([null, 1], $this->vec([null, null, 1, 1])->unique()->all(), 'can handle null');
+        $this->assertSame([true, false, 1, 0, null, ''], $this->vec([true, false, 1, 0, null, ''])->unique()->all(), 'strict');
+        $this->assertSame([INF], $this->vec([INF, INF])->unique()->all(), 'one');
         $this->assertNan($this->vec([NAN, NAN])->unique()->sole(), 'one');
-        $this->assertSame([1, 2], $this->vec([1, 2, 3, 4])->unique(fn($n) => $n % 2 === 0)->toArray(), 'with callback');
+        $this->assertSame([1, 2], $this->vec([1, 2, 3, 4])->unique(fn($n) => $n % 2 === 0)->all(), 'with callback');
 
-        $this->assertSame([], $this->map()->unique()->toArray(), 'empty');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1])->unique()->toArray(), 'one');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 1])->unique()->toArray(), 'keep first occurrence');
+        $this->assertSame([], $this->map()->unique()->all(), 'empty');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->unique()->all(), 'one');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 1])->unique()->all(), 'keep first occurrence');
+    }
+
+    public function test_when(): void
+    {
+        $callback = fn(Vec $s) => $s->append(1);
+        $fallback = fn(Vec $s) => $s->append(2);
+
+        $this->assertSame([1], $this->vec()->when(true, $callback, $fallback)->all(), 'when true on empty');
+        $this->assertSame([2], $this->vec()->when(false, $callback, $fallback)->all(), 'when false on empty');
+
+        $this->assertSame([1, 1], $this->vec([1])->when(true, $callback)->all(), 'when true no fallback');
+        $this->assertSame([1, 1], $this->vec([1])->when(true, $callback, $fallback)->all(), 'when true with fallback');
+        $this->assertSame([1], $this->vec([1])->when(false, $callback)->all(), 'when false no fallback');
+        $this->assertSame([1, 2], $this->vec([1])->when(false, $callback, $fallback)->all(), 'when false with fallback');
+
+        $this->assertSame([1], $this->vec()->when(fn() => true, $callback, $fallback)->all(), 'when callback true');
+        $this->assertSame([2], $this->vec()->when(fn() => false, $callback, $fallback)->all(), 'when callback false');
     }
 }
