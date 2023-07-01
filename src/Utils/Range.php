@@ -83,4 +83,12 @@ final readonly class Range implements Countable, IteratorAggregate
             ? $this->end
             : $this->end - 1;
     }
+
+    /**
+     * @return bool
+     */
+    public function includesEnd(): bool
+    {
+        return $this->includeEnd;
+    }
 }

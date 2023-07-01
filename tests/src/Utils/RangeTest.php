@@ -43,4 +43,13 @@ final class RangeTest extends TestCase
         $range = new Range(-2, 2);
         $this->assertSame(2, $range->max());
     }
+
+    public function test_includesEnd(): void
+    {
+        $range = new Range(0, 2);
+        $this->assertTrue($range->includesEnd());
+
+        $range = new Range(0, 2, false);
+        $this->assertFalse($range->includesEnd());
+    }
 }
