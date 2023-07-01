@@ -611,6 +611,14 @@ final class Iter
         bool $reindex = false,
     ): Generator
     {
+        if ($size <= 0) {
+            throw new InvalidArgumentException("Expected: \$size > 0. Got: {$size}.", [
+                'iterable' => $iterable,
+                'size' => $size,
+                'reindex' => $reindex,
+            ]);
+        }
+
         $window = [];
         $filled = false;
         foreach ($iterable as $key => $val) {
@@ -632,7 +640,8 @@ final class Iter
         }
 
         if ($filled === false) {
-            throw new InvalidArgumentException("{$size} must be bigger than the given iterable.", [
+            $count = Arr::count($iterable);
+            throw new InvalidArgumentException("\$size ({$size}) must be >= size of \$iterable ({$count}).", [
                 'iterable' => $iterable,
                 'size' => $size,
                 'reindex' => $reindex,

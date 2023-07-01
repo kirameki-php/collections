@@ -16,6 +16,7 @@ use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Dumper\Config;
 use Kirameki\Dumper\Writer;
+use PHPStan\Type\VoidType;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
 use stdClass;
@@ -1495,5 +1496,27 @@ final class EnumerableTest extends TestCase
         $this->assertSame([1, 1], $this->vec([1])->whenNotEmpty($callback, $fallback)->all(), 'when non-empty no fallback');
         $this->assertSame(['a' => 1, 'b' => 1], $this->map(['a' => 1])->whenNotEmpty(fn(Map $s) => $s->set('b', 1))->all(), 'map callback');
         $this->assertSame(['a' => 1], $this->map()->whenNotEmpty(fn($s) => $s, fn(Map $s) => $s->set('a', 1))->all(), 'map fallback');
+    }
+
+    public function test_windows(): void
+    {
+        $arr = range(0, 2);
+        $this->assertSame([[0], [1], [2]], $this->vec($arr)->windows(1)->map(fn(Vec $a) => $a->all())->all(), 'size 1');
+        $this->assertSame([[0, 1], [1, 2]], $this->vec($arr)->windows(2)->map(fn(Vec $a) => $a->all())->all(), 'size 2');
+        $this->assertSame([[0, 1, 2]], $this->vec($arr)->windows(3)->map(fn(Vec $a) => $a->all())->all(), 'size 2');
+    }
+
+    public function test_windows_zero_size(): void
+    {
+        $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec()->windows(0);
+    }
+
+    public function test_windows_size_overflow(): void
+    {
+        $this->expectExceptionMessage('$size (4) must be >= size of $iterable (3).');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1, 2, 3])->windows(4);
     }
 }
