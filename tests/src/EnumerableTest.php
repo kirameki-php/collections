@@ -914,6 +914,21 @@ final class EnumerableTest extends TestCase
         $this->vec([1, NAN, 1])->maxOrNull();
     }
 
+    public function test_merge(): void
+    {
+        $this->assertSame([], $this->vec()->merge([])->all(), 'empty');
+        $this->assertSame([1, 0], $this->vec([1])->merge([0])->all(), 'single');
+        $this->assertSame([1, 0, 1], $this->vec([1])->merge([0], [1])->all(), 'multi');
+        $this->assertSame([[1], [2]], $this->vec([[1]])->merge([[2]])->all(), 'empty');
+    }
+
+    public function test_merge_mix_types(): void
+    {
+        $this->expectExceptionMessage('Tried to merge list with map. Try converting the map to a list.');
+        $this->expectException(TypeMismatchException::class);
+        $this->vec([1])->merge(['a' => 1]);
+    }
+
     public function test_min(): void
     {
         $this->assertSame(1, $this->vec([1, 2])->min(), 'basic use');

@@ -1987,6 +1987,13 @@ final class ArrTest extends TestCase
         self::assertSame(6, Arr::product(['b' => 1, 'a' => 3, 'c' => 2]), 'assoc');
     }
 
+    public function test_product_with_nan(): void
+    {
+        $this->expectExceptionMessage('$iterable cannot contain NAN.');
+        $this->expectException(InvalidElementException::class);
+        Arr::product([1, NAN]);
+    }
+
     public function test_pull(): void
     {
         // list

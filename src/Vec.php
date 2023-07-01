@@ -236,7 +236,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     protected function reindex(): bool
     {
