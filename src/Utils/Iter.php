@@ -639,13 +639,8 @@ final class Iter
             $window = array_slice($window, 1, null, !$reindex);
         }
 
-        if ($filled === false) {
-            $count = Arr::count($iterable);
-            throw new InvalidArgumentException("\$size ({$size}) must be >= size of \$iterable ({$count}).", [
-                'iterable' => $iterable,
-                'size' => $size,
-                'reindex' => $reindex,
-            ]);
+        if (!$filled) {
+            yield $window;
         }
     }
 

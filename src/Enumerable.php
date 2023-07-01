@@ -82,6 +82,23 @@ trait Enumerable
     }
 
     /**
+     * Splits the collection into chunks of the given size.
+     *
+     * @param int<1, max> $size
+     * Size of each chunk. Must be >= 1.
+     * @return Vec<static>
+     */
+    public function chunk(int $size): Vec
+    {
+        $chunks = [];
+        foreach (Iter::chunk($this, $size, $this->reindex()) as $chunk) {
+            $converted = $this->instantiate($chunk);
+            $chunks[] = $converted;
+        }
+        return $this->newVec($chunks);
+    }
+
+    /**
      * Returns the first non-null value.
      * Throws `InvalidArgumentException` if empty or all elements are **null**.
      *
@@ -1165,23 +1182,6 @@ trait Enumerable
     public function sortWith(Closure $comparison): static
     {
         return $this->instantiate(Arr::sortWith($this, $comparison, $this->reindex()));
-    }
-
-    /**
-     * Splits the collection into chunks of the given size.
-     *
-     * @param int<1, max> $size
-     * Size of each chunk. Must be >= 1.
-     * @return Vec<static>
-     */
-    public function split(int $size): Vec
-    {
-        $chunks = [];
-        foreach (Iter::chunk($this, $size, $this->reindex()) as $chunk) {
-            $converted = $this->instantiate($chunk);
-            $chunks[] = $converted;
-        }
-        return $this->newVec($chunks);
     }
 
     /**

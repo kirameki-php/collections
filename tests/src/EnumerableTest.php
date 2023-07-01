@@ -100,6 +100,21 @@ final class EnumerableTest extends TestCase
         $this->assertNull($this->map(['a' => 1, 'b' => 2])->atOrNull(-3), 'out of bounds negative');
     }
 
+    public function test_chunk(): void
+    {
+        $this->assertSame([], $this->vec()->chunk(1)->all(), 'empty');
+        $this->assertSame([[1], [2]], $this->vec([1, 2])->chunk(1)->map(fn(Vec $s) => $s->all())->all(), 'split 1');
+        $this->assertSame([[1, 2], [3]], $this->vec([1, 2, 3])->chunk(2)->map(fn(Vec $s) => $s->all())->all(), 'split 2');
+        $this->assertSame([[1, 2]], $this->vec([1, 2])->chunk(5)->map(fn(Vec $s) => $s->all())->all(), 'split 2');
+    }
+
+    public function test_chunk_zero_size(): void
+    {
+        $this->expectExceptionMessage('$size >= 1. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec()->chunk(0)->all();
+    }
+
     public function test_coalesce(): void
     {
         $this->assertSame(1, $this->vec([1])->coalesce(), 'single value');
@@ -1503,7 +1518,14 @@ final class EnumerableTest extends TestCase
         $arr = range(0, 2);
         $this->assertSame([[0], [1], [2]], $this->vec($arr)->windows(1)->map(fn(Vec $a) => $a->all())->all(), 'size 1');
         $this->assertSame([[0, 1], [1, 2]], $this->vec($arr)->windows(2)->map(fn(Vec $a) => $a->all())->all(), 'size 2');
-        $this->assertSame([[0, 1, 2]], $this->vec($arr)->windows(3)->map(fn(Vec $a) => $a->all())->all(), 'size 2');
+        $this->assertSame([[0, 1, 2]], $this->vec($arr)->windows(3)->map(fn(Vec $a) => $a->all())->all(), 'size exact');
+        $this->assertSame([[0, 1, 2]], $this->vec($arr)->windows(5)->map(fn(Vec $a) => $a->all())->all(), 'size overflow');
+
+        $arr = ['a' => 1, 'b' => 2, 'c' => 3];
+        $windowed = $this->map($arr)->windows(2);
+        $this->assertInstanceOf(Vec::class, $windowed);
+        $this->assertSame(['a' => 1, 'b' => 2], $windowed[0]->all(), 'Mapped window 1');
+        $this->assertSame(['b' => 2, 'c' => 3], $windowed[1]->all(), 'Mapped window 2');
     }
 
     public function test_windows_zero_size(): void
@@ -1511,12 +1533,5 @@ final class EnumerableTest extends TestCase
         $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
         $this->expectException(InvalidArgumentException::class);
         $this->vec()->windows(0);
-    }
-
-    public function test_windows_size_overflow(): void
-    {
-        $this->expectExceptionMessage('$size (4) must be >= size of $iterable (3).');
-        $this->expectException(InvalidArgumentException::class);
-        $this->vec([1, 2, 3])->windows(4);
     }
 }

@@ -3412,8 +3412,8 @@ final class ArrTest extends TestCase
     public function test_windows_negative_size(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('$size (1) must be >= size of $iterable (0).');
-        self::assertSame([], Arr::windows([], 1), 'empty');
+        $this->expectExceptionMessage('Expected: $size > 0. Got: -1.');
+        self::assertSame([], Arr::windows([], -1), 'empty');
     }
 
     public function test_windows_zero_size(): void
