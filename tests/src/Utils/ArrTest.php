@@ -273,38 +273,20 @@ final class ArrTest extends TestCase
         $compacted = Arr::compact(['a' => ['b' => null], 'b' => null]);
         self::assertSame(['a' => ['b' => null]], $compacted);
 
-        // depth = INT_MAX
-        $compacted = Arr::compact(['a' => ['b' => ['c' => null]], 'b' => null], PHP_INT_MAX);
-        self::assertSame(['a' => ['b' => []]], $compacted);
-
         // list: removes nulls (reindex: null (auto-detect))
         self::assertSame([1, 2], Arr::compact([1, null, 2]));
 
         // reindex: true with list
-        self::assertSame([1, 2], Arr::compact([1, null, null, 2], 1, true));
+        self::assertSame([1, 2], Arr::compact([1, null, null, 2], true));
 
         // reindex: true with map
-        self::assertSame([1], Arr::compact(['a' => null, 'b' => null, 'c' => 1], 1, true));
+        self::assertSame([1], Arr::compact(['a' => null, 'b' => null, 'c' => 1], true));
 
         // reindex: false with list
-        self::assertSame([1, 2 => 2], Arr::compact([1, null, 2], 1, false));
+        self::assertSame([1, 2 => 2], Arr::compact([1, null, 2], false));
 
         // reindex: false with map
-        self::assertSame(['c' => 1], Arr::compact(['a' => null, 'b' => null, 'c' => 1], 1, false));
-    }
-
-    public function test_compact_zero_depth(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0.');
-        Arr::compact([], 0);
-    }
-
-    public function test_compact_negative_depth(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1.');
-        Arr::compact([], -1);
+        self::assertSame(['c' => 1], Arr::compact(['a' => null, 'b' => null, 'c' => 1], false));
     }
 
     public function test_contains(): void

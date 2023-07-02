@@ -169,7 +169,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([1, 2], $this->vec([1, 2])->compact()->all(), 'no nulls');
         $this->assertSame([1, 2], $this->vec([null, 1, null, 2, null])->compact()->all(), 'mixed nulls');
         $this->assertSame([0, false, ''], $this->vec([null, 0, false, ''])->compact()->all(), 'null like');
-        $this->assertSame([[1]], $this->vec([[1, null]])->compact(2)->all(), 'nested');
+        $this->assertSame([[1, null]], $this->vec([[1, null]])->compact()->all(), 'nested');
 
         $this->assertSame([], $this->map()->compact()->all(), 'empty');
         $this->assertSame([], $this->map(['a' => null, 'b' => null])->compact()->all(), 'all null');
@@ -179,21 +179,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->compact()->all(), 'no nulls');
         $this->assertSame(['b' => 1, 'd' => 2], $this->map(['a' => null, 'b' => 1, 'c' => null, 'd' => 2])->compact()->all(), 'mixed nulls');
         $this->assertSame(['b' => 0, 'c' => false, 'd' => ''], $this->map(['a' => null, 'b' => 0, 'c' => false, 'd' => ''])->compact()->all(), 'null like');
-        $this->assertSame(['a' => [1]], $this->map(['a' => [1, null]])->compact(2)->all(), 'nested');
-    }
-
-    public function test_compact_zero_depth(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: 0.');
-        $this->vec()->compact(0);
-    }
-
-    public function test_compact_negative_depth(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $depth >= 1. Got: -1.');
-        $this->vec()->compact(-1);
+        $this->assertSame(['a' => [1, null]], $this->map(['a' => [1, null]])->compact()->all(), 'nested');
     }
 
     public function test_contains(): void

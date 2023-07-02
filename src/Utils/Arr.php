@@ -429,16 +429,13 @@ final class Arr
      * Example:
      * ```php
      * Arr::compact([null, 0, false]); // [0, false]
-     * Arr::compact([[null]]); // [[null]] Doesn't remove inner null since default depth is 1.
-     * Arr::compact([[null]], 2); // [[]] Removes inner null since depth is set to 2.
+     * Arr::compact([[null]]); // [[null]] Doesn't remove inner null.
      * ```
      *
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param int $depth
-     * [Optional] Must be >= 1. Default is 1.
      * @param bool|null $reindex
      * [Optional] If set to **true**, the result will be re-indexed.
      * If **null**, the result will be re-indexed only if it's a list.
@@ -447,32 +444,18 @@ final class Arr
      */
     public static function compact(
         iterable $iterable,
-        int $depth = 1,
         ?bool $reindex = null,
     ): array
     {
-        if ($depth < 1) {
-            throw new InvalidArgumentException("Expected: \$depth >= 1. Got: {$depth}.", [
-                'iterable' => $iterable,
-                'depth' => $depth,
-            ]);
-        }
-
         if ($reindex === null) {
             $iterable = self::from($iterable);
             $reindex = array_is_list($iterable);
         }
 
         $result = [];
-
         foreach (Iter::compact($iterable, $reindex) as $key => $val) {
-            if (is_iterable($val) && $depth > 1) {
-                /** @var TValue $val */
-                $val = self::compact($val, $depth - 1, $reindex);
-            }
             $result[$key] = $val;
         }
-
         return $result;
     }
 

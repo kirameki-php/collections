@@ -123,13 +123,11 @@ trait Enumerable
     /**
      * Returns a new instance with all null elements removed.
      *
-     * @param int<1, max> $depth
-     * [Optional] Must be >= 1. Default is 1.
      * @return static
      */
-    public function compact(int $depth = 1): static
+    public function compact(): static
     {
-        return $this->instantiate(Arr::compact($this, $depth, $this->reindex()));
+        return $this->instantiate(Arr::compact($this, $this->reindex()));
     }
 
     /**
