@@ -3212,46 +3212,6 @@ final class ArrTest extends TestCase
         Arr::sum([NAN]);
     }
 
-    public function test_symDiff(): void
-    {
-        // empty array1
-        self::assertSame([1], Arr::symDiff([], [1]));
-
-        // empty array2
-        self::assertSame([1], Arr::symDiff([1], []));
-
-        // same but not same order
-        self::assertSame([], Arr::symDiff([1, 2], [2, 1]));
-
-        // list
-        self::assertSame([1, 3], Arr::symDiff([1, 2], [2, 3]));
-
-        // assoc
-        self::assertSame(['a' => 1, 'd' => 3], Arr::symDiff(['a' => 1, 'b' => 2], ['c' => 2, 'd' => 3]));
-
-        // assoc but with same key (overwritten by array2)
-        self::assertSame(['a' => 3], Arr::symDiff(['a' => 1, 'b' => 2], ['c' => 2, 'a' => 3]));
-
-        // reindex: true
-        $result = Arr::symDiff(['a' => 2, 'b' => 3], ['c' => 2, 'd' => 1], reindex: true);
-        self::assertSame([3, 1], $result);
-
-        // reindex: false
-        $result = Arr::symDiff(['a' => 2, 'b' => 3], ['c' => 2, 'd' => 1], reindex: false);
-        self::assertSame(['b' => 3, 'd' => 1], $result);
-
-        // with custom diff subject
-        $diff = Arr::symDiff([[1], [2]], [[2], [3]], by: static fn(array $a, array $b) => $a[0] <=> $b[0]);
-        self::assertSame([[1], [3]], $diff);
-    }
-
-    public function test_symDiff_cannot_mix_array_types(): void
-    {
-        $this->expectException(TypeMismatchException::class);
-        $this->expectExceptionMessage('Tried to compare list with map. Try converting the map to a list.');
-        Arr::symDiff([1], ['a' => 1]);
-    }
-
     public function test_takeFirst(): void
     {
         // empty

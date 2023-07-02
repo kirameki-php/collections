@@ -5,14 +5,13 @@ namespace Kirameki\Collections;
 use ArrayAccess;
 use Closure;
 use JsonSerializable;
-use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Collections\Utils\Range;
+use Kirameki\Core\Exceptions\NotSupportedException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Random\Randomizer;
-use function count;
 use function gettype;
 use function is_array;
 use function is_int;
@@ -27,16 +26,6 @@ use const PHP_INT_MAX;
  */
 class Vec extends Enumerator implements ArrayAccess, JsonSerializable
 {
-    /**
-     * @use MutatesSelf<int, TValue>
-     */
-    use MutatesSelf {
-        offsetExists as traitOffsetExists;
-        offsetGet as traitOffsetGet;
-        offsetSet as traitOffsetSet;
-        offsetUnset as traitOffsetUnset;
-    }
-
     /**
      * @param iterable<int, TValue> $items
      */
@@ -83,11 +72,21 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, TValue>
      */
-    public function jsonSerialize(): array
+    protected function &getItemsAsRef(): array
     {
-        return Arr::from($this);
+        $items = &$this->items;
+
+        if (is_array($items)) {
+            return $items;
+        }
+
+        $innerType = get_debug_type($items);
+        throw new NotSupportedException("Vec's inner item must be of type array|ArrayAccess, {$innerType} given.", [
+            'this' => $this,
+            'items' => $items,
+        ]);
     }
 
     /**
@@ -97,7 +96,8 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     public function offsetExists(mixed $offset): bool
     {
         $this->ensureOffsetIsIndex($offset);
-        return self::traitOffsetExists($offset);
+        $ref = $this->getItemsAsRef();
+        return isset($ref[$offset]);
     }
 
     /**
@@ -107,39 +107,43 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     public function offsetGet(mixed $offset): mixed
     {
         $this->ensureOffsetIsIndex($offset);
-        return self::traitOffsetGet($offset);
+        $ref = $this->getItemsAsRef();
+        return $ref[$offset];
     }
 
     /**
-     * @param int|null $offset
+     * @param int|string|null $offset
      * @param TValue $value
      * @return void
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->ensureOffsetIsIndex($offset);
-
-        $ref = $this->getItemsAsRef();
-        $size = count($ref);
-        if ($offset > $size) {
-            throw new IndexOutOfBoundsException("Can not assign to a non-existing index. (size: {$size} index: {$offset})", [
-                'this' => $this,
-                'offset' => $offset,
-                'size' => $size,
-            ]);
-        }
-
-        self::traitOffsetSet($offset, $value);
+        throw new NotSupportedException(__METHOD__ . ' is not supported.');
     }
 
     /**
-     * @param int $offset
+     * @param mixed $offset
      * @return void
      */
     public function offsetUnset(mixed $offset): void
     {
-        $this->ensureOffsetIsIndex($offset);
-        self::traitOffsetUnset($offset);
+        throw new NotSupportedException(__METHOD__ . ' is not supported.');
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return Arr::from($this);
+    }
+
+    /**
+     * @return VecMutable<TValue>
+     */
+    public function mutable(): VecMutable
+    {
+        return new VecMutable($this->items);
     }
 
     /**

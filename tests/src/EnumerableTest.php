@@ -929,6 +929,16 @@ final class EnumerableTest extends TestCase
         $this->vec([1])->merge(['a' => 1]);
     }
 
+    public function test_mergeRecursive(): void
+    {
+        $this->assertSame([], $this->vec()->mergeRecursive([])->all(), 'empty');
+        $this->assertSame([1, 0], $this->vec([1])->mergeRecursive([0])->all(), 'single');
+        $this->assertSame([1, [2, 3], 4], $this->vec([1, [2, 3]])->mergeRecursive([4])->all(), 'single');
+
+        $this->assertSame(['a' => 3], $this->map(['a' => [1,2]])->mergeRecursive(['a' => 3])->all(), 'override');
+        $this->assertSame(['a' => [1,2,3]], $this->map(['a' => [1,2]])->mergeRecursive(['a' => [3]])->all(), 'append');
+    }
+
     public function test_min(): void
     {
         $this->assertSame(1, $this->vec([1, 2])->min(), 'basic use');
@@ -1386,6 +1396,13 @@ final class EnumerableTest extends TestCase
         $this->assertSame([1, 2, 3], $this->vec([2, 1, 3])->sortDesc(fn($a) => -$a)->all(), 'with by');
         $this->assertSame(["10", "2"], $this->vec(["2", "10"])->sortDesc()->all(), 'sort regular');
         $this->assertSame(["2", "10"], $this->vec(["10", "2"])->sortDesc(flag: SORT_STRING)->all(), 'with flag');
+    }
+
+    public function test_sortWith(): void
+    {
+        $this->assertSame([], $this->vec()->sortWith(fn(int $a, int $b) => $a <=> $b)->all(), 'empty');
+        $this->assertSame([1,2,3], $this->vec([2,3,1])->sortWith(fn($a, $b) => $a <=> $b)->all(), 'vec sort with spaceship');
+        $this->assertSame(['a' => 1, 'b' => 2, 'c' => 3], $this->map(['b' => 2, 'c' => 3, 'a' => 1])->sortWith(fn($a, $b) => $a <=> $b)->all(), 'map sort with spaceship');
     }
 
     public function test_takeFirst(): void

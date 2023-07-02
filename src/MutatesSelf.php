@@ -29,33 +29,7 @@ trait MutatesSelf
     /**
      * @return array<TKey, TValue>
      */
-    protected function &getItemsAsRef(): array
-    {
-        if (is_array($this->items)) {
-            return $this->items;
-        }
-        throw new NotSupportedException();
-    }
-
-    /**
-     * @param TKey $offset
-     * @return bool
-     */
-    public function offsetExists(mixed $offset): bool
-    {
-        $ref = $this->getItemsAsRef();
-        return isset($ref[$offset]);
-    }
-
-    /**
-     * @param TKey $offset
-     * @return TValue
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        $ref = $this->getItemsAsRef();
-        return $ref[$offset];
-    }
+    abstract protected function &getItemsAsRef(): array;
 
     /**
      * @param int|string|null $offset

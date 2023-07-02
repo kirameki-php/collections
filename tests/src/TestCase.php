@@ -4,8 +4,10 @@ namespace Tests\Kirameki\Collections;
 
 use Generator;
 use Kirameki\Collections\Map;
+use Kirameki\Collections\MapMutable;
 use Kirameki\Collections\Vec;
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Kirameki\Collections\VecMutable;
+use Kirameki\Core\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -33,6 +35,16 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * @template T
+     * @param iterable<int, T> $items
+     * @return VecMutable<T>
+     */
+    protected function vecMut(iterable $items = []): VecMutable
+    {
+        return new VecMutable($items);
+    }
+
+    /**
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $items
@@ -41,5 +53,16 @@ abstract class TestCase extends BaseTestCase
     protected function map(iterable $items = []): Map
     {
         return new Map($items);
+    }
+
+    /**
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $items
+     * @return MapMutable<TKey, TValue>
+     */
+    protected function mapMut(iterable $items = []): MapMutable
+    {
+        return new MapMutable($items);
     }
 }

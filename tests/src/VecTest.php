@@ -5,8 +5,11 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Vec;
+use Kirameki\Collections\VecMutable;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\NotSupportedException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
@@ -106,6 +109,15 @@ final class VecTest extends TestCase
         self::assertSame(1, $this->vec([1, 2])->offsetGet(0));
     }
 
+    public function test_offsetGet_invalid_type(): void
+    {
+        $this->throwOnError();
+        $this->expectExceptionMessage("Vec's inner item must be of type array|ArrayAccess, Kirameki\Collections\LazyIterator given.");
+        $this->expectException(NotSupportedException::class);
+        $vec = $this->vec(new LazyIterator([1]));
+        $vec[0];
+    }
+
     public function test_offsetGet_non_int_access(): void
     {
         $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
@@ -113,65 +125,19 @@ final class VecTest extends TestCase
         $this->vec([1, 2])['0'];
     }
 
-    public function test_offsetSet(): void
+    public function test_offsetSet_throws_error(): void
     {
-        $vec = $this->vec([1, 2]);
-        $vec[0] = 3;
-        self::assertSame([3, 2], $vec->all(), 'Overwriting existing value');
-
-        $vec = $this->vec([1, 2]);
-        $vec[] = 3;
-        self::assertSame([1, 2, 3], $vec->all(), 'Appending to the end');
-
-        $vec = $this->vec([1, 2]);
-        $vec->offsetSet(0, 3);
-        self::assertSame([3, 2], $vec->all(), 'Overwriting existing value using method');
-
-        $vec = $this->vec([1, 2]);
-        $vec->offsetSet(null, 3);
-        self::assertSame([1, 2, 3], $vec->all(), 'Appending to the end using method');
-    }
-
-    public function test_offsetSet_non_int_access(): void
-    {
-        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
-        $this->expectException(InvalidKeyException::class);
+        $this->expectExceptionMessage('Kirameki\Collections\Vec::offsetSet is not supported.');
+        $this->expectException(NotSupportedException::class);
         $this->vec([1, 2])['0'] = 3;
-    }
-
-    public function test_offsetSet_assignment_out_of_bounds(): void
-    {
-        $this->expectExceptionMessage('Can not assign to a non-existing index. (size: 2 index: 3)');
-        $this->expectException(IndexOutOfBoundsException::class);
-        $vec = $this->vec([1, 2]);
-        $vec[3] = 3;
     }
 
     public function test_offsetUnset(): void
     {
+        $this->expectExceptionMessage('Kirameki\Collections\Vec::offsetUnset is not supported.');
+        $this->expectException(NotSupportedException::class);
         $vec = $this->vec([1, 2]);
         unset($vec[0]);
-        self::assertSame([2], $vec->all(), 'Unset first element');
-
-        $vec = $this->vec([1, 2, 3]);
-        unset($vec[1]);
-        self::assertSame([1, 3], $vec->all(), 'Unset middle element');
-
-        $vec = $this->vec([1, 2]);
-        unset($vec[2]);
-        self::assertSame([1, 2], $vec->all(), 'Unset non-existing element');
-
-        $vec = $this->vec([1, 2]);
-        $vec->offsetUnset(0);
-        self::assertSame([2], $vec->all(), 'Unset first element using method');
-
-    }
-
-    public function test_offsetUnset_non_int_access(): void
-    {
-        $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
-        $this->expectException(InvalidKeyException::class);
-        unset($this->vec([1, 2])['0']);
     }
 
     public function test_append(): void
@@ -187,6 +153,11 @@ final class VecTest extends TestCase
     {
         $mapped = $this->vec([1, 2])->map(fn($v): int => $v * 2);
         self::assertSame([2, 4], $mapped->all());
+    }
+
+    public function test_mutable():void
+    {
+        self::assertInstanceOf(VecMutable::class, $this->vec([1])->mutable());
     }
 
     public function test_pad(): void

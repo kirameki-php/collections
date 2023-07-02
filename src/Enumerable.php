@@ -1172,38 +1172,16 @@ trait Enumerable
     }
 
     /**
-     * Sorts the collection by value using the provided `$comparison` function.
+     * Sorts the collection by value using the provided `$comparator` function.
      *
-     * @param Closure(TValue, TValue): int $comparison
+     * @param Closure(TValue, TValue): int $comparator
      * The comparison function to use.
      * Utilize the spaceship operator (`<=>`) to easily compare two values.
      * @return static
      */
-    public function sortWith(Closure $comparison): static
+    public function sortWith(Closure $comparator): static
     {
-        return $this->instantiate(Arr::sortWith($this, $comparison, $this->reindex()));
-    }
-
-    /**
-     * Returns the symmetric difference between collection and `$items`.
-     * Throws `TypeMismatchException` if comparing a map to a list.
-     *
-     * @param iterable<TKey, TValue> $items
-     * Iterable to be traversed and compared to.
-     * @param Closure(TValue, TValue): int<-1, 1>|null $by
-     * [Optional] User defined comparison callback.
-     * Return 1 if first argument is greater than the 2nd.
-     * Return 0 if first argument is equal to the 2nd.
-     * Return -1 if first argument is less than the 2nd.
-     * Defaults to **null**.
-     * @return static
-     */
-    public function symDiff(
-        iterable $items,
-        Closure $by = null,
-    ): static
-    {
-        return $this->instantiate(Arr::symDiff($this, $items, $by, $this->reindex()));
+        return $this->instantiate(Arr::sortWith($this, $comparator, $this->reindex()));
     }
 
     /**

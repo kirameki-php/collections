@@ -4862,7 +4862,7 @@ final class Arr
     }
 
     /**
-     * Sorts the `$iterable` by value using the provided `$comparison` function.
+     * Sorts the `$iterable` by value using the provided `$comparator` function.
      *
      * Example:
      * ```php
@@ -4873,7 +4873,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param Closure(TValue, TValue): int $comparison
+     * @param Closure(TValue, TValue): int $comparator
      * The comparison function to use.
      * Utilize the spaceship operator (`<=>`) to easily compare two values.
      * @param bool|null $reindex
@@ -4884,14 +4884,14 @@ final class Arr
      */
     public static function sortWith(
         iterable $iterable,
-        Closure $comparison,
-        ?bool $reindex = null,
+        Closure  $comparator,
+        ?bool    $reindex = null,
     ): array
     {
         $copy = self::from($iterable);
         $reindex ??= array_is_list($copy);
 
-        uasort($copy, $comparison);
+        uasort($copy, $comparator);
 
         return $reindex
             ? array_values($copy)
@@ -4959,70 +4959,6 @@ final class Arr
         }
 
         return $total;
-    }
-
-    /**
-     * Returns the symmetric difference of the given iterables.
-     * Throws `TypeMismatchException` if comparing a map to a list.
-     *
-     * Example:
-     * ```php
-     * Arr::symDiff([1, 2], [2, 3]); // [1, 3]
-     * Arr::symDiff(['a' => 1, 'b' => 2], ['c' => 2, 'd' => 3]); // ['a' => 1, 'd' => 3]
-     * ```
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable1
-     * Iterable to be traversed.
-     * @param iterable<TKey, TValue> $iterable2
-     * Iterable to be traversed.
-     * @param Closure(TValue, TValue): int<-1, 1>|null $by
-     * [Optional] User defined comparison callback.
-     * Return 1 if first argument is greater than the 2nd.
-     * Return 0 if first argument is equal to the 2nd.
-     * Return -1 if first argument is less than the 2nd.
-     * Defaults to **null**.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
-     * @return array<TKey, TValue>
-     */
-    public static function symDiff(
-        iterable $iterable1,
-        iterable $iterable2,
-        Closure $by = null,
-        ?bool $reindex = null,
-    ): array
-    {
-        $array1 = self::from($iterable1);
-        $array2 = self::from($iterable2);
-
-        if (self::isDifferentArrayType($array1, $array2)) {
-            throw new TypeMismatchException('Tried to compare list with map. Try converting the map to a list.', [
-                'iterable1' => $iterable1,
-                'iterable2' => $iterable2,
-                'by' => $by,
-            ]);
-        }
-
-        $by ??= static fn(mixed $a, mixed $b): int => $a <=> $b;
-        $reindex ??= array_is_list($array1) && array_is_list($array2);
-
-        $diff1 = array_udiff($array1, $array2, $by);
-        $diff2 = array_udiff($array2, $array1, $by);
-
-        if ($reindex) {
-            $diff1 = array_values($diff1);
-            $diff2 = array_values($diff2);
-        }
-
-        /**
-         * @var array<TKey, TValue> $diff1
-         * @var array<TKey, TValue> $diff2
-         */
-        return self::merge($diff1, $diff2);
     }
 
     /**

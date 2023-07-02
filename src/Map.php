@@ -7,6 +7,7 @@ use Closure;
 use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
+use Kirameki\Core\Exceptions\NotSupportedException;
 use Random\Randomizer;
 use const SORT_REGULAR;
 
@@ -20,9 +21,61 @@ use const SORT_REGULAR;
 class Map extends Enumerator implements ArrayAccess, JsonSerializable
 {
     /**
-     * @use MutatesSelf<TKey, TValue>
+     * @return array<TKey, TValue>
      */
-    use MutatesSelf;
+    protected function &getItemsAsRef(): array
+    {
+        $items = &$this->items;
+
+        if (is_array($items)) {
+            return $items;
+        }
+
+        $innerType = get_debug_type($items);
+        throw new NotSupportedException("Map's inner item must be of type array|ArrayAccess, {$innerType} given.", [
+            'this' => $this,
+            'items' => $items,
+        ]);
+    }
+
+    /**
+     * @param TKey $offset
+     * @return bool
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        $ref = $this->getItemsAsRef();
+        return isset($ref[$offset]);
+    }
+
+    /**
+     * @param TKey $offset
+     * @return TValue
+     */
+    public function offsetGet(mixed $offset): mixed
+    {
+        $ref = $this->getItemsAsRef();
+        return $ref[$offset];
+    }
+
+    /**
+     * @param int|string|null $offset
+     * @param TValue $value
+     * @return void
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported.');
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported.');
+    }
 
     /**
      * @return object
@@ -30,6 +83,14 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function jsonSerialize(): object
     {
         return (object) Arr::from($this);
+    }
+
+    /**
+     * @return MapMutable<TKey, TValue>
+     */
+    public function mutable(): MapMutable
+    {
+        return new MapMutable($this->items);
     }
 
     /**

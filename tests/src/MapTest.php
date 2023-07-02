@@ -2,13 +2,16 @@
 
 namespace Tests\Kirameki\Collections;
 
-use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Map;
+use Kirameki\Collections\MapMutable;
 use Kirameki\Collections\Vec;
+use Kirameki\Core\Exceptions\ErrorException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\NotSupportedException;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use stdClass;
@@ -44,73 +47,53 @@ final class MapTest extends TestCase
         self::assertEquals((object)['a' => 1, 'b' => 2], $data);
     }
 
-    public function test_offsetSet_assignment_with_invalid_key(): void
+    public function test_offsetExists(): void
     {
-        $this->expectExceptionMessage("Expected: \$offset's type to be int|string. Got: double.");
-        $this->expectException(InvalidArgumentException::class);
+        $map = $this->map(['a' => 1]);
+        $this->assertTrue(isset($map['a']));
+        $this->assertFalse(isset($map['b']));
+    }
+
+    public function test_offsetGet(): void
+    {
+        $map = $this->map(['a' => 1]);
+        $this->assertSame(1, $map['a']);
+        $this->assertNull($map['b'] ?? null);
+    }
+
+    public function test_offsetGet_non_existent_access(): void
+    {
+        $this->throwOnError();
+        $this->expectExceptionMessage('Undefined array key "b"');
+        $this->expectException(ErrorException::class);
+
         $map = $this->map();
-        $map[0.3] = 3;
+        $this->assertNull($map['b']);
     }
 
-    public function test_clear(): void
+    public function test_offsetGet_invalid_type(): void
     {
-        $map = $this->map([]);
-        self::assertSame([], $map->clear()->all(), 'empty map');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame([], $map->clear()->all(), 'non-empty map');
+        $this->throwOnError();
+        $this->expectExceptionMessage("Map's inner item must be of type array|ArrayAccess, Kirameki\Collections\LazyIterator given.");
+        $this->expectException(NotSupportedException::class);
+        $vec = $this->map(new LazyIterator([1]));
+        $vec[0];
     }
 
-    public function test_insertAt(): void
+    public function test_offsetSet_throws_error(): void
     {
-        self::assertSame(
-            ['a' => 1],
-            $this->map()->insertAt(0, ['a' => 1])->all(),
-            'empty map',
-        );
-
-        self::assertSame(
-            ['a' => 1],
-            $this->map()->insertAt(-100, ['a' => 1])->all(),
-            'negative overflows on empty map',
-        );
-
-        self::assertSame(
-            ['a' => 1],
-            $this->map()->insertAt(100, ['a' => 1])->all(),
-            'overflows on empty map',
-        );
-
-        self::assertSame(
-            ['b' => 2, 'a' => 1],
-            $this->map(['a' => 1])->insertAt(0, ['b' => 2])->all(),
-            'non-empty map',
-        );
-
-        self::assertSame(
-            ['a' => 1, 'b' => 2, 'c' => 3],
-            $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3])->all(),
-            'negative insert index',
-        );
-
-        self::assertSame(
-            message: 'negative insert index',
-            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(1, ['c' => 3])->all(),
-            expected: ['a' => 1, 'c' => 3, 'b' => 2],
-        );
-
-        self::assertSame(
-            message: 'insert with overwrite',
-            actual: $this->map(['a' => 1, 'b' => 2])->insertAt(-1, ['c' => 3, 'a' => 0], true)->all(),
-            expected: ['b' => 2, 'c' => 3, 'a' => 0],
-        );
+        $this->expectExceptionMessage("Kirameki\Collections\Map::offsetSet is not supported.");
+        $this->expectException(NotSupportedException::class);
+        $map = $this->map();
+        $map['a'] = 1;
     }
 
-    public function test_insertAt_duplicate_without_overwrite(): void
+    public function test_offsetUnset_throws_error(): void
     {
-        $this->expectExceptionMessage('Tried to overwrite existing key: a.');
-        $this->expectException(DuplicateKeyException::class);
-        $this->map(['a' => 1])->insertAt(0, ['a' => 2]);
+        $this->expectExceptionMessage("Kirameki\Collections\Map::offsetUnset is not supported.");
+        $this->expectException(NotSupportedException::class);
+        $map = $this->map(['a' => 1]);
+        unset($map['a']);
     }
 
     public function test_containsAllKeys(): void
@@ -316,119 +299,9 @@ final class MapTest extends TestCase
         self::assertSame(['a' => 'aa', 'b' => 'bb'], $map->map(static fn($v, $k) => $k . $k)->all(), 'non-empty map with key args');
     }
 
-    public function test_remove(): void
+    public function test_mutable():void
     {
-        $map = $this->map();
-        self::assertSame([], $map->remove('a'), 'remove on empty map');
-
-        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 2]);
-        self::assertSame(['b', 'c'], $map->remove(2), 'remove existing value');
-        self::assertSame([], $map->remove(2), 'remove non-existing value');
-        self::assertSame(['a' => 1], $map->all(), 'check remains');
-
-        $map = $this->map(['a' => 1, 'b' => 1]);
-        self::assertSame(['a'], $map->remove(1, 1), 'remove only one value');
-        self::assertSame(['b' => 1], $map->all(), 'check remains');
-    }
-
-    public function test_pop(): void
-    {
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(2, $map->pop(), 'pop');
-        self::assertSame(['a' => 1], $map->all(), 'check remains');
-    }
-
-    public function test_pop_on_empty(): void
-    {
-        $this->expectExceptionMessage('&$array must contain at least one element.');
-        $this->expectException(EmptyNotAllowedException::class);
-        $this->map()->pop();
-    }
-
-    public function test_popMany(): void
-    {
-        $map = $this->map();
-        self::assertSame([], $map->popMany(2)->all(), 'pop empty');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['b' => 2], $map->popMany(1)->all(), 'pop one');
-        self::assertSame(['a' => 1], $map->all(), 'check remains');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(2)->all(), 'pop to empty');
-        self::assertSame([], $map->all(), 'check remains');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->popMany(3)->all(), 'pop overflow');
-        self::assertSame([], $map->all(), 'check remains');
-    }
-
-    public function test_popMany_zero_amount(): void
-    {
-        $this->expectExceptionMessage('Expected: $amount >= 1. Got: 0.');
-        $this->expectException(InvalidArgumentException::class);
-        $this->map()->popMany(0);
-    }
-
-    public function test_popMany_negative_amount(): void
-    {
-        $this->expectExceptionMessage('Expected: $amount >= 1. Got: -1.');
-        $this->expectException(InvalidArgumentException::class);
-        $this->map()->popMany(-1);
-    }
-
-    public function test_popOrNull(): void
-    {
-        self::assertNull($this->map()->popOrNull(), 'pop on empty');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(2, $map->popOrNull(), 'pop');
-        self::assertSame(['a' => 1], $map->all(), 'check remains');
-    }
-
-    public function test_pull(): void
-    {
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(2, $map->pull('b'));
-        self::assertSame(['a' => 1], $map->all());
-    }
-
-    public function test_pull_on_empty(): void
-    {
-        $this->expectExceptionMessage('Tried to pull undefined key "a".');
-        $this->expectException(InvalidKeyException::class);
-        $this->map()->pull('a');
-    }
-
-    public function test_pullOr(): void
-    {
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(2, $map->pullOr('b', 100), 'pull existing');
-        self::assertSame(100, $map->pullOr('c', 100), 'pull missing');
-        self::assertSame(['a' => 1], $map->all());
-    }
-
-    public function test_pullOrNull(): void
-    {
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(2, $map->pullOrNull('b'));
-        self::assertNull($map->pullOrNull('b'));
-        self::assertSame(['a' => 1], $map->all());
-    }
-
-    public function test_pullMany(): void
-    {
-        $missed = [];
-        self::assertSame([], $this->map()->pullMany(['b'], $missed)->all(), 'pull on empty map');
-        self::assertSame(['b'], $missed, 'check missed');
-
-        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 3]);
-        self::assertSame(['b' => 2], $map->pullMany(['b'])->all(), 'pull one');
-        self::assertSame(['a' => 1, 'c' => 3], $map->all(), 'check remains');
-
-        $map = $this->map(['a' => 1, 'b' => 2, 'c' => 3]);
-        self::assertSame(['b' => 2, 'c' => 3], $map->pullMany(['b', 'c'])->all(), 'pull many');
-        self::assertSame(['a' => 1], $map->all(), 'check remains');
+        self::assertInstanceOf(MapMutable::class, $this->map(['a' => 1])->mutable());
     }
 
     public function test_sampleKey(): void
@@ -512,86 +385,6 @@ final class MapTest extends TestCase
         $this->expectExceptionMessage('$amount must be between 0 and size of $iterable.');
         $this->expectException(InvalidArgumentException::class);
         $this->map(['a' => 1])->sampleKeys(2);
-    }
-
-    public function test_shift(): void
-    {
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(1, $map->shift(), 'shift');
-        self::assertSame(['b' => 2], $map->all(), 'check remains');
-    }
-
-    public function test_shift_on_empty(): void
-    {
-        $this->expectExceptionMessage('&$array must contain at least one element.');
-        $this->expectException(EmptyNotAllowedException::class);
-        $this->map()->shift();
-    }
-
-    public function test_shiftOrNull(): void
-    {
-        self::assertNull($this->map()->shiftOrNull(), 'shift on empty');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(1, $map->shiftOrNull(), 'shift');
-        self::assertSame(['b' => 2], $map->all(), 'check remains');
-    }
-
-    public function test_shiftMany(): void
-    {
-        self::assertSame([], $this->map()->shiftMany(2)->all(), 'shift many on empty');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1], $map->shiftMany(1)->all(), 'shift many one');
-        self::assertSame(['b' => 2], $map->all(), 'check remains');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(2)->all(), 'shift many exact');
-        self::assertSame([], $map->all(), 'check remains');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->shiftMany(3)->all(), 'shift many amount overflow');
-        self::assertSame([], $map->all(), 'check remains');
-    }
-
-    public function test_set(): void
-    {
-        $map = $this->map();
-        self::assertSame(['c' => 3], $map->set('c', 3)->all(), 'set on empty');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2, 'c' => 3], $map->set('c', 3)->all(), 'set at end');
-
-        $map = $this->map(['a' => 1, 'b' => 0.2]);
-        self::assertSame(['a' => 1, 'b' => 0.2, 'c' => 'a'], $map->set('c', 'a')->all(), 'mixed types');
-    }
-
-    public function test_setIfExists(): void
-    {
-        $map = $this->map();
-        self::assertSame([], $map->setIfExists('c', 3)->all(), 'set on empty');
-
-        $map = $this->map(['a' => 1]);
-        $result = false;
-        self::assertSame(['a' => 1], $map->setIfExists('b', 2, $result)->all(), 'key does not exist');
-        self::assertFalse($result, 'result');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        $result = false;
-        self::assertSame(['a' => 1, 'b' => 3], $map->setIfExists('b', 3, $result)->all(), 'key exists');
-        self::assertTrue($result, 'result');
-    }
-
-    public function test_setIfNotExists(): void
-    {
-        $map = $this->map();
-        self::assertSame(['a' => 1], $map->setIfNotExists('a', 1)->all(), 'set on empty');
-
-        $map = $this->map(['a' => 1]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('b', 2)->all(), 'key does not exist');
-
-        $map = $this->map(['a' => 1, 'b' => 2]);
-        self::assertSame(['a' => 1, 'b' => 2], $map->setIfNotExists('a', 3)->all(), 'key exists');
     }
 
     public function test_sortByKey(): void
