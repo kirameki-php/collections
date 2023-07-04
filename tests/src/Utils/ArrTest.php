@@ -1749,37 +1749,6 @@ final class ArrTest extends TestCase
         self::assertSame([1, 'a' => 2], Arr::of(1, a: 2));
     }
 
-    public function test_only(): void
-    {
-        // empty
-        self::assertSame([], Arr::only([], []));
-
-        // with list array
-        self::assertSame([2], Arr::only([1, 2, 3], [1]));
-
-        // with assoc array
-        self::assertSame(['a' => 1, 'b' => 2], Arr::only(['a' => 1, 'b' => 2, 'c' => 3], ['a', 'b']));
-
-        // different order of keys
-        self::assertSame(['c' => 3, 'b' => 2], Arr::only(['a' => 1, 'b' => 2, 'c' => 3], ['c', 'b']));
-
-        // different order of keys
-        self::assertSame(['c' => 3, 'b' => 2], Arr::only(['a' => 1, 'b' => 2, 'c' => 3], ['x' => 'c', 'b']));
-
-        // safe: false with list
-        self::assertSame([1], Arr::only([1, 2, 3], [0, 300], false));
-
-        // safe: false with map
-        self::assertSame(['a' => 1], Arr::only(['a' => 1, 'b' => 2], ['a', 'z'], false));
-    }
-
-    public function test_only_safe_on_non_existing_keys(): void
-    {
-        $this->expectException(MissingKeyException::class);
-        $this->expectExceptionMessage("Keys: [1, 2, 'b']");
-        self::assertSame([], Arr::only([], [1, 2, 'b']));
-    }
-
     public function test_pad(): void
     {
         // empty
@@ -3200,6 +3169,24 @@ final class ArrTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         Arr::takeFirst(['a' => 1], -1);
+    }
+
+    public function test_takeKeys(): void
+    {
+        self::assertSame([], Arr::takeKeys([], []), 'empty');
+        self::assertSame([2], Arr::takeKeys([1, 2, 3], [1]), 'with list array');
+        self::assertSame(['a' => 1, 'b' => 2], Arr::takeKeys(['a' => 1, 'b' => 2, 'c' => 3], ['a', 'b']), 'with assoc array');
+        self::assertSame(['c' => 3, 'b' => 2], Arr::takeKeys(['a' => 1, 'b' => 2, 'c' => 3], ['c', 'b']), 'different order of keys');
+        self::assertSame(['c' => 3, 'b' => 2], Arr::takeKeys(['a' => 1, 'b' => 2, 'c' => 3], ['x' => 'c', 'b']), 'different order of keys');
+        self::assertSame([1], Arr::takeKeys([1, 2, 3], [0, 300], false), 'safe: false with list');
+        self::assertSame(['a' => 1], Arr::takeKeys(['a' => 1, 'b' => 2], ['a', 'z'], false), 'safe: false with map');
+    }
+
+    public function test_takeKeys_safe_on_non_existing_keys(): void
+    {
+        $this->expectException(MissingKeyException::class);
+        $this->expectExceptionMessage("Keys: [1, 2, 'b']");
+        self::assertSame([], Arr::takeKeys([], [1, 2, 'b']));
     }
 
     public function test_takeLast(): void

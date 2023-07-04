@@ -752,26 +752,6 @@ trait Enumerable
     }
 
     /**
-     * Returns a new collection which only contains the elements that has matching
-     * keys in the collection. Non-existent keys will be ignored.
-     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
-     * if a key does not exist in the collection.
-     *
-     * @param iterable<TKey> $keys
-     * Keys to be included.
-     * @param bool $safe
-     * [Optional] If this is set to **true**, `MissingKeyException` will be
-     * thrown if key does not exist in the collection.
-     * If set to **false**, non-existing keys will be filled with **null**.
-     * Defaults to **true**.
-     * @return static
-     */
-    public function only(iterable $keys, bool $safe = true): static
-    {
-        return $this->instantiate(Arr::only($this, $keys, $safe, $this->reindex()));
-    }
-
-    /**
      * Returns a list with two collection elements.
      * All elements in the collection evaluated to be **true** will be pushed to
      * the first collection. Elements evaluated to be **false** will be pushed to
@@ -1193,6 +1173,26 @@ trait Enumerable
     public function takeFirst(int $amount): static
     {
         return $this->instantiate(Iter::takeFirst($this, $amount));
+    }
+
+    /**
+     * Returns a new collection which only contains the elements that has matching
+     * keys in the collection. Non-existent keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if a key does not exist in the collection.
+     *
+     * @param iterable<TKey> $keys
+     * Keys to be included.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in the collection.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
+     * @return static
+     */
+    public function takeKeys(iterable $keys, bool $safe = true): static
+    {
+        return $this->instantiate(Arr::takeKeys($this, $keys, $safe, $this->reindex()));
     }
 
     /**

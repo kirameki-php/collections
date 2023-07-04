@@ -2948,68 +2948,6 @@ final class Arr
     }
 
     /**
-     * Returns a new array which only contain the elements that has matching
-     * keys in `$iterable`. Non-existent keys will be ignored.
-     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
-     * if a key does not exist in `$iterable`.
-     *
-     * Example:
-     * ```php
-     * Arr::only(['a' => 1, 'b' => 2, 'c' => 3], ['b', 'd']); // ['b' => 2]
-     * Arr::only([1, 2, 3], [1]); // [2]
-     * ```
-     *
-     * @template TKey of int|string
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param iterable<int, TKey> $keys
-     * Keys to be included.
-     * @param bool $safe
-     * [Optional] If this is set to **true**, `MissingKeyException` will be
-     * thrown if key does not exist in `$iterable`.
-     * If set to **false**, non-existing keys will be filled with **null**.
-     * Defaults to **true**.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
-     * @return (TKey is int ? array<int, TValue> : array<TKey, TValue>)
-     */
-    public static function only(
-        iterable $iterable,
-        iterable $keys,
-        bool $safe = true,
-        ?bool $reindex = null,
-    ): array
-    {
-        $array = self::from($iterable);
-        $reindex ??= array_is_list($array);
-
-        $missingKeys = [];
-        $result = [];
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $array)) {
-                $reindex
-                    ? $result[] = $array[$key]
-                    : $result[$key] = $array[$key];
-            } elseif ($safe) {
-                $missingKeys[] = $key;
-            }
-        }
-
-        if ($safe && self::isNotEmpty($missingKeys)) {
-            throw new MissingKeyException($missingKeys, [
-                'iterable' => $iterable,
-                'givenKeys' => $keys,
-                'missingKeys' => $missingKeys,
-            ]);
-        }
-
-        return $result;
-    }
-
-    /**
      * Returns a list (array) with a given value padded to the right side of
      * `$iterable` up to `$length`.
      * To apply padding to the left instead, use a negative integer for `$length`.
@@ -4967,6 +4905,68 @@ final class Arr
     ): array
     {
         return iterator_to_array(Iter::takeFirst($iterable, $amount));
+    }
+
+    /**
+     * Returns a new array which only contain the elements that has matching
+     * keys in `$iterable`. Non-existent keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if a key does not exist in `$iterable`.
+     *
+     * Example:
+     * ```php
+     * Arr::takeKeys(['a' => 1, 'b' => 2, 'c' => 3], ['b', 'd']); // ['b' => 2]
+     * Arr::takeKeys([1, 2, 3], [1]); // [2]
+     * ```
+     *
+     * @template TKey of int|string
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param iterable<int, TKey> $keys
+     * Keys to be included.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in `$iterable`.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return (TKey is int ? array<int, TValue> : array<TKey, TValue>)
+     */
+    public static function takeKeys(
+        iterable $iterable,
+        iterable $keys,
+        bool $safe = true,
+        ?bool $reindex = null,
+    ): array
+    {
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+
+        $missingKeys = [];
+        $result = [];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $array)) {
+                $reindex
+                    ? $result[] = $array[$key]
+                    : $result[$key] = $array[$key];
+            } elseif ($safe) {
+                $missingKeys[] = $key;
+            }
+        }
+
+        if ($safe && self::isNotEmpty($missingKeys)) {
+            throw new MissingKeyException($missingKeys, [
+                'iterable' => $iterable,
+                'givenKeys' => $keys,
+                'missingKeys' => $missingKeys,
+            ]);
+        }
+
+        return $result;
     }
 
     /**
