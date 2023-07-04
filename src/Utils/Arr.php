@@ -73,6 +73,16 @@ use const SORT_ASC;
 use const SORT_DESC;
 use const SORT_REGULAR;
 
+/**
+ * TODO add keyOf(TValue $value)
+ * TODO add takeEvery(int $nth)/dropEvery(int $nth)
+ * TODO add split(int $parts)
+ * TODO add sliceAfter(Closure $condition)
+ * TODO add sliceBefore(Closure $condition)
+ * TODO add sliceWhen(Closure $condition)
+ * TODO add take(Closure $condition) **rename filter**
+ * TODO add drop(Closure $condition)
+ */
 final class Arr
 {
     private const EMPTY = [];
@@ -3678,6 +3688,8 @@ final class Arr
 
     /**
      * Returns an array which contains `$iterable` for a given number of times.
+     *
+     * Note: All keys will be discarded.
      *
      * Example
      * ```php

@@ -1189,6 +1189,8 @@ trait Enumerable
      * If set to **false**, non-existing keys will be filled with **null**.
      * Defaults to **true**.
      * @return static
+     *
+     * TODO ADD TESTS
      */
     public function takeKeys(iterable $keys, bool $safe = true): static
     {
