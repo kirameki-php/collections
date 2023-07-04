@@ -559,6 +559,26 @@ final class ArrTest extends TestCase
         Arr::dropFirst(['a' => 1], -1);
     }
 
+    public function test_dropKeys(): void
+    {
+        self::assertSame([], Arr::dropKeys([], []), 'empty array');
+        self::assertSame(['a' => 1], Arr::dropKeys(['a' => 1], []), 'empty except');
+        self::assertSame([2], Arr::dropKeys([1, 2, 3], [0, 2]), 'expect key (int)');
+        self::assertSame(['b' => 2], Arr::dropKeys(['a' => 1, 'b' => 2], ['a']), 'expect key (string)');
+        self::assertSame([2], Arr::dropKeys([1, 2, 3], [0, 2], reindex: true), 'reindex: true on list');
+        self::assertSame([2], Arr::dropKeys(['a' => 1, 'b' => 2], ['a'], reindex: true), 'reindex: true on assoc');
+        self::assertSame([1 => 2], Arr::dropKeys([1, 2, 3], [0, 2], reindex: false), 'reindex: false on list');
+        self::assertSame(['b' => 2], Arr::dropKeys(['a' => 1, 'b' => 2], ['a'], reindex: false), 'reindex: false on assoc');
+        self::assertSame(['b' => 2], Arr::dropKeys(['a' => 1, 'b' => 2], ['a', 'c'], false), 'safe: false');
+    }
+
+    public function test_dropKeys_safe_on_non_existing_keys(): void
+    {
+        $this->expectException(MissingKeyException::class);
+        $this->expectExceptionMessage("Keys: [1, 2, 'b']");
+        self::assertSame([], Arr::dropKeys([], [1, 2, 'b']));
+    }
+
     public function test_dropLast(): void
     {
         // empty
@@ -772,43 +792,6 @@ final class ArrTest extends TestCase
         $this->expectException(InvalidKeyException::class);
         $this->expectExceptionMessage('2');
         Arr::get([1, 2], 2);
-    }
-
-    public function test_except(): void
-    {
-        // empty array
-        self::assertSame([], Arr::except([], []));
-
-        // empty except
-        self::assertSame(['a' => 1], Arr::except(['a' => 1], []));
-
-        // expect key (int)
-        self::assertSame([2], Arr::except([1, 2, 3], [0, 2]));
-
-        // expect key (string)
-        self::assertSame(['b' => 2], Arr::except(['a' => 1, 'b' => 2], ['a']));
-
-        // reindex: true on list
-        self::assertSame([2], Arr::except([1, 2, 3], [0, 2], reindex: true));
-
-        // reindex: true on assoc
-        self::assertSame([2], Arr::except(['a' => 1, 'b' => 2], ['a'], reindex: true));
-
-        // reindex: false on list
-        self::assertSame([1 => 2], Arr::except([1, 2, 3], [0, 2], reindex: false));
-
-        // reindex: false on assoc
-        self::assertSame(['b' => 2], Arr::except(['a' => 1, 'b' => 2], ['a'], reindex: false));
-
-        // safe: false
-        self::assertSame(['b' => 2], Arr::except(['a' => 1, 'b' => 2], ['a', 'c'], false));
-    }
-
-    public function test_except_safe_on_non_existing_keys(): void
-    {
-        $this->expectException(MissingKeyException::class);
-        $this->expectExceptionMessage("Keys: [1, 2, 'b']");
-        self::assertSame([], Arr::except([], [1, 2, 'b']));
     }
 
     public function test_filter(): void

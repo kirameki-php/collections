@@ -904,6 +904,67 @@ final class Arr
     }
 
     /**
+     * Returns a new array with the given keys removed from `$iterable`.
+     * Missing keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if a key does not exist in `$iterable`.
+     *
+     * Example:
+     * ```php
+     * Arr::dropKeys(['a' => 1, 'b' => 2], ['a']); // ['b' => 2]
+     * Arr::dropKeys([1, 2, 3], [0, 2], reindex: true); // [2]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param array<int, array-key> $keys
+     * Keys to be excluded.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in `$iterable`.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return array<TKey, TValue>
+     */
+    public static function dropKeys(
+        iterable $iterable,
+        iterable $keys,
+        bool $safe = true,
+        ?bool $reindex = null,
+    ): array
+    {
+        $copy = self::from($iterable);
+        $reindex ??= array_is_list($copy);
+
+        $missingKeys = [];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $copy)) {
+                unset($copy[$key]);
+            } elseif ($safe) {
+                $missingKeys[] = $key;
+            }
+        }
+
+        if ($safe && self::isNotEmpty($missingKeys)) {
+            throw new MissingKeyException($missingKeys, [
+                'iterable' => $iterable,
+                'givenKeys' => $keys,
+                'missingKeys' => $missingKeys,
+            ]);
+        }
+
+        return $reindex
+            ? array_values($copy)
+            : $copy;
+    }
+
+    /**
      * Drop the last n elements from given iterable.
      *
      * Example:
@@ -1077,67 +1138,6 @@ final class Arr
     ): void
     {
         iterator_to_array(Iter::each($iterable, $callback));
-    }
-
-    /**
-     * Returns a new array with the given keys removed from `$iterable`.
-     * Missing keys will be ignored.
-     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
-     * if a key does not exist in `$iterable`.
-     *
-     * Example:
-     * ```php
-     * Arr::except(['a' => 1, 'b' => 2], ['a']); // ['b' => 2]
-     * Arr::except([1, 2, 3], [0, 2], reindex: true); // [2]
-     * ```
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param array<int, array-key> $keys
-     * Keys to be excluded.
-     * @param bool $safe
-     * [Optional] If this is set to **true**, `MissingKeyException` will be
-     * thrown if key does not exist in `$iterable`.
-     * If set to **false**, non-existing keys will be filled with **null**.
-     * Defaults to **true**.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
-     * @return array<TKey, TValue>
-     */
-    public static function except(
-        iterable $iterable,
-        iterable $keys,
-        bool $safe = true,
-        ?bool $reindex = null,
-    ): array
-    {
-        $copy = self::from($iterable);
-        $reindex ??= array_is_list($copy);
-
-        $missingKeys = [];
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $copy)) {
-                unset($copy[$key]);
-            } elseif ($safe) {
-                $missingKeys[] = $key;
-            }
-        }
-
-        if ($safe && self::isNotEmpty($missingKeys)) {
-            throw new MissingKeyException($missingKeys, [
-                'iterable' => $iterable,
-                'givenKeys' => $keys,
-                'missingKeys' => $missingKeys,
-            ]);
-        }
-
-        return $reindex
-            ? array_values($copy)
-            : $copy;
     }
 
     /**

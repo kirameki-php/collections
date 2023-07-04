@@ -237,6 +237,25 @@ trait Enumerable
     }
 
     /**
+     * Returns a new instance with the given keys removed. Missing keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if a key does not exist.
+     *
+     * @param array<int, TKey> $keys
+     * Keys to be excluded.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in the collection.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
+     * @return static
+     */
+    public function dropKeys(iterable $keys, bool $safe = true): static
+    {
+        return $this->instantiate(Arr::dropKeys($this, $keys, $safe, $this->reindex()));
+    }
+
+    /**
      * Returns a new instance with the last n elements dropped.
      *
      * @param int $amount
@@ -305,25 +324,6 @@ trait Enumerable
     public function each(Closure $callback): static
     {
         return $this->instantiate(Iter::each($this, $callback));
-    }
-
-    /**
-     * Returns a new instance with the given keys removed. Missing keys will be ignored.
-     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
-     * if a key does not exist.
-     *
-     * @param array<int, TKey> $keys
-     * Keys to be excluded.
-     * @param bool $safe
-     * [Optional] If this is set to **true**, `MissingKeyException` will be
-     * thrown if key does not exist in the collection.
-     * If set to **false**, non-existing keys will be filled with **null**.
-     * Defaults to **true**.
-     * @return static
-     */
-    public function except(iterable $keys, bool $safe = true): static
-    {
-        return $this->instantiate(Arr::except($this, $keys, $safe, $this->reindex()));
     }
 
     /**

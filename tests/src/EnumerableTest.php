@@ -367,6 +367,35 @@ final class EnumerableTest extends TestCase
         $this->vec([1])->dropFirst(-1)->all();
     }
 
+    public function test_dropKeys(): void
+    {
+        $this->assertSame([], $this->vec()->dropKeys([])->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->dropKeys([])->all(), 'remove none');
+        $this->assertSame([1], $this->vec([1, 2])->dropKeys([1])->all(), 'remove one');
+        $this->assertSame([], $this->vec([1, 2])->dropKeys([0, 1])->all(), 'remove all');
+        $this->assertSame(['a'], $this->vec(['a'])->dropKeys([1], false)->all(), 'remove missing unsafe');
+
+        $this->assertSame([], $this->map()->dropKeys([])->all(), 'empty');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->dropKeys([])->all(), 'remove none');
+        $this->assertSame(['b' => 1], $this->map(['a' => 1, 'b' => 1])->dropKeys(['a'])->all(), 'remove one');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 1])->dropKeys(['a', 'b'])->all(), 'remove all');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->dropKeys(['b'], false)->all(), 'remove missing unsafe');
+    }
+
+    public function test_dropKeys_safe_vec(): void
+    {
+        $this->expectExceptionMessage('Keys: [0, 1] did not exist.');
+        $this->expectException(MissingKeyException::class);
+        $this->vec()->dropKeys([0, 1])->all();
+    }
+
+    public function test_dropKeys_safe_map(): void
+    {
+        $this->expectExceptionMessage("Keys: ['a', 'b'] did not exist.");
+        $this->expectException(MissingKeyException::class);
+        $this->map()->dropKeys(['a', 'b'])->all();
+    }
+
     public function test_dropLast(): void
     {
         $this->assertSame([], $this->vec()->dropLast(0)->all(), 'zero on empty');
@@ -456,35 +485,6 @@ final class EnumerableTest extends TestCase
         $obj = new stdClass();
         $this->map(['a' => 1, 'b' => 2])->each(fn($n, $k) => $obj->{"x{$k}"} = $n);
         $this->assertSame(['xa' => 1, 'xb' => 2], (array) $obj);
-    }
-
-    public function test_except(): void
-    {
-        $this->assertSame([], $this->vec()->except([])->all(), 'empty');
-        $this->assertSame([1], $this->vec([1])->except([])->all(), 'remove none');
-        $this->assertSame([1], $this->vec([1, 2])->except([1])->all(), 'remove one');
-        $this->assertSame([], $this->vec([1, 2])->except([0, 1])->all(), 'remove all');
-        $this->assertSame(['a'], $this->vec(['a'])->except([1], false)->all(), 'remove missing unsafe');
-
-        $this->assertSame([], $this->map()->except([])->all(), 'empty');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1])->except([])->all(), 'remove none');
-        $this->assertSame(['b' => 1], $this->map(['a' => 1, 'b' => 1])->except(['a'])->all(), 'remove one');
-        $this->assertSame([], $this->map(['a' => 1, 'b' => 1])->except(['a', 'b'])->all(), 'remove all');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1])->except(['b'], false)->all(), 'remove missing unsafe');
-    }
-
-    public function test_expect_safe_vec(): void
-    {
-        $this->expectExceptionMessage('Keys: [0, 1] did not exist.');
-        $this->expectException(MissingKeyException::class);
-        $this->vec()->except([0, 1])->all();
-    }
-
-    public function test_expect_safe_map(): void
-    {
-        $this->expectExceptionMessage("Keys: ['a', 'b'] did not exist.");
-        $this->expectException(MissingKeyException::class);
-        $this->map()->except(['a', 'b'])->all();
     }
 
     public function test_filter(): void
