@@ -74,13 +74,11 @@ use const SORT_DESC;
 use const SORT_REGULAR;
 
 /**
- * TODO add keyOf(TValue $value)
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
- * TODO add sliceAfter(Closure $condition)
- * TODO add sliceBefore(Closure $condition)
- * TODO add sliceWhen(Closure $condition)
- * TODO add take(Closure $condition) **rename filter**
- * TODO add drop(Closure $condition)
+ * TODO add splitAfter(Closure $condition)
+ * TODO add splitBefore(Closure $condition)
+ * TODO add takeIf(Closure $condition) **rename filter**
+ * TODO add dropIf(Closure $condition)
  */
 final class Arr
 {
