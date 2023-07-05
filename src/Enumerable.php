@@ -780,7 +780,7 @@ trait Enumerable
      * The result of the callback will be returned.
      * @return TPipe
      */
-    public function pipe(Closure $callback)
+    public function pipe(Closure $callback): mixed
     {
         return $callback($this);
     }
