@@ -1163,6 +1163,23 @@ trait Enumerable
     }
 
     /**
+     * Splits the collection into the given size and return it as Vec.
+     *
+     * @param int $parts
+     * Number of parts to split into.
+     * @return Vec<static>
+     */
+    public function splitEvenly(int $parts): Vec
+    {
+        return $this->newVec(
+            array_map(
+                fn(array $array): static => $this->instantiate($array),
+                Arr::splitEvenly($this, $parts, $this->reindex()),
+            ),
+        );
+    }
+
+    /**
      * Take the first n elements from the collection and return a new instance
      * with those elements.
      *

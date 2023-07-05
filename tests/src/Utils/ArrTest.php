@@ -3117,6 +3117,24 @@ final class ArrTest extends TestCase
         self::assertSame([1 => 'a', 2 => 'c', 3 => 'b'], $assoc);
     }
 
+    public function test_splitEvenly(): void
+    {
+        $this->assertSame([], Arr::splitEvenly([], 1), 'empty');
+        $this->assertSame([[1], [2]], Arr::splitEvenly([1, 2], 2), 'split 1');
+        $this->assertSame([[1, 2], [3]], Arr::splitEvenly([1, 2, 3], 2), 'split 2 on size: 3');
+        $this->assertSame([[1, 2], [3, 4]], Arr::splitEvenly([1, 2, 3, 4], 2), 'split 2 on size: 4');
+        $this->assertSame([[1, 2]], Arr::splitEvenly([1, 2], 1), 'exact');
+        $this->assertSame([[1], [2]], Arr::splitEvenly([1, 2], 4), 'overflow');
+        $this->assertSame([['a' => 1, 'b' => 2], ['c' => 3]], Arr::splitEvenly(['a' => 1, 'b' => 2, 'c' => 3], 2), 'map: split 2 on size: 3');
+    }
+
+    public function test_splitEvenly_zero_parts(): void
+    {
+        $this->expectExceptionMessage('Expected: $parts > 0. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::splitEvenly([], 0);
+    }
+
     public function test_sum(): void
     {
         // empty

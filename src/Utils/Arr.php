@@ -76,7 +76,6 @@ use const SORT_REGULAR;
 /**
  * TODO add keyOf(TValue $value)
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
- * TODO add split(int $parts)
  * TODO add sliceAfter(Closure $condition)
  * TODO add sliceBefore(Closure $condition)
  * TODO add sliceWhen(Closure $condition)
@@ -4817,8 +4816,8 @@ final class Arr
      */
     public static function sortWith(
         iterable $iterable,
-        Closure  $comparator,
-        ?bool    $reindex = null,
+        Closure $comparator,
+        ?bool $reindex = null,
     ): array
     {
         $copy = self::from($iterable);
@@ -4855,6 +4854,63 @@ final class Arr
         $copy = self::from($iterable);
         uksort($copy, $comparison);
         return $copy;
+    }
+
+    /**
+     * Splits the `$iterable` into the given size.
+     *
+     * Example:
+     * ```php
+     * Arr::splitEvenly([1, 2, 3, 4, 5], 3); // [[1, 2], [3, 4], [5]]
+     * Arr::splitEvenly([1, 2, 3], 1); // [[1, 2, 3]]
+     * Arr::splitEvenly([], 2); // []
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $parts
+     * Number of parts to split into.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return list<array<TKey, TValue>>
+     */
+    public static function splitEvenly(
+        iterable $iterable,
+        int $parts,
+        ?bool $reindex = null,
+    ): array
+    {
+        if ($parts <= 0) {
+            throw new InvalidArgumentException("Expected: \$parts > 0. Got: {$parts}.", [
+                'iterable' => $iterable,
+                'parts' => $parts,
+                'reindex' => $reindex,
+            ]);
+        }
+
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+        $total = count($array);
+        $chunk = (int) ceil($total / $parts);
+
+        $split = [];
+        $i = 0;
+        $count = 0;
+        foreach ($array as $key => $val) {
+            $reindex
+                ? $split[$i][] = $val
+                : $split[$i][$key] = $val;
+            ++$count;
+            if ($count === $chunk) {
+                $count = 0;
+                ++$i;
+            }
+        }
+        return $split;
     }
 
     /**
