@@ -237,6 +237,19 @@ trait Enumerable
     }
 
     /**
+     * Creates a Generator that will send the key/value to the generator if the condition is **false**.
+     *
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * A condition that should return a boolean.
+     * @return static
+     */
+    public function dropIf(Closure $condition): static
+    {
+        return $this->instantiate(Iter::dropIf($this, $condition, $this->reindex()));
+    }
+
+    /**
      * Returns a new instance with the given keys removed. Missing keys will be ignored.
      * If `$safe` is set to **true**, `MissingKeyException` will be thrown
      * if a key does not exist.
@@ -329,6 +342,8 @@ trait Enumerable
     /**
      * Creates a Generator that will send the key/value to the generator if the condition is **true**.
      *
+     * Alias of `static::takeIf()`
+     *
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition
      * A condition that should return a boolean.
@@ -336,7 +351,7 @@ trait Enumerable
      */
     public function filter(Closure $condition): static
     {
-        return $this->instantiate(Iter::filter($this, $condition, $this->reindex()));
+        return $this->takeIf($condition);
     }
 
     /**
@@ -1190,6 +1205,19 @@ trait Enumerable
     public function takeFirst(int $amount): static
     {
         return $this->instantiate(Iter::takeFirst($this, $amount));
+    }
+
+    /**
+     * Creates a Generator that will send the key/value to the generator if the condition is **true**.
+     *
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * A condition that should return a boolean.
+     * @return static
+     */
+    public function takeIf(Closure $condition): static
+    {
+        return $this->instantiate(Iter::takeIf($this, $condition, $this->reindex()));
     }
 
     /**

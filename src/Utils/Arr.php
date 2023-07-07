@@ -911,6 +911,39 @@ final class Arr
     }
 
     /**
+     * Iterates over each element in iterable and passes them to the callback function.
+     * If the callback function returns **false** the element is passed on to the new array.
+     *
+     * Example:
+     * ```php
+     * Arr::dropIf([null, '', 1], empty(...)); // [1]
+     * Arr::dropIf(['a' => true, 'b' => 1], fn($v) => $v === 1); // ['a' => true]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return array<TKey, TValue>
+     */
+    public static function dropIf(
+        iterable $iterable,
+        Closure $condition,
+        bool $reindex = null,
+    ): array
+    {
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+        return iterator_to_array(Iter::dropIf($array, $condition, $reindex));
+    }
+
+    /**
      * Returns a new array with the given keys removed from `$iterable`.
      * Missing keys will be ignored.
      * If `$safe` is set to **true**, `MissingKeyException` will be thrown
@@ -1158,6 +1191,8 @@ final class Arr
      * Arr::filter(['a' => true, 'b' => 1], fn($v) => $v === 1); // ['b' => 1]
      * ```
      *
+     * Alias of `self::takeIf()`
+     *
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
@@ -1176,9 +1211,7 @@ final class Arr
         bool $reindex = null,
     ): array
     {
-        $array = self::from($iterable);
-        $reindex ??= array_is_list($array);
-        return iterator_to_array(Iter::filter($array, $condition, $reindex));
+        return self::takeIf($iterable, $condition, $reindex);
     }
 
     /**
@@ -4971,6 +5004,40 @@ final class Arr
     ): array
     {
         return iterator_to_array(Iter::takeFirst($iterable, $amount));
+    }
+
+    /**
+     * Iterates over each element in iterable and passes them to the callback function.
+     * If the callback function returns **true** the element is passed on to the new array.
+     *
+     * Example:
+     * ```php
+     * Arr::takeIf([null, '', 1], fn($v) => $v === ''); // [null, 1]
+     * Arr::takeIf([null, '', 0], Str::isNotBlank(...)); // [0]
+     * Arr::takeIf(['a' => true, 'b' => 1], fn($v) => $v === 1); // ['b' => 1]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return array<TKey, TValue>
+     */
+    public static function takeIf(
+        iterable $iterable,
+        Closure $condition,
+        bool $reindex = null,
+    ): array
+    {
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+        return iterator_to_array(Iter::takeIf($array, $condition, $reindex));
     }
 
     /**

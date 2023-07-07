@@ -559,6 +559,14 @@ final class ArrTest extends TestCase
         Arr::dropFirst(['a' => 1], -1);
     }
 
+    public function test_dropIf(): void
+    {
+        self::assertSame([''], Arr::dropIf([null, ''], static fn($v) => $v === null), 'list: removes ones with condition');
+        self::assertSame(['b' => null], Arr::dropIf(['a' => '', 'b' => null, 'c' => ''], static fn($v) => $v !== null), 'assoc: removes ones with condition');
+        self::assertSame([''], Arr::dropIf([null, ''], static fn($v) => $v !== '', reindex: true), 'reindex: true');
+        self::assertSame([1 => ''], Arr::dropIf([null, ''], static fn($v) => $v !== '', reindex: false), 'reindex: false');
+    }
+
     public function test_dropKeys(): void
     {
         self::assertSame([], Arr::dropKeys([], []), 'empty array');
@@ -3187,6 +3195,21 @@ final class ArrTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         Arr::takeFirst(['a' => 1], -1);
+    }
+
+    public function test_takeIf(): void
+    {
+        // list: removes ones with condition
+        self::assertSame([''], Arr::takeIf([null, ''], static fn($v) => $v === ''));
+
+        // assoc: removes ones with condition
+        self::assertSame(['b' => ''], Arr::takeIf(['a' => null, 'b' => '', 'c' => null], static fn($v) => $v !== null));
+
+        // reindex: true
+        self::assertSame([''], Arr::takeIf([null, ''], static fn($v) => $v === '', reindex: true));
+
+        // reindex: false
+        self::assertSame([1 => ''], Arr::takeIf([null, ''], static fn($v) => $v === '', reindex: false));
     }
 
     public function test_takeKeys(): void

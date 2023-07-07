@@ -114,6 +114,36 @@ final class Iter
     }
 
     /**
+     * Creates a Generator that will send the key/value to the generator if the condition is **false**.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * A condition that should return a boolean.
+     * @param bool $reindex
+     * If set to **true** the array will be re-indexed.
+     * @return Generator<TKey, TValue>
+     */
+    public static function dropIf(
+        iterable $iterable,
+        Closure $condition,
+        bool $reindex = false,
+    ): Generator
+    {
+        foreach ($iterable as $key => $val) {
+            if (!self::verify($condition, $key, $val)) {
+                if ($reindex) {
+                    yield $val;
+                } else {
+                    yield $key => $val;
+                }
+            }
+        }
+    }
+
+    /**
      * Creates a Generator which iterates and drop values until the condition returns **true**.
      *
      * @template TKey of array-key
@@ -202,36 +232,6 @@ final class Iter
         foreach ($iterable as $key => $item) {
             $callback($item, $key);
             yield $key => $item;
-        }
-    }
-
-    /**
-     * Creates a Generator that will send the key/value to the generator if the condition is **true**.
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param Closure(TValue, TKey): bool $condition
-     * A condition that should return a boolean.
-     * @param bool $reindex
-     * If set to **true** the array will be re-indexed.
-     * @return Generator<TKey, TValue>
-     */
-    public static function filter(
-        iterable $iterable,
-        Closure $condition,
-        bool $reindex = false,
-    ): Generator
-    {
-        foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
-                if ($reindex) {
-                    yield $val;
-                } else {
-                    yield $key => $val;
-                }
-            }
         }
     }
 
@@ -522,6 +522,36 @@ final class Iter
         }
 
         return self::slice($iterable, 0, $amount);
+    }
+
+    /**
+     * Creates a Generator that will send the key/value to the generator if the condition is **true**.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * A condition that should return a boolean.
+     * @param bool $reindex
+     * If set to **true** the array will be re-indexed.
+     * @return Generator<TKey, TValue>
+     */
+    public static function takeIf(
+        iterable $iterable,
+        Closure $condition,
+        bool $reindex = false,
+    ): Generator
+    {
+        foreach ($iterable as $key => $val) {
+            if (self::verify($condition, $key, $val)) {
+                if ($reindex) {
+                    yield $val;
+                } else {
+                    yield $key => $val;
+                }
+            }
+        }
     }
 
     /**

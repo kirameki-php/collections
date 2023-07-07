@@ -10,6 +10,7 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Map;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
@@ -365,6 +366,21 @@ final class EnumerableTest extends TestCase
         $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         $this->expectException(InvalidArgumentException::class);
         $this->vec([1])->dropFirst(-1)->all();
+    }
+
+    public function test_dropIf(): void
+    {
+        $this->assertSame(
+            [''],
+            $this->vec([null, ''])->dropIf(static fn($v) => $v === null)->all(),
+            'list: removes ones with condition',
+        );
+
+        $this->assertSame(
+            ['b' => null],
+            $this->map(['a' => '', 'b' => null, 'c' => ''])->dropIf(static fn($v) => $v !== null)->all(),
+            'assoc: removes ones with condition',
+        );
     }
 
     public function test_dropKeys(): void
@@ -1405,6 +1421,22 @@ final class EnumerableTest extends TestCase
         $this->expectExceptionMessage('Expected: $amount >= 0. Got: -1.');
         $this->expectException(InvalidArgumentException::class);
         $this->vec([1, 2])->takeFirst(-1);
+    }
+
+    public function test_takeIf(): void
+    {
+        $this->assertSame([], $this->vec()->takeIf(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->vec()->takeIf(fn() => false)->all(), 'empty');
+        $this->assertSame([], $this->vec([1, 2])->takeIf(fn() => false)->all(), 'no match');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeIf(fn() => true)->all(), 'match all');
+        $this->assertSame([2], $this->vec([1, 2])->takeIf(fn($v) => $v > 1)->all(), 'match some');
+        $this->assertSame([], $this->vec([1, 2])->takeIf(fn($v) => $v > 2)->all(), 'match none');
+
+        $this->assertSame([], $this->map()->takeIf(fn() => true)->all(), 'empty');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2])->takeIf(fn() => false)->all(), 'no match');
+        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->takeIf(fn() => true)->all(), 'match all');
+        $this->assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->takeIf(fn($v) => $v > 1)->all(), 'match some');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 2])->takeIf(fn($v) => $v > 2)->all(), 'match none');
     }
 
     public function test_takeLast(): void
