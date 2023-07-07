@@ -4872,16 +4872,18 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param Closure(TKey, TKey): int $comparison
+     * @param Closure(TKey, TKey): int $comparator
+     * The comparison function to use.
+     * Utilize the spaceship operator (`<=>`) to easily compare two values.
      * @return array<TKey, TValue>
      */
     public static function sortWithKey(
         iterable $iterable,
-        Closure $comparison,
+        Closure $comparator,
     ): array
     {
         $copy = self::from($iterable);
-        uksort($copy, $comparison);
+        uksort($copy, $comparator);
         return $copy;
     }
 
