@@ -77,8 +77,6 @@ use const SORT_REGULAR;
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
  * TODO add splitAfter(Closure $condition)
  * TODO add splitBefore(Closure $condition)
- * TODO add takeIf(Closure $condition) **rename filter**
- * TODO add dropIf(Closure $condition)
  */
 final class Arr
 {
