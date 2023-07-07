@@ -1178,6 +1178,40 @@ trait Enumerable
     }
 
     /**
+     * TODO add test
+     *
+     * Splits the collection right after the index where `$condition` returned **true**.
+     *
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return Vec<static>
+     */
+    public function splitAfter(Closure $condition): Vec
+    {
+        return $this->newVec(array_map(
+            $this->instantiate(...),
+            Arr::splitAfter($this, $condition, $this->reindex())
+        ));
+    }
+
+    /**
+     * TODO add test
+     *
+     * Splits the collection right before the index where `$condition` returned **true**.
+     *
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return Vec<static>
+     */
+    public function splitBefore(Closure $condition): Vec
+    {
+        return $this->newVec(array_map(
+            $this->instantiate(...),
+            Arr::splitBefore($this, $condition, $this->reindex())
+        ));
+    }
+
+    /**
      * Splits the collection into the given size and return it as Vec.
      *
      * @param int $parts
@@ -1186,12 +1220,10 @@ trait Enumerable
      */
     public function splitEvenly(int $parts): Vec
     {
-        return $this->newVec(
-            array_map(
-                fn(array $array): static => $this->instantiate($array),
-                Arr::splitEvenly($this, $parts, $this->reindex()),
-            ),
-        );
+        return $this->newVec(array_map(
+            $this->instantiate(...),
+            Arr::splitEvenly($this, $parts, $this->reindex()),
+        ));
     }
 
     /**
@@ -1234,8 +1266,6 @@ trait Enumerable
      * If set to **false**, non-existing keys will be filled with **null**.
      * Defaults to **true**.
      * @return static
-     *
-     * TODO ADD TESTS
      */
     public function takeKeys(iterable $keys, bool $safe = true): static
     {

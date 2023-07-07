@@ -75,8 +75,6 @@ use const SORT_REGULAR;
 
 /**
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
- * TODO add splitAfter(Closure $condition)
- * TODO add splitBefore(Closure $condition)
  */
 final class Arr
 {
@@ -4885,6 +4883,85 @@ final class Arr
         $copy = self::from($iterable);
         uksort($copy, $comparator);
         return $copy;
+    }
+
+    /**
+     * TODO add example
+     * TODO add test
+     * Splits the `$iterable` right after the index where `$condition` returned **true**.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return list<array<TKey, TValue>>
+     */
+    public static function splitAfter(
+        iterable $iterable,
+        Closure $condition,
+        ?bool $reindex = null,
+    ): array
+    {
+        $array = [];
+        $i = 0;
+        foreach ($iterable as $key => $val) {
+            $reindex
+                ? $array[$i][] = $val
+                : $array[$i][$key] = $val;
+            if (self::verify($condition, $key, $val)) {
+                ++$i;
+                $array[$i] = [];
+            }
+        }
+        return $array;
+    }
+
+    /**
+     * TODO add example
+     * TODO add test
+     * Splits the `$iterable` right before the index where `$condition` returned **true**.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return list<array<TKey, TValue>>
+     */
+    public static function splitBefore(
+        iterable $iterable,
+        Closure $condition,
+        ?bool $reindex = null,
+    ): array
+    {
+        $array = [];
+        $i = 0;
+        $init = true;
+        foreach ($iterable as $key => $val) {
+            if ($init) {
+                $array[$i] = [];
+                $init = false;
+            }
+            if (self::verify($condition, $key, $val)) {
+                ++$i;
+                $array[$i] = [];
+            }
+            $reindex
+                ? $array[$i][] = $val
+                : $array[$i][$key] = $val;
+        }
+        return $array;
     }
 
     /**
