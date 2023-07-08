@@ -60,4 +60,13 @@ class VecMutable extends Vec
         self::traitOffsetUnset($offset);
     }
 
+    /**
+     * TODO add test
+     *
+     * @return Vec<TValue>
+     */
+    public function immutable(): Vec
+    {
+        return new Vec($this->items);
+    }
 }

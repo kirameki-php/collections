@@ -19,6 +19,9 @@ use function is_null;
 use const PHP_INT_MAX;
 
 /**
+ * TODO add swap
+ * TODO add symDiff
+ *
  * @template TValue
  * @extends Enumerator<int, TValue>
  * @implements ArrayAccess<int, TValue>
@@ -66,7 +69,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
         int $start,
         int $end,
         bool $includeEnd = true,
-    ): Vec
+    ): self
     {
         return new static(new Range($start, $end, $includeEnd));
     }
@@ -139,14 +142,6 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @return VecMutable<TValue>
-     */
-    public function mutable(): VecMutable
-    {
-        return new VecMutable($this->items);
-    }
-
-    /**
      * Append value(s) to the end.
      *
      * @param TValue ...$value
@@ -166,6 +161,17 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     public function map(Closure $callback): self
     {
         return $this->newVec(Iter::map($this, $callback));
+    }
+
+    /**
+     * @return VecMutable<TValue>
+     */
+    public function mutable(): VecMutable
+    {
+        $items = is_object($this->items)
+            ? clone $this->items
+            : $this->items;
+        return new VecMutable($items);
     }
 
     /**

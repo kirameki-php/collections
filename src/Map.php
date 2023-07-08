@@ -86,14 +86,6 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @return MapMutable<TKey, TValue>
-     */
-    public function mutable(): MapMutable
-    {
-        return new MapMutable($this->items);
-    }
-
-    /**
      * @param iterable<int, TKey> $keys
      * @return bool
      */
@@ -238,6 +230,17 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function map(Closure $callback): self
     {
         return $this->newMap(Arr::map($this, $callback));
+    }
+
+    /**
+     * @return MapMutable<TKey, TValue>
+     */
+    public function mutable(): MapMutable
+    {
+        $items = is_object($this->items)
+            ? clone $this->items
+            : $this->items;
+        return new MapMutable($this->items);
     }
 
     /**

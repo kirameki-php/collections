@@ -23,4 +23,14 @@ class MapMutable extends Map
     {
         parent::__construct(Arr::from($items));
     }
+
+    /**
+     * TODO add test
+     *
+     * @return Map<TKey, TValue>
+     */
+    public function immutable(): Map
+    {
+        return new Map($this->items);
+    }
 }
