@@ -77,6 +77,8 @@ use const SORT_REGULAR;
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
  * TODO add splitAt
  * TODO add startsWith/endsWith
+ * TODO add afterEvery($nth)
+ * TODO add zip
  */
 final class Arr
 {
@@ -318,6 +320,8 @@ final class Arr
     }
 
     /**
+     * TODO add filler option
+     *
      * Splits the iterable into chunks of new arrays.
      *
      * Example:
