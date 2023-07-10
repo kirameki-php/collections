@@ -1178,8 +1178,6 @@ trait Enumerable
     }
 
     /**
-     * TODO add test
-     *
      * Splits the collection right after the index where `$condition` returned **true**.
      *
      * @param Closure(TValue, TKey): bool $condition
@@ -1195,8 +1193,6 @@ trait Enumerable
     }
 
     /**
-     * TODO add test
-     *
      * Splits the collection right before the index where `$condition` returned **true**.
      *
      * @param Closure(TValue, TKey): bool $condition

@@ -1407,6 +1407,48 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['a' => 1, 'b' => 2, 'c' => 3], $this->map(['b' => 2, 'c' => 3, 'a' => 1])->sortWith(fn($a, $b) => $a <=> $b)->all(), 'map sort with spaceship');
     }
 
+    public function test_splitAfter(): void
+    {
+        $splits = $this->vec([1, 2])->splitAfter(fn($v) => true);
+        $splits->each(fn($vec) => $this->assertInstanceOf(Vec::class, $vec));
+
+        $this->assertSame([], $this->vec()->splitAfter(fn() => true)->all(), 'empty');
+        $this->assertSame([[1, 2, 3]], $this->vec([1, 2, 3])->splitAfter(fn() => false)->toArray(), 'no match');
+        $this->assertSame([[1], [2, 3]], $this->vec([1, 2, 3])->splitAfter(fn($v) => $v === 1)->toArray(), 'split 1');
+        $this->assertSame([[1], [2], [3], []], $this->vec([1, 2, 3])->splitAfter(fn($v) => true)->toArray(), 'split every');
+        $this->assertSame([[1, 2, 3], []], $this->vec([1, 2, 3])->splitAfter(fn($v) => $v === 3)->toArray(), 'split at end');
+
+        $splits = $this->map(['a' => 1, 'b' => 2])->splitAfter(fn($v) => true);
+        $splits->each(fn($vec) => $this->assertInstanceOf(Map::class, $vec));
+
+        $this->assertSame(
+            [['a' => 1, 'b' => 2], ['c' => 3]],
+            $this->map(['a' => 1, 'b' => 2, 'c' => 3])->splitAfter(fn($v, $k) => $k === 'b')->toArray(),
+            'split map',
+        );
+    }
+
+    public function test_splitBefore(): void
+    {
+        $splits = $this->vec([1, 2])->splitBefore(fn($v) => true);
+        $splits->each(fn($vec) => $this->assertInstanceOf(Vec::class, $vec));
+
+        $this->assertSame([], $this->vec()->splitAfter(fn() => true)->all(), 'empty');
+        $this->assertSame([[1, 2, 3]], $this->vec([1, 2, 3])->splitBefore(fn() => false)->toArray(), 'no match');
+        $this->assertSame([[], [1, 2, 3]], $this->vec([1, 2, 3])->splitBefore(fn($v) => $v === 1)->toArray(), 'split 1');
+        $this->assertSame([[], [1], [2], [3]], $this->vec([1, 2, 3])->splitBefore(fn($v) => true)->toArray(), 'split every');
+        $this->assertSame([[1, 2], [3]], $this->vec([1, 2, 3])->splitBefore(fn($v) => $v === 3)->toArray(), 'split at end');
+
+        $splits = $this->map(['a' => 1, 'b' => 2])->splitBefore(fn($v) => true);
+        $splits->each(fn($vec) => $this->assertInstanceOf(Map::class, $vec));
+
+        $this->assertSame(
+            [['a' => 1], ['b' => 2, 'c' => 3]],
+            $this->map(['a' => 1, 'b' => 2, 'c' => 3])->splitBefore(fn($v, $k) => $k === 'b')->toArray(),
+            'split map',
+        );
+    }
+
     public function test_takeFirst(): void
     {
         $this->assertSame([], $this->vec([1, 2])->takeFirst(0)->all(), 'take none');

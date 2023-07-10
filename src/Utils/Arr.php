@@ -4890,9 +4890,13 @@ final class Arr
     }
 
     /**
-     * TODO add example
-     * TODO add test
      * Splits the `$iterable` right after the index where `$condition` returned **true**.
+     *
+     * Example:
+     * ```php
+     * Arr::splitAfter([1, 2, 3], fn($v) => $v === 1) // [[1], [2, 3]]
+     * Arr::splitAfter([1, 2, 3], fn($v) => true) // [[1], [2], [3], []]
+     * ```
      *
      * @template TKey of array-key
      * @template TValue
@@ -4912,24 +4916,30 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        $array = [];
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+        $groups = [];
         $i = 0;
-        foreach ($iterable as $key => $val) {
+        foreach ($array as $key => $val) {
             $reindex
-                ? $array[$i][] = $val
-                : $array[$i][$key] = $val;
+                ? $groups[$i][] = $val
+                : $groups[$i][$key] = $val;
             if (self::verify($condition, $key, $val)) {
                 ++$i;
-                $array[$i] = [];
+                $groups[$i] = [];
             }
         }
-        return $array;
+        return $groups;
     }
 
     /**
-     * TODO add example
-     * TODO add test
      * Splits the `$iterable` right before the index where `$condition` returned **true**.
+     *
+     * Example:
+     * ```php
+     * Arr::splitBefore([1, 2, 3], fn($v) => $v === 2) // [[1], [2, 3]]
+     * Arr::splitBefore([1, 2, 3], fn($v) => true) // [[], [1], [2], [3]]
+     * ```
      *
      * @template TKey of array-key
      * @template TValue
@@ -4949,23 +4959,25 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        $array = [];
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+        $groups = [];
         $i = 0;
         $init = true;
-        foreach ($iterable as $key => $val) {
+        foreach ($array as $key => $val) {
             if ($init) {
-                $array[$i] = [];
+                $groups[$i] = [];
                 $init = false;
             }
             if (self::verify($condition, $key, $val)) {
                 ++$i;
-                $array[$i] = [];
+                $groups[$i] = [];
             }
             $reindex
-                ? $array[$i][] = $val
-                : $array[$i][$key] = $val;
+                ? $groups[$i][] = $val
+                : $groups[$i][$key] = $val;
         }
-        return $array;
+        return $groups;
     }
 
     /**

@@ -748,7 +748,7 @@ final class ArrTest extends TestCase
         Arr::each([], static fn() => throw new UnreachableException());
 
         // list
-        Arr::each(['a', 'b'], static function(string $v, int $k) {
+        Arr::each(['a', 'b'], static function (string $v, int $k) {
             match ($k) {
                 0 => self::assertSame('a', $v),
                 1 => self::assertSame('b', $v),
@@ -757,7 +757,7 @@ final class ArrTest extends TestCase
         });
 
         // assoc
-        Arr::each(['a' => 1, 'b' => 2], static function($v, $k) {
+        Arr::each(['a' => 1, 'b' => 2], static function ($v, $k) {
             match ($k) {
                 'a' => self::assertSame(['a' => 1], [$k => $v]),
                 'b' => self::assertSame(['b' => 2], [$k => $v]),
@@ -1048,11 +1048,11 @@ final class ArrTest extends TestCase
         $reduced = Arr::fold([], 0, static fn(int $i) => $i + 1);
         self::assertSame(0, $reduced);
 
-        $reduced = Arr::fold(['a' => 1, 'b' => 2], new stdClass(), static function(stdClass $c, int $i, string $k): stdClass {
+        $reduced = Arr::fold(['a' => 1, 'b' => 2], new stdClass(), static function (stdClass $c, int $i, string $k): stdClass {
             $c->$k = $i * 2;
             return $c;
         });
-        self::assertSame(['a' => 2, 'b' => 4], (array) $reduced);
+        self::assertSame(['a' => 2, 'b' => 4], (array)$reduced);
 
         $reduced = Arr::fold([1, 2, 3], 0, static fn(int $c, $i, $k): int => $c + $i);
         self::assertSame(6, $reduced);
@@ -1070,13 +1070,13 @@ final class ArrTest extends TestCase
         self::assertSame(['a' => 1, 'b' => 2], Arr::from(['a' => 1, 'b' => 2]));
 
         // iterator list
-        self::assertSame([1, 2], Arr::from((function() {
+        self::assertSame([1, 2], Arr::from((function () {
             yield 1;
             yield 2;
         })()));
 
         // iterator assoc
-        self::assertSame(['a' => 1, 'b' => 2], Arr::from((function() {
+        self::assertSame(['a' => 1, 'b' => 2], Arr::from((function () {
             yield 'a' => 1;
             yield 'b' => 2;
         })()));
@@ -1785,10 +1785,10 @@ final class ArrTest extends TestCase
 
     public function test_partition(): void
     {
-        self::assertSame([[], []], Arr::partition([], fn($v) => (bool) ($v % 2)), 'empty');
+        self::assertSame([[], []], Arr::partition([], fn($v) => (bool)($v % 2)), 'empty');
         self::assertSame([[1, 2, 3], []], Arr::partition([1, 2, 3], fn($v) => is_int($v)), ' all true');
         self::assertSame([[], [1, 2, 3]], Arr::partition([1, 2, 3], fn($v) => $v === 0), ' all false');
-        self::assertSame([[1, 3], [2]], Arr::partition([1, 2, 3], fn($v) => (bool) ($v % 2)), 'list');
+        self::assertSame([[1, 3], [2]], Arr::partition([1, 2, 3], fn($v) => (bool)($v % 2)), 'list');
         self::assertSame([['a' => 1], ['b' => 2]], Arr::partition(['a' => 1, 'b' => 2], fn($v) => $v === 1), 'map');
     }
 
@@ -3123,6 +3123,36 @@ final class ArrTest extends TestCase
     {
         $assoc = Arr::sortWithKey([1 => 'a', 3 => 'b', 2 => 'c'], static fn($a, $b) => ($a < $b) ? -1 : 1);
         self::assertSame([1 => 'a', 2 => 'c', 3 => 'b'], $assoc);
+    }
+
+    public function test_splitAfter(): void
+    {
+        $this->assertSame([], Arr::splitAfter([], fn() => true), 'empty');
+        $this->assertSame([[1, 2, 3]], Arr::splitAfter([1, 2, 3], fn() => false), 'no match');
+        $this->assertSame([[1], [2, 3]], Arr::splitAfter([1, 2, 3], fn($v) => $v === 1), 'split 1');
+        $this->assertSame([[1], [2], [3], []], Arr::splitAfter([1, 2, 3], fn($v) => true), 'split every');
+        $this->assertSame([[1, 2, 3], []], Arr::splitAfter([1, 2, 3], fn($v) => $v === 3), 'split at end');
+
+        $this->assertSame(
+            [['a' => 1, 'b' => 2], ['c' => 3]],
+            Arr::splitAfter(['a' => 1, 'b' => 2, 'c' => 3], fn($v, $k) => $k === 'b'),
+            'split map',
+        );
+    }
+
+    public function test_splitBefore(): void
+    {
+        $this->assertSame([], Arr::splitBefore([], fn() => true), 'empty');
+        $this->assertSame([[1, 2, 3]], Arr::splitBefore([1, 2, 3], fn() => false), 'no match');
+        $this->assertSame([[], [1, 2, 3]], Arr::splitBefore([1, 2, 3], fn($v) => $v === 1), 'split 1');
+        $this->assertSame([[], [1], [2], [3]], Arr::splitBefore([1, 2, 3], fn($v) => true), 'split every');
+        $this->assertSame([[1, 2], [3]], Arr::splitBefore([1, 2, 3], fn($v) => $v === 3), 'split at end');
+
+        $this->assertSame(
+            [['a' => 1], ['b' => 2, 'c' => 3]],
+            Arr::splitBefore(['a' => 1, 'b' => 2, 'c' => 3], fn($v, $k) => $k === 'b'),
+            'split map',
+        );
     }
 
     public function test_splitEvenly(): void
