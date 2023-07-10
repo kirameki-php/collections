@@ -9,6 +9,7 @@ use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
 use Kirameki\Collections\Vec;
+use Kirameki\Collections\VecMutable;
 use Kirameki\Core\Exceptions\ErrorException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\NotSupportedException;
@@ -302,6 +303,7 @@ final class MapTest extends TestCase
     public function test_mutable():void
     {
         self::assertInstanceOf(MapMutable::class, $this->map(['a' => 1])->mutable());
+        self::assertInstanceOf(MapMutable::class, $this->map(['a' => 1])->lazy()->mutable());
     }
 
     public function test_sampleKey(): void

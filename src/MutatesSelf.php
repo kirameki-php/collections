@@ -205,25 +205,4 @@ trait MutatesSelf
         $ref = &$this->getItemsAsRef();
         return $this->instantiate(Arr::shiftMany($ref, $amount));
     }
-
-    /**
-     * @template TNewKey of array-key
-     * @template TNewValue
-     * @param iterable<TNewKey, TNewValue> $iterable
-     * @return MapMutable<TNewKey, TNewValue>
-     */
-    protected function newMap(iterable $iterable): MapMutable
-    {
-        return new MapMutable($iterable);
-    }
-
-    /**
-     * @template TNewValue
-     * @param iterable<int, TNewValue> $iterable
-     * @return VecMutable<TNewValue>
-     */
-    protected function newVec(iterable $iterable): VecMutable
-    {
-        return new VecMutable($iterable);
-    }
 }

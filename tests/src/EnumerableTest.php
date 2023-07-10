@@ -1410,6 +1410,7 @@ final class EnumerableTest extends TestCase
     public function test_splitAfter(): void
     {
         $splits = $this->vec([1, 2])->splitAfter(fn($v) => true);
+        $this->assertInstanceOf(Vec::class, $splits);
         $splits->each(fn($vec) => $this->assertInstanceOf(Vec::class, $vec));
 
         $this->assertSame([], $this->vec()->splitAfter(fn() => true)->all(), 'empty');
@@ -1419,6 +1420,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([[1, 2, 3], []], $this->vec([1, 2, 3])->splitAfter(fn($v) => $v === 3)->toArray(), 'split at end');
 
         $splits = $this->map(['a' => 1, 'b' => 2])->splitAfter(fn($v) => true);
+        $this->assertInstanceOf(Vec::class, $splits);
         $splits->each(fn($vec) => $this->assertInstanceOf(Map::class, $vec));
 
         $this->assertSame(
@@ -1431,6 +1433,7 @@ final class EnumerableTest extends TestCase
     public function test_splitBefore(): void
     {
         $splits = $this->vec([1, 2])->splitBefore(fn($v) => true);
+        $this->assertInstanceOf(Vec::class, $splits);
         $splits->each(fn($vec) => $this->assertInstanceOf(Vec::class, $vec));
 
         $this->assertSame([], $this->vec()->splitAfter(fn() => true)->all(), 'empty');
@@ -1440,6 +1443,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([[1, 2], [3]], $this->vec([1, 2, 3])->splitBefore(fn($v) => $v === 3)->toArray(), 'split at end');
 
         $splits = $this->map(['a' => 1, 'b' => 2])->splitBefore(fn($v) => true);
+        $this->assertInstanceOf(Vec::class, $splits);
         $splits->each(fn($vec) => $this->assertInstanceOf(Map::class, $vec));
 
         $this->assertSame(
@@ -1447,6 +1451,37 @@ final class EnumerableTest extends TestCase
             $this->map(['a' => 1, 'b' => 2, 'c' => 3])->splitBefore(fn($v, $k) => $k === 'b')->toArray(),
             'split map',
         );
+    }
+
+    public function test_splitEvenly(): void
+    {
+        $splits = $this->vec([1, 2])->splitEvenly(2);
+        $this->assertInstanceOf(Vec::class, $splits);
+        $splits->each(fn($vec) => $this->assertInstanceOf(Vec::class, $vec));
+
+        $this->assertSame([], $this->vec()->splitEvenly(1)->toArray(), 'empty');
+        $this->assertSame([[1], [2]], $this->vec([1, 2])->splitEvenly(2)->toArray(), 'split 1');
+        $this->assertSame([[1, 2], [3]], $this->vec([1, 2, 3])->splitEvenly(2)->toArray(), 'split 2 on size: 3');
+        $this->assertSame([[1, 2], [3, 4]], $this->vec([1, 2, 3, 4])->splitEvenly(2)->toArray(), 'split 2 on size: 4');
+        $this->assertSame([[1, 2]], $this->vec([1, 2])->splitEvenly(1)->toArray(), 'exact');
+        $this->assertSame([[1], [2]], $this->vec([1, 2])->splitEvenly(4)->toArray(), 'overflow');
+
+        $splits = $this->map(['a' => 1, 'b' => 2])->splitEvenly(2);
+        $this->assertInstanceOf(Vec::class, $splits);
+        $splits->each(fn($vec) => $this->assertInstanceOf(Map::class, $vec));
+
+        $this->assertSame(
+            [['a' => 1, 'b' => 2], ['c' => 3]],
+            $this->map(['a' => 1, 'b' => 2, 'c' => 3])->splitEvenly(2)->toArray(),
+            'map: split 2 on size: 3',
+        );
+    }
+
+    public function test_splitEvenly_zero_parts(): void
+    {
+        $this->expectExceptionMessage('Expected: $parts > 0. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec()->splitEvenly(0);
     }
 
     public function test_takeFirst(): void

@@ -158,6 +158,7 @@ final class VecTest extends TestCase
     public function test_mutable():void
     {
         self::assertInstanceOf(VecMutable::class, $this->vec([1])->mutable());
+        self::assertInstanceOf(VecMutable::class, $this->vec([1])->lazy()->mutable());
     }
 
     public function test_pad(): void
