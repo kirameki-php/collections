@@ -76,7 +76,6 @@ use const SORT_REGULAR;
 /**
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
  * TODO add splitAt
- * TODO add swap/move
  * TODO add startsWith/endsWith
  */
 final class Arr
