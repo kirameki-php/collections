@@ -75,7 +75,6 @@ use const SORT_REGULAR;
 
 /**
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
- * TODO add without/withoutNull
  * TODO add splitAt
  * TODO add swap/move
  * TODO add startsWith/endsWith
@@ -5422,6 +5421,35 @@ final class Arr
             $reindex = array_is_list($iterable);
         }
         return iterator_to_array(Iter::windows($iterable, $size, $reindex));
+    }
+
+    /**
+     * Returns a copy of `$iterable` as array without the specified `$value` excluded.
+     *
+     * Example:
+     * ```php
+     * Arr::values(['a' => 1, 'b' => 2]) // [1, 2]
+     * Arr::values([1 => 1, 0 => 2]) // [1, 2]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param TValue $value
+     * Value to be excluded.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * @return array<TKey, TValue>
+     */
+    public static function without(
+        iterable $iterable,
+        mixed $value,
+        ?bool $reindex = null,
+    ): array
+    {
+        return self::filter($iterable, static fn($v) => $v !== $value, $reindex);
     }
 
     /**

@@ -330,7 +330,7 @@ trait Enumerable
     /**
      * Iterates through the collection and invoke `$callback` for each element.
      *
-     * @param Closure(TValue, TKey): mixed $callback
+     * @param Closure(TValue, TKey): mixed|void $callback
      * Callback which is called for every element of the collection.
      * @return static
      */
@@ -1443,6 +1443,18 @@ trait Enumerable
             }
         })();
         return $this->newVec($generator);
+    }
+
+    /**
+     * Returns a new instance with the specified `$value` excluded.
+     *
+     * @param TValue $value
+     * Value to be excluded.
+     * @return static
+     */
+    public function without(mixed $value): static
+    {
+        return $this->instantiate(Arr::without($this, $value, $this->reindex()));
     }
 
     /**
