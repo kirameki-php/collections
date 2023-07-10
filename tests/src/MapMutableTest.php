@@ -5,7 +5,9 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
+use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 
 final class MapMutableTest extends TestCase
@@ -46,6 +48,11 @@ final class MapMutableTest extends TestCase
 
         $map = $this->mapMut(['a' => 1, 'b' => 2]);
         self::assertSame([], $map->clear()->all(), 'non-empty map');
+    }
+
+    public function test_immutable():void
+    {
+        self::assertInstanceOf(Map::class, $this->mapMut(['a' => 1])->immutable());
     }
 
     public function test_insertAt(): void

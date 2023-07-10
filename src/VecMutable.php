@@ -61,8 +61,6 @@ class VecMutable extends Vec
     }
 
     /**
-     * TODO add test
-     *
      * @return Vec<TValue>
      */
     public function immutable(): Vec

@@ -6,6 +6,7 @@ use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Vec;
+use Kirameki\Collections\VecMutable;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Random\Engine\Xoshiro256StarStar;
@@ -100,5 +101,10 @@ final class VecMutableTest extends TestCase
         $this->expectExceptionMessage('Expected: $offset\'s type to be int|null. Got: string.');
         $this->expectException(InvalidKeyException::class);
         unset($this->vecMut([1, 2])['0']);
+    }
+
+    public function test_immutable():void
+    {
+        self::assertInstanceOf(Vec::class, $this->vecMut([1])->immutable());
     }
 }

@@ -25,8 +25,6 @@ class MapMutable extends Map
     }
 
     /**
-     * TODO add test
-     *
      * @return Map<TKey, TValue>
      */
     public function immutable(): Map

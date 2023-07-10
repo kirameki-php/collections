@@ -207,8 +207,6 @@ trait MutatesSelf
     }
 
     /**
-     * TODO add test
-     *
      * @template TNewKey of array-key
      * @template TNewValue
      * @param iterable<TNewKey, TNewValue> $iterable
@@ -220,8 +218,6 @@ trait MutatesSelf
     }
 
     /**
-     * TODO add test
-     *
      * @template TNewValue
      * @param iterable<int, TNewValue> $iterable
      * @return VecMutable<TNewValue>
