@@ -1484,6 +1484,26 @@ final class EnumerableTest extends TestCase
         $this->vec()->splitEvenly(0);
     }
 
+    public function test_swap(): void
+    {
+        $this->assertSame([1, 3, 2, 4], $this->vec([1, 2, 3, 4])->swap(1, 2)->all(), 'swap list');
+        $this->assertSame(['c' => 3, 'b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->swap('c', 'a')->all(), 'swap map');
+    }
+
+    public function test_swap_non_existing_key1(): void
+    {
+        $this->expectExceptionMessage('Key: 0 does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        $this->vec()->swap(0, 1);
+    }
+
+    public function test_swap_non_existing_key2(): void
+    {
+        $this->expectExceptionMessage('Key: 1 does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        $this->vec([1])->swap(0, 1);
+    }
+
     public function test_takeFirst(): void
     {
         $this->assertSame([], $this->vec([1, 2])->takeFirst(0)->all(), 'take none');

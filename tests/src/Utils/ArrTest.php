@@ -3188,6 +3188,26 @@ final class ArrTest extends TestCase
         self::assertSame(6, Arr::sum(['b' => 1, 'a' => 3, 'c' => 2]));
     }
 
+    public function test_swap(): void
+    {
+        $this->assertSame([1, 3, 2, 4], Arr::swap([1, 2, 3, 4], 1, 2), 'swap list');
+        $this->assertSame(['c' => 3, 'b' => 2, 'a' => 1], Arr::swap(['a' => 1, 'b' => 2, 'c' => 3], 'c', 'a'), 'swap map');
+    }
+
+    public function test_swap_non_existing_key1(): void
+    {
+        $this->expectExceptionMessage('Key: 0 does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        Arr::swap([], 0, 1);
+    }
+
+    public function test_swap_non_existing_key2(): void
+    {
+        $this->expectExceptionMessage('Key: 1 does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        Arr::swap([1], 0, 1);
+    }
+
     public function test_sum_throw_on_sum_of_string(): void
     {
         $this->expectException(TypeError::class);

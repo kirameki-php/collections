@@ -3431,6 +3431,7 @@ final class Arr
     /**
      * Removes `$keys` from the `&$array` and returns the pulled values as list.
      * If the given array is a list, the list will be re-indexed.
+     * If the given key does not exist, the missing key will be added to `$missed`.
      *
      * Example:
      * ```php
@@ -5071,6 +5072,69 @@ final class Arr
         }
 
         return $total;
+    }
+
+    /**
+     * Returns a copy of `$iterable` with the given keys swapped.
+     * Throws `InvalidArgumentException` if the given key does not exist.
+     *
+     * Example:
+     * ```php
+     * Arr::swap([1, 2, 3], 0, 2); // [3, 2, 1]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue of int|float
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param TKey $key1
+     * Key to be swapped.
+     * @param TKey $key2
+     * Key to be swapped.
+     * @return array<TKey, TValue>
+     */
+    public static function swap(
+        iterable $iterable,
+        int|string $key1,
+        int|string $key2,
+        ?bool $reindex = null,
+    ): array
+    {
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+
+        if (!array_key_exists($key1, $array)) {
+            throw new InvalidKeyException("Key: {$key1} does not exist.", [
+                'iterable' => $iterable,
+                'key1' => $key1,
+                'key2' => $key2,
+            ]);
+        }
+
+        if (!array_key_exists($key2, $array)) {
+            throw new InvalidKeyException("Key: {$key2} does not exist.", [
+                'iterable' => $iterable,
+                'key1' => $key1,
+                'key2' => $key2,
+            ]);
+        }
+
+        if ($reindex) {
+            [$array[$key1], $array[$key2]] = [$array[$key2], $array[$key1]];
+            return $array;
+        } else {
+            $val1 = $array[$key1];
+            $val2 = $array[$key2];
+            $swapped = [];
+            foreach ($array as $key => $val) {
+                match ($key) {
+                    $key1 => $swapped[$key2] = $val2,
+                    $key2 => $swapped[$key1] = $val1,
+                    default => $swapped[$key] = $val,
+                };
+            }
+            return $swapped;
+        }
     }
 
     /**
