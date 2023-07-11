@@ -3433,6 +3433,36 @@ final class ArrTest extends TestCase
         self::assertSame([], Arr::windows([], 0), 'zero');
     }
 
+    public function test_zip(): void
+    {
+        self::assertSame([], Arr::zip([]), 'empty no 2+ args');
+        self::assertSame([], Arr::zip([], []), 'empty args');
+        self::assertSame([[1]], Arr::zip([1]), 'no list args');
+        self::assertSame([[1, null, 5], [2, null, null]], Arr::zip([1, 2], [], [5]), 'list uneven');
+        self::assertSame([[1, 3, 5], [2, 4, 6]], Arr::zip([1, 2], [3, 4], [5, 6]), 'list even');
+    }
+
+    public function test_zip_no_arg(): void
+    {
+        $this->expectExceptionMessage('Arr::zip() expects at least 1 argument.');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::zip();
+    }
+
+    public function test_zip_map_first_arg(): void
+    {
+        $this->expectExceptionMessage('Argument #1 must be a list, map given.');
+        $this->expectException(TypeMismatchException::class);
+        Arr::zip(['a' => 1]);
+    }
+
+    public function test_zip_map_2nd_arg(): void
+    {
+        $this->expectExceptionMessage('Argument #2 must be a list, map given.');
+        $this->expectException(TypeMismatchException::class);
+        Arr::zip([1], ['a' => 1]);
+    }
+
     public function test_setDefaultRandomizer(): void
     {
         $randomizer = new Randomizer(new FixedNumEngine());

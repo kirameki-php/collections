@@ -5520,6 +5520,47 @@ final class Arr
     }
 
     /**
+     * @template TValue
+     * @param iterable<int, TValue> $iterable
+     * @return list<array<int, TValue|null>>
+     */
+    public static function zip(
+        iterable ...$iterable,
+    ): array
+    {
+        if (count($iterable) < 1) {
+            throw new InvalidArgumentException('Arr::zip() expects at least 1 argument.', [
+                'iterable' => $iterable,
+            ]);
+        }
+
+        $grouped = [];
+        foreach ($iterable as $iter) {
+            $array = self::from($iter);
+            $grouped[] = $array;
+            if (!array_is_list($array)) {
+                $count = count($grouped);
+                throw new TypeMismatchException("Argument #{$count} must be a list, map given.", [
+                    'iter' => $iter,
+                    'n' => $count,
+                ]);
+            }
+        }
+
+        $firstList = array_shift($grouped) ?? [];
+        $listCount = count($grouped);
+        $array = [];
+        foreach ($firstList as $i => $val) {
+            $each = [$val];
+            for ($j = 0; $j < $listCount; $j++) {
+                $each[] = $grouped[$j][$i] ?? null;
+            }
+            $array[] = $each;
+        }
+        return $array;
+    }
+
+    /**
      * Ensure that a given key is an int or string and return the key.
      *
      * @param mixed $key

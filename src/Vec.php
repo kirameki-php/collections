@@ -9,6 +9,7 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Collections\Utils\Range;
+use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Random\Randomizer;
@@ -243,6 +244,24 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     ): self
     {
         return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
+    }
+
+    /**
+     * @param iterable<int, TValue> ...$list
+     * @return Vec<Vec<TValue|null>>
+     */
+    public function zip(iterable ...$list): self
+    {
+        if (count($list) < 1) {
+            throw new InvalidArgumentException('Expected: at least 1 argument. Got: 0.', [
+                'this' => $this,
+                'list' => $list,
+            ]);
+        }
+
+        return $this->newVec(
+            array_map(fn($v): self => $this->newVec($v), Arr::zip($this, ...$list)),
+        );
     }
 
     /**

@@ -6,6 +6,7 @@ use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\LazyIterator;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Collections\VecMutable;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
@@ -252,5 +253,26 @@ final class VecTest extends TestCase
         $this->expectExceptionMessage('$amount must be between 0 and size of $iterable.');
         $this->expectException(InvalidArgumentException::class);
         $this->vec([1])->sampleIndexes(2);
+    }
+
+    public function test_zip(): void
+    {
+        self::assertSame([], $this->vec()->zip([])->toArray(), 'empty list');
+        self::assertSame([[1, null, 5], [2, null, null]], $this->vec([1, 2])->zip([], [5])->toArray(), 'list uneven');
+        self::assertSame([[1, 3, 5], [2, 4, 6]], $this->vec([1, 2])->zip([3, 4], [5, 6])->toArray(), 'list even');
+    }
+
+    public function test_zip_no_arg(): void
+    {
+        $this->expectExceptionMessage('Expected: at least 1 argument. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1])->zip();
+    }
+
+    public function test_zip_map_arg(): void
+    {
+        $this->expectExceptionMessage('Argument #2 must be a list, map given.');
+        $this->expectException(TypeMismatchException::class);
+        $this->vec([1])->zip(['a' => 1]);
     }
 }
