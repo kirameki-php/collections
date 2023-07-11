@@ -220,7 +220,7 @@ final class Iter
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param Closure(TValue, TKey): mixed $callback
+     * @param Closure(TValue, TKey): (mixed|void) $callback
      * Callback which is called for every element of `$iterable`.
      * @return Generator<TKey, TValue>
      */

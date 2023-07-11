@@ -5087,7 +5087,7 @@ final class Arr
      * ```
      *
      * @template TKey of array-key
-     * @template TValue of int|float
+     * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param TKey $key1

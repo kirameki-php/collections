@@ -330,7 +330,7 @@ trait Enumerable
     /**
      * Iterates through the collection and invoke `$callback` for each element.
      *
-     * @param Closure(TValue, TKey): mixed|void $callback
+     * @param Closure(TValue, TKey): (mixed|void) $callback
      * Callback which is called for every element of the collection.
      * @return static
      */
