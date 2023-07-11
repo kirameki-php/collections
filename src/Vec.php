@@ -20,7 +20,6 @@ use function is_null;
 use const PHP_INT_MAX;
 
 /**
- * TODO add swap
  * TODO add symDiff
  *
  * @template TValue

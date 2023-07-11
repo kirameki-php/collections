@@ -78,7 +78,6 @@ use const SORT_REGULAR;
  * TODO add splitAt
  * TODO add startsWith/endsWith
  * TODO add afterEvery($nth)
- * TODO add zip
  */
 final class Arr
 {
@@ -5547,7 +5546,7 @@ final class Arr
             }
         }
 
-        $firstList = array_shift($grouped) ?? [];
+        $firstList = array_shift($grouped);
         $listCount = count($grouped);
         $array = [];
         foreach ($firstList as $i => $val) {
