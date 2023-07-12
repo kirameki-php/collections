@@ -121,16 +121,6 @@ trait Enumerable
     }
 
     /**
-     * Returns a new instance with all null elements removed.
-     *
-     * @return static
-     */
-    public function compact(): static
-    {
-        return $this->instantiate(Arr::compact($this, $this->reindex()));
-    }
-
-    /**
      * Returns **true** if value exists, **false** otherwise.
      *
      * @param TValue $value

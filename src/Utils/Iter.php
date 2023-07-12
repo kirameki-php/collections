@@ -58,33 +58,6 @@ final class Iter
     }
 
     /**
-     * Creates a Generator which iterates while ignoring all **null** values.
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param bool $reindex
-     * If set to **true** the array will be re-indexed.
-     * @return Generator<TKey, TValue>
-     */
-    public static function compact(
-        iterable $iterable,
-        bool $reindex = false,
-    ): Generator
-    {
-        foreach ($iterable as $key => $val) {
-            if ($val !== null) {
-                if ($reindex) {
-                    yield $val;
-                } else {
-                    yield $key => $val;
-                }
-            }
-        }
-    }
-
-    /**
      * Creates a Generator which iterates after the given amount.
      *
      * @template TKey of array-key

@@ -433,42 +433,6 @@ final class Arr
     }
 
     /**
-     * Returns an array with all null elements removed from `$iterable`.
-     *
-     * Example:
-     * ```php
-     * Arr::compact([null, 0, false]); // [0, false]
-     * Arr::compact([[null]]); // [[null]] Doesn't remove inner null.
-     * ```
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param bool|null $reindex
-     * [Optional] If set to **true**, the result will be re-indexed.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
-     * @return array<TKey, TValue>
-     */
-    public static function compact(
-        iterable $iterable,
-        ?bool $reindex = null,
-    ): array
-    {
-        if ($reindex === null) {
-            $iterable = self::from($iterable);
-            $reindex = array_is_list($iterable);
-        }
-
-        $result = [];
-        foreach (Iter::compact($iterable, $reindex) as $key => $val) {
-            $result[$key] = $val;
-        }
-        return $result;
-    }
-
-    /**
      * Returns **true** if value exists in `$iterable`, **false** otherwise.
      *
      * Example:

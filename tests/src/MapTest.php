@@ -458,10 +458,10 @@ final class MapTest extends TestCase
 
     public function test_reindex(): void
     {
-        self::assertSame(['b' => 1, 'c' => 2], $this->map(['a' => null, 'b' => 1, 'c' => 2])->compact()->all(), 'with compact');
         self::assertSame(['a' => 1, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropKeys(['b'])->all(), 'with except');
         self::assertSame(['a' => 1, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->takeIf(fn($n) => (bool)($n % 2))->all(), 'with filter');
         self::assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->takeKeys(['b'])->all(), 'with only');
         self::assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->reverse()->all(), 'with reverse');
+        self::assertSame(['b' => 1, 'c' => 2], $this->map(['a' => null, 'b' => 1, 'c' => 2])->without(null)->all(), 'with without');
     }
 }

@@ -200,11 +200,11 @@ final class VecTest extends TestCase
 
     public function test_reindex(): void
     {
-        self::assertSame([1, 2], $this->vec([null, 1, 2])->compact()->all(), 'with compact');
         self::assertSame([1, 3], $this->vec([1, 2, 3])->dropKeys([1])->all(), 'with except');
         self::assertSame([1, 3], $this->vec([1, 2, 3])->takeIf(fn($n) => (bool)($n % 2))->all(), 'with filter');
         self::assertSame([2], $this->vec([1, 2, 3])->takeKeys([1])->all(), 'with only');
         self::assertSame([2, 1], $this->vec([1, 2])->reverse()->all(), 'with reverse');
+        self::assertSame([1, 2], $this->vec([null, 1, 2])->without(null)->all(), 'with without');
     }
 
     public function test_sampleIndex(): void

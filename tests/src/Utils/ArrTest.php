@@ -249,46 +249,6 @@ final class ArrTest extends TestCase
         self::assertSame(null, Arr::coalesceOrNull([null, null]), 'everything skipped and returns null');
     }
 
-    public function test_compact(): void
-    {
-        // empty
-        self::assertSame([], Arr::compact([]));
-
-        // list: no nulls
-        self::assertSame([1, 2], Arr::compact([1, 2]));
-
-        // list: all nulls
-        self::assertSame([], Arr::compact([null, null]));
-
-        // assoc: removes nulls
-        self::assertSame(['b' => 1, 'c' => 2], Arr::compact(['a' => null, 'b' => 1, 'c' => 2, 'd' => null]));
-
-        // assoc: no nulls
-        self::assertSame(['a' => 1, 'b' => 2], Arr::compact(['a' => 1, 'b' => 2]));
-
-        // assoc: all nulls
-        self::assertSame([], Arr::compact(['a' => null, 'b' => null]));
-
-        // depth = 1
-        $compacted = Arr::compact(['a' => ['b' => null], 'b' => null]);
-        self::assertSame(['a' => ['b' => null]], $compacted);
-
-        // list: removes nulls (reindex: null (auto-detect))
-        self::assertSame([1, 2], Arr::compact([1, null, 2]));
-
-        // reindex: true with list
-        self::assertSame([1, 2], Arr::compact([1, null, null, 2], true));
-
-        // reindex: true with map
-        self::assertSame([1], Arr::compact(['a' => null, 'b' => null, 'c' => 1], true));
-
-        // reindex: false with list
-        self::assertSame([1, 2 => 2], Arr::compact([1, null, 2], false));
-
-        // reindex: false with map
-        self::assertSame(['c' => 1], Arr::compact(['a' => null, 'b' => null, 'c' => 1], false));
-    }
-
     public function test_contains(): void
     {
         self::assertFalse(Arr::contains([], null));
