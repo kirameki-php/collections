@@ -1318,6 +1318,40 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2])->shuffle($randomizer)->all(), 'map');
     }
 
+    public function test_single(): void
+    {
+        $this->assertSame(2, $this->vec([2])->single(), 'no condition');
+        $this->assertSame(2, $this->vec([1, 2, 3])->single(fn($i) => $i === 2), 'with condition');
+    }
+
+    public function test_single_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec()->single();
+    }
+
+    public function test_single_no_match(): void
+    {
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        $this->expectException(NoMatchFoundException::class);
+        $this->vec([1, 2])->single(fn() => false);
+    }
+
+    public function test_single_multi(): void
+    {
+        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([1, 1])->single();
+    }
+
+    public function test_single_multi_condition(): void
+    {
+        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([0, 1, 1, 2])->single(fn($i) => $i === 1);
+    }
+
     public function test_slice(): void
     {
         $this->assertSame([], $this->vec()->slice(0)->all(), 'empty');
@@ -1333,40 +1367,6 @@ final class EnumerableTest extends TestCase
         $this->assertSame([2], $this->vec([1, 2])->slice(1)->all(), 'positive offset');
         $this->assertSame([2], $this->vec([1, 2, 3])->slice(-2, 1)->all(), 'negative offset with length');
         $this->assertSame([2, 3], $this->vec([1, 2, 3, 4])->slice(-3, -2)->all(), 'negative length');
-    }
-
-    public function test_sole(): void
-    {
-        $this->assertSame(2, $this->vec([2])->sole(), 'no condition');
-        $this->assertSame(2, $this->vec([1, 2, 3])->sole(fn($i) => $i === 2), 'with condition');
-    }
-
-    public function test_sole_on_empty(): void
-    {
-        $this->expectExceptionMessage('$iterable must contain at least one element.');
-        $this->expectException(EmptyNotAllowedException::class);
-        $this->vec()->sole();
-    }
-
-    public function test_sole_no_match(): void
-    {
-        $this->expectExceptionMessage('Failed to find matching condition.');
-        $this->expectException(NoMatchFoundException::class);
-        $this->vec([1, 2])->sole(fn() => false);
-    }
-
-    public function test_sole_multi(): void
-    {
-        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
-        $this->expectException(InvalidArgumentException::class);
-        $this->vec([1, 1])->sole();
-    }
-
-    public function test_sole_multi_condition(): void
-    {
-        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
-        $this->expectException(InvalidArgumentException::class);
-        $this->vec([0, 1, 1, 2])->sole(fn($i) => $i === 1);
     }
 
     public function test_sort(): void
@@ -1618,7 +1618,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([null, 1], $this->vec([null, null, 1, 1])->unique()->all(), 'can handle null');
         $this->assertSame([true, false, 1, 0, null, ''], $this->vec([true, false, 1, 0, null, ''])->unique()->all(), 'strict');
         $this->assertSame([INF], $this->vec([INF, INF])->unique()->all(), 'one');
-        $this->assertNan($this->vec([NAN, NAN])->unique()->sole(), 'one');
+        $this->assertNan($this->vec([NAN, NAN])->unique()->single(), 'one');
         $this->assertSame([1, 2], $this->vec([1, 2, 3, 4])->unique(fn($n) => $n % 2 === 0)->all(), 'with callback');
 
         $this->assertSame([], $this->map()->unique()->all(), 'empty');

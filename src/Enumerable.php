@@ -1069,6 +1069,24 @@ trait Enumerable
     }
 
     /**
+     * Returns the only element in the collection.
+     * If a condition is also given, the sole element of a sequence that satisfies a specified
+     * condition is returned instead.
+     * Throws `InvalidArgumentException` if there are more than one element in `$iterable`.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     *
+     * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
+     * @return TValue
+     */
+    public function single(?Closure $condition = null): mixed
+    {
+        return Arr::single($this, $condition);
+    }
+
+    /**
      * Returns a shallow copy of a portion of the collection into a new collection.
      *
      * @param int $offset
@@ -1084,24 +1102,6 @@ trait Enumerable
     public function slice(int $offset, int $length = PHP_INT_MAX): static
     {
         return $this->instantiate(Iter::slice($this, $offset, $length, $this->reindex()));
-    }
-
-    /**
-     * Returns the only element in the collection.
-     * If a condition is also given, the sole element of a sequence that satisfies a specified
-     * condition is returned instead.
-     * Throws `InvalidArgumentException` if there are more than one element in `$iterable`.
-     * Throws `NoMatchFoundException` if no condition is met.
-     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
-     *
-     * @param Closure(TValue, TKey): bool|null $condition
-     * [Optional] User defined condition callback. The callback must return a boolean value.
-     * Defaults to **null**.
-     * @return TValue
-     */
-    public function sole(?Closure $condition = null): mixed
-    {
-        return Arr::sole($this, $condition);
     }
 
     /**

@@ -4522,42 +4522,6 @@ final class Arr
     }
 
     /**
-     * Returns a shallow copy of a portion of an iterable into a new array.
-     *
-     * Example:
-     * ```php
-     * Arr::slice([1, 2, 3, 4], 1, 2); // [2, 3]
-     * Arr::slice([1, 2, 3], -2); // [2, 3]
-     * ```
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param int $offset
-     * Starting position of the slice.
-     * @param int $length
-     * Length of the slice.
-     * [Optional] Defaults to `INT_MAX`.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * Defaults to **null**.
-     * @return array<TKey, TValue>
-     */
-    public static function slice(
-        iterable $iterable,
-        int $offset,
-        int $length = PHP_INT_MAX,
-        ?bool $reindex = null,
-    ): array
-    {
-        $array = self::from($iterable);
-        $reindex ??= array_is_list($array);
-        return iterator_to_array(Iter::slice($array, $offset, $length, $reindex));
-    }
-
-    /**
      * Returns the only element in the `$iterable`.
      * If `$condition` is also given, the sole element of a sequence that satisfies a specified
      * condition is returned instead.
@@ -4567,8 +4531,8 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::sole([1]); // 1
-     * Arr::sole([1, 2]); // InvalidArgumentException
+     * Arr::single([1]); // 1
+     * Arr::single([1, 2]); // InvalidArgumentException
      * ```
      *
      * @template TKey of array-key
@@ -4580,7 +4544,7 @@ final class Arr
      * Defaults to **null**.
      * @return TValue
      */
-    public static function sole(
+    public static function single(
         iterable $iterable,
         ?Closure $condition = null,
     ): mixed
@@ -4614,6 +4578,42 @@ final class Arr
         }
 
         return $found;
+    }
+
+    /**
+     * Returns a shallow copy of a portion of an iterable into a new array.
+     *
+     * Example:
+     * ```php
+     * Arr::slice([1, 2, 3, 4], 1, 2); // [2, 3]
+     * Arr::slice([1, 2, 3], -2); // [2, 3]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $offset
+     * Starting position of the slice.
+     * @param int $length
+     * Length of the slice.
+     * [Optional] Defaults to `INT_MAX`.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return array<TKey, TValue>
+     */
+    public static function slice(
+        iterable $iterable,
+        int $offset,
+        int $length = PHP_INT_MAX,
+        ?bool $reindex = null,
+    ): array
+    {
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
+        return iterator_to_array(Iter::slice($array, $offset, $length, $reindex));
     }
 
     /**
@@ -5519,6 +5519,8 @@ final class Arr
     }
 
     /**
+     * TODO add description
+     *
      * @template TValue
      * @param iterable<int, TValue> $iterable
      * @return list<array<int, TValue|null>>
@@ -5538,10 +5540,10 @@ final class Arr
             $array = self::from($iter);
             $grouped[] = $array;
             if (!array_is_list($array)) {
-                $count = count($grouped);
-                throw new TypeMismatchException("Argument #{$count} must be a list, map given.", [
-                    'iter' => $iter,
-                    'n' => $count,
+                $position = count($grouped);
+                throw new TypeMismatchException("Argument #{$position} must be a list, map given.", [
+                    'iterables' => $iterable,
+                    'position' => $position,
                 ]);
             }
         }

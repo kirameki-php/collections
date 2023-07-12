@@ -2930,6 +2930,39 @@ final class ArrTest extends TestCase
         self::assertSame([0, 1, 2, 3], array_keys(Arr::shuffle(['a' => 1, 'b' => 2, 'c' => 3, 'd' => 4], true, $randomizer)));
     }
 
+    public function test_single(): void
+    {
+        // list
+        self::assertSame(1, Arr::single([1]));
+
+        // assoc
+        self::assertSame(1, Arr::single(['a' => 1]));
+
+        // with condition
+        self::assertSame(2, Arr::single([1, 2, 3], static fn(int $i) => $i === 2));
+    }
+
+    public function test_single_zero_item(): void
+    {
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        Arr::single([]);
+    }
+
+    public function test_single_no_match(): void
+    {
+        $this->expectException(NoMatchFoundException::class);
+        $this->expectExceptionMessage('Failed to find matching condition.');
+        Arr::single([1, 2], static fn() => false);
+    }
+
+    public function test_single_more_than_one_item(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
+        Arr::single([1, 2]);
+    }
+
     public function test_slice(): void
     {
         // with offset
@@ -2958,39 +2991,6 @@ final class ArrTest extends TestCase
 
         // reindex: false
         self::assertSame([1 => 2], Arr::slice([1, 2, 3], 1, 1, reindex: false));
-    }
-
-    public function test_sole(): void
-    {
-        // list
-        self::assertSame(1, Arr::sole([1]));
-
-        // assoc
-        self::assertSame(1, Arr::sole(['a' => 1]));
-
-        // with condition
-        self::assertSame(2, Arr::sole([1, 2, 3], static fn(int $i) => $i === 2));
-    }
-
-    public function test_sole_zero_item(): void
-    {
-        $this->expectException(EmptyNotAllowedException::class);
-        $this->expectExceptionMessage('$iterable must contain at least one element.');
-        Arr::sole([]);
-    }
-
-    public function test_sole_no_match(): void
-    {
-        $this->expectException(NoMatchFoundException::class);
-        $this->expectExceptionMessage('Failed to find matching condition.');
-        Arr::sole([1, 2], static fn() => false);
-    }
-
-    public function test_sole_more_than_one_item(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected only one element in result. 2 given.');
-        Arr::sole([1, 2]);
     }
 
     public function test_sort(): void
