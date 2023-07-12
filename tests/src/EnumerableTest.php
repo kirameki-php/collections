@@ -302,6 +302,36 @@ final class EnumerableTest extends TestCase
         $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->count(fn() => false), 'no condition match');
     }
 
+    public function test_countIs(): void
+    {
+        $this->assertTrue($this->vec()->countIs(0));
+        $this->assertFalse($this->vec()->countIs(1));
+        $this->assertTrue($this->vec([1, 2, 3])->countIs(3));
+        $this->assertFalse($this->vec([2, 3, 4])->countIs(0));
+        $this->assertTrue($this->map(['a' => 1])->countIs(1));
+        $this->assertFalse($this->map(['a' => 2])->countIs(0));
+    }
+
+    public function test_countIsBetween(): void
+    {
+        $this->assertTrue($this->vec()->countIsBetween(0, 1));
+        $this->assertFalse($this->vec()->countIsBetween(1, 2));
+        $this->assertTrue($this->vec([1])->countIsBetween(0, 1));
+        $this->assertTrue($this->vec([1])->countIsBetween(1, 1));
+        $this->assertFalse($this->vec([1])->countIsBetween(2, 2));
+        $this->assertTrue($this->vec([1, 2])->countIsBetween(2, 3), 'match lowest');
+        $this->assertTrue($this->vec([1, 2])->countIsBetween(0, 3), 'match middle');
+        $this->assertTrue($this->vec([1, 2])->countIsBetween(0, 2), 'match highest');
+        $this->assertTrue($this->map(['a' => 1])->countIsBetween(1, 1));
+        $this->assertFalse($this->map(['a' => 2])->countIsBetween(2, 10));
+    }
+
+    public function test_countIsBetween_end_bigger_than_start(): void
+    {
+        $this->expectExceptionMessage('`$end` must be >= `$start`');
+        $this->vec()->countIsBetween(1, 0);
+    }
+
     public function test_diff(): void
     {
         $this->assertSame([], $this->vec()->diff([])->all(), 'both empty');

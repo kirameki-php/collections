@@ -196,6 +196,39 @@ trait Enumerable
     }
 
     /**
+     * Counts and checks the collection to see if the amount is equal to `$size`.
+     *
+     * @param int $size
+     * Size to be compared to.
+     * @return bool
+     */
+    public function countIs(int $size): bool
+    {
+        return $this->count() === $size;
+    }
+
+    /**
+     * Checks and returns **true** if count of collection is between `$start` and `$end`,
+     * **false** otherwise. The range is inclusive meaning countIsBetween(1, 10) will include
+     * the numbers 1 and 10. Throws `InvalidArgumentException` if `$end` is smaller than `$start`.
+     *
+     * @param int $start
+     * Start of the range.
+     * @param int $end
+     * End of the range.
+     * @return bool
+     */
+    public function countIsBetween(int $start, int $end): bool
+    {
+        if ($end < $start) {
+            throw new InvalidArgumentException('`$end` must be >= `$start`.');
+        }
+
+        $count = $this->count();
+        return $count >= $start && $count <= $end;
+    }
+
+    /**
      * Compares the keys against the values from `$items` and returns the difference.
      *
      * @param iterable<TKey, TValue> $items
