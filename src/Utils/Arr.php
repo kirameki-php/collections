@@ -78,6 +78,7 @@ use const SORT_REGULAR;
  * TODO add splitAt
  * TODO add startsWith/endsWith
  * TODO add afterEvery($nth)
+ * TODO add padStart/padEnd
  */
 final class Arr
 {
