@@ -144,13 +144,13 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     /**
      * Append value(s) to the end.
      *
-     * @param TValue ...$value
+     * @param TValue ...$values
      * Value(s) to be appended.
      * @return static
      */
-    public function append(mixed ...$value): static
+    public function append(mixed ...$values): static
     {
-        return $this->instantiate(Arr::append($this, ...$value));
+        return $this->instantiate(Arr::append($this, ...$values));
     }
 
     /**
@@ -193,13 +193,13 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     /**
      * Returns a new instance with `$value`(s) prepended to the front.
      *
-     * @param mixed ...$value
+     * @param mixed ...$values
      * Value(s) to be prepended.
      * @return static
      */
-    public function prepend(mixed ...$value): static
+    public function prepend(mixed ...$values): static
     {
-        return $this->instantiate(Arr::prepend($this, ...$value));
+        return $this->instantiate(Arr::prepend($this, ...$values));
     }
 
     /**
@@ -246,20 +246,20 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param iterable<int, TValue> ...$list
+     * @param iterable<int, TValue> ...$lists
      * @return Vec<Vec<TValue|null>>
      */
-    public function zip(iterable ...$list): self
+    public function zip(iterable ...$lists): self
     {
-        if (count($list) < 1) {
+        if (count($lists) < 1) {
             throw new InvalidArgumentException('Expected: at least 1 argument. Got: 0.', [
                 'this' => $this,
-                'list' => $list,
+                'list' => $lists,
             ]);
         }
 
         return $this->newVec(
-            array_map(fn($v): self => $this->newVec($v), Arr::zip($this, ...$list)),
+            array_map(fn($v): self => $this->newVec($v), Arr::zip($this, ...$lists)),
         );
     }
 

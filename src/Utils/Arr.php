@@ -105,26 +105,26 @@ final class Arr
      * @template T
      * @param iterable<int, T> &$iterable
      * Iterable which the value is getting appended.
-     * @param T ...$value
+     * @param T ...$values
      * Value(s) to be appended to the array.
      * @return array<int, T>
      */
     public static function append(
         iterable $iterable,
-        mixed ...$value,
+        mixed ...$values,
     ): array
     {
         $array = self::from($iterable);
         if (!array_is_list($array)) {
             throw new TypeMismatchException('$array must be a list, map given.', [
                 'iterable' => $iterable,
-                'values' => $value,
+                'values' => $values,
             ]);
         }
-        if (!array_is_list($value)) {
-            $value = array_values($value);
+        if (!array_is_list($values)) {
+            $values = array_values($values);
         }
-        array_push($array, ...$value);
+        array_push($array, ...$values);
         return $array;
     }
 
@@ -2652,16 +2652,16 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param iterable<TKey, TValue> ...$iterable
+     * @param iterable<TKey, TValue> ...$iterables
      * Iterable(s) to be merged.
      * @return array<TKey, TValue>
      */
     public static function merge(
-        iterable ...$iterable,
+        iterable ...$iterables,
     ): array
     {
         $result = null;
-        foreach ($iterable as $iter) {
+        foreach ($iterables as $iter) {
             if ($result === null) {
                 $result = self::from($iter);
                 continue;
@@ -3153,26 +3153,26 @@ final class Arr
      * @template T
      * @param array<int, T> $iterable
      * Iterable to be prepended.
-     * @param T ...$value
+     * @param T ...$values
      * Value(s) to be prepended to the array.
      * @return array<int, T>
      */
     public static function prepend(
         iterable $iterable,
-        mixed ...$value,
+        mixed ...$values,
     ): array
     {
         $array = self::from($iterable);
         if (!array_is_list($array)) {
             throw new TypeMismatchException('$array must be a list, map given.', [
                 'iterable' => $iterable,
-                'values' => $value,
+                'values' => $values,
             ]);
         }
-        if (!array_is_list($value)) {
-            $value = array_values($value);
+        if (!array_is_list($values)) {
+            $values = array_values($values);
         }
-        array_unshift($array, ...$value);
+        array_unshift($array, ...$values);
         return $array;
     }
 
@@ -3462,23 +3462,23 @@ final class Arr
      * @template T
      * @param array<T> &$array
      * Array reference which the value is getting push to.
-     * @param T ...$value
+     * @param T ...$values
      * Value(s) to be pushed on to the array.
      * @return void
      */
     public static function push(
         array &$array,
-        mixed ...$value,
+        mixed ...$values,
     ): void
     {
         if (!array_is_list($array)) {
             throw new TypeMismatchException('$array must be a list, map given.', [
                 'array' => $array,
-                'values' => $value,
+                'values' => $values,
             ]);
         }
 
-        array_push($array, ...$value);
+        array_push($array, ...$values);
     }
 
     /**
@@ -5487,27 +5487,27 @@ final class Arr
      * TODO add description
      *
      * @template TValue
-     * @param iterable<int, TValue> $iterable
+     * @param iterable<int, TValue> $iterables
      * @return list<array<int, TValue|null>>
      */
     public static function zip(
-        iterable ...$iterable,
+        iterable ...$iterables,
     ): array
     {
-        if (count($iterable) < 1) {
+        if (count($iterables) < 1) {
             throw new InvalidArgumentException('Arr::zip() expects at least 1 argument.', [
-                'iterable' => $iterable,
+                'iterables' => $iterables,
             ]);
         }
 
         $grouped = [];
-        foreach ($iterable as $iter) {
+        foreach ($iterables as $iter) {
             $array = self::from($iter);
             $grouped[] = $array;
             if (!array_is_list($array)) {
                 $position = count($grouped);
                 throw new TypeMismatchException("Argument #{$position} must be a list, map given.", [
-                    'iterables' => $iterable,
+                    'iterables' => $iterables,
                     'position' => $position,
                 ]);
             }

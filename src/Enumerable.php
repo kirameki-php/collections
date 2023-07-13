@@ -711,9 +711,9 @@ trait Enumerable
      * Iterable(s) to be merged.
      * @return static
      */
-    public function merge(iterable ...$iterable): static
+    public function merge(iterable ...$iterables): static
     {
-        return $this->instantiate(Arr::merge($this, ...$iterable));
+        return $this->instantiate(Arr::merge($this, ...$iterables));
     }
 
     /**
