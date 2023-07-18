@@ -78,7 +78,7 @@ use const SORT_REGULAR;
  * TODO add splitAt
  * TODO add startsWith/endsWith
  * TODO add afterEvery($nth)
- * TODO add padStart/padEnd
+ * TODO add padLeft/padRight
  */
 final class Arr
 {
@@ -470,7 +470,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains all provided values,
+     * Returns **true** if given iterable contains all of the provided `$values`,
      * **false** otherwise.
      *
      * Example:
@@ -512,7 +512,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains all the provided keys,
+     * Returns **true** if given iterable contains all of the provided `$keys`,
      * **false** otherwise.
      *
      * Example:
@@ -545,7 +545,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains any of the provided values,
+     * Returns **true** if given iterable contains any of the provided `$values`,
      * **false** otherwise.
      *
      * Example:
@@ -577,7 +577,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains any of the provided keys,
+     * Returns **true** if given iterable contains any of the provided `$keys`,
      * **false** otherwise.
      *
      * Example:
@@ -636,7 +636,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains none of the provided values,
+     * Returns **true** if given iterable contains none of the provided `$values`,
      * **false** otherwise.
      *
      * Example:
@@ -669,7 +669,7 @@ final class Arr
 
     /**
      * Counts all the elements in `$iterable`.
-     * If a condition is given, it will only increase the count if the condition returns **true**.
+     * If `$condition` is provided, it will only increase the count if the condition returns **true**.
      *
      * Example:
      * ```php
@@ -5002,6 +5002,40 @@ final class Arr
             }
         }
         return $split;
+    }
+
+    /**
+     * Returns **true** if `$iterable` starts with the given `$values`, **false** otherwise.
+     *
+     * Example:
+     * ```php
+     * Arr::startsWith([1, 2, 3], 1, 2); // true
+     * Arr::startsWith([1, 2, 3], 1, 3); // false
+     * Arr::startsWith([1, 2, 3], 1, 2, 3, 4); // false
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param TValue ...$values
+     * @return bool
+     */
+    public static function startsWith(
+        iterable $iterable,
+        iterable $values,
+    ): bool
+    {
+        foreach ($iterable as $val) {
+            $index = key($values);
+            if ($index === null) {
+                break;
+            }
+            if ($values[$index] !== $val) {
+                return false;
+            }
+            next($values);
+        }
+        return true;
     }
 
     /**

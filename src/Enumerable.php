@@ -1246,6 +1246,20 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if the collection starts with the given `$values`, **false** otherwise.
+     *
+     * @param TValue ...$values
+     * Items to check for.
+     * @return bool
+     */
+    public function startsWith(
+        mixed ...$values,
+    ): bool
+    {
+        return Arr::startsWith($this, ...$values);
+    }
+
+    /**
      * Returns a new collection with the elements of the two keys swapped.
      *
      * @param TKey $key1

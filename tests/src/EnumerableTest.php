@@ -1491,6 +1491,11 @@ final class EnumerableTest extends TestCase
         $this->vec()->splitEvenly(0);
     }
 
+    public function test_startsWith(): void
+    {
+        $this->assertSame([], $this->vec()->startsWith()->toArray(), 'empty');
+    }
+
     public function test_swap(): void
     {
         $this->assertSame([1, 3, 2, 4], $this->vec([1, 2, 3, 4])->swap(1, 2)->all(), 'swap list');
