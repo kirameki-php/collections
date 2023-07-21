@@ -901,7 +901,7 @@ final class Arr
     public static function dropIf(
         iterable $iterable,
         Closure $condition,
-        bool $reindex = null,
+        ?bool $reindex = null,
     ): array
     {
         $array = self::from($iterable);
@@ -1212,7 +1212,7 @@ final class Arr
     public static function filter(
         iterable $iterable,
         Closure $condition,
-        bool $reindex = null,
+        ?bool $reindex = null,
     ): array
     {
         return self::takeIf($iterable, $condition, $reindex);
@@ -5229,7 +5229,7 @@ final class Arr
     public static function takeIf(
         iterable $iterable,
         Closure $condition,
-        bool $reindex = null,
+        ?bool $reindex = null,
     ): array
     {
         $array = self::from($iterable);
