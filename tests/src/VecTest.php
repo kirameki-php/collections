@@ -162,14 +162,14 @@ final class VecTest extends TestCase
         self::assertInstanceOf(VecMutable::class, $this->vec([1])->lazy()->mutable());
     }
 
-    public function test_pad(): void
+    public function test_padRight(): void
     {
-        self::assertSame([], $this->vec()->pad(0, 1)->all(), 'zero pad');
-        self::assertSame([1, 1], $this->vec()->pad(2, 1)->all(), 'on empty');
-        self::assertSame([0], $this->vec([0])->pad(1, 1)->all(), 'no pad');
-        self::assertSame([0], $this->vec([0])->pad(-1, 1)->all(), 'negative pad');
-        self::assertSame([1, 1, 0], $this->vec([0])->pad(-3, 1)->all(), 'negative pad');
-        self::assertSame([0, 1, 1], $this->vec([0])->pad(3, 1)->all(), 'pad left');
+        self::assertSame([], $this->vec()->padRight(0, 1)->all(), 'zero pad');
+        self::assertSame([1, 1], $this->vec()->padRight(2, 1)->all(), 'on empty');
+        self::assertSame([0], $this->vec([0])->padRight(1, 1)->all(), 'no pad');
+        self::assertSame([0], $this->vec([0])->padRight(-1, 1)->all(), 'negative pad');
+        self::assertSame([1, 1, 0], $this->vec([0])->padRight(-3, 1)->all(), 'negative pad');
+        self::assertSame([0, 1, 1], $this->vec([0])->padRight(3, 1)->all(), 'pad left');
     }
 
     public function test_prepend(): void

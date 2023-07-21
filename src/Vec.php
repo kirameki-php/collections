@@ -185,9 +185,9 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * Value inserted into each padding.
      * @return static
      */
-    public function pad(int $length, mixed $value): static
+    public function padRight(int $length, mixed $value): static
     {
-        return $this->instantiate(Arr::pad($this, $length, $value));
+        return $this->instantiate(Arr::padRight($this, $length, $value));
     }
 
     /**

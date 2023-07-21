@@ -1731,30 +1731,30 @@ final class ArrTest extends TestCase
         self::assertSame([1, 'a' => 2], Arr::of(1, a: 2));
     }
 
-    public function test_pad(): void
+    public function test_padRight(): void
     {
         // empty
-        self::assertSame([], Arr::pad([], 0, 1));
+        self::assertSame([], Arr::padRight([], 0, 1));
 
         // not padded
-        self::assertSame([1], Arr::pad([1], 0, 1));
+        self::assertSame([1], Arr::padRight([1], 0, 1));
 
         // pad right
-        self::assertSame([0], Arr::pad([], 1, 0));
-        self::assertSame([1, 1], Arr::pad([1], 2, 1));
-        self::assertSame([1, 2, 2], Arr::pad([1], 3, 2));
+        self::assertSame([0], Arr::padRight([], 1, 0));
+        self::assertSame([1, 1], Arr::padRight([1], 2, 1));
+        self::assertSame([1, 2, 2], Arr::padRight([1], 3, 2));
 
         // pad left
-        self::assertSame([0], Arr::pad([], -1, 0));
-        self::assertSame([1, 1], Arr::pad([1], -2, 1));
-        self::assertSame([2, 2, 1], Arr::pad([1], -3, 2));
+        self::assertSame([0], Arr::padRight([], -1, 0));
+        self::assertSame([1, 1], Arr::padRight([1], -2, 1));
+        self::assertSame([2, 2, 1], Arr::padRight([1], -3, 2));
     }
 
-    public function test_padding_on_assoc(): void
+    public function test_paddRight_on_assoc(): void
     {
         $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('Padding can only be applied to a list, map given.');
-        Arr::pad(['a' => 1], 1, 2);
+        Arr::padRight(['a' => 1], 1, 2);
     }
 
     public function test_partition(): void

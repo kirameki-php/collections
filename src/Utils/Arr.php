@@ -76,8 +76,7 @@ use const SORT_REGULAR;
 /**
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
  * TODO add splitAt
- * TODO add afterEvery($nth)
- * TODO add padLeft/padRight
+ * TODO add padLeft
  * TODO add assertExactKeys
  */
 final class Arr
@@ -3002,9 +3001,9 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::pad(['a'], 3, 'b'); // ['a', 'b', 'b']
-     * Arr::pad([1], -3, 2); // [2, 2, 1]
-     * Arr::pad('a' => 1], 2, 2); // TypeMismatchException
+     * Arr::padRight(['a'], 3, 'b'); // ['a', 'b', 'b']
+     * Arr::padRight([1], -3, 2); // [2, 2, 1]
+     * Arr::padRight('a' => 1], 2, 2); // TypeMismatchException
      * ```
      *
      * @template TValue
@@ -3017,7 +3016,7 @@ final class Arr
      * Value inserted into each padding.
      * @return array<int, TValue>
      */
-    public static function pad(
+    public static function padRight(
         iterable $iterable,
         int $length,
         mixed $value,
