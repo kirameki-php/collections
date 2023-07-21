@@ -3441,6 +3441,7 @@ final class ArrTest extends TestCase
         self::assertSame([], Arr::zip([]), 'empty no 2+ args');
         self::assertSame([], Arr::zip([], []), 'empty args');
         self::assertSame([[1]], Arr::zip([1]), 'no list args');
+        self::assertSame([[1, 2]], Arr::zip([1], [2, 3]), '2nd arg has more elements');
         self::assertSame([[1, null, 5], [2, null, null]], Arr::zip([1, 2], [], [5]), 'list uneven');
         self::assertSame([[1, 3, 5], [2, 4, 6]], Arr::zip([1, 2], [3, 4], [5, 6]), 'list even');
     }

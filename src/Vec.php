@@ -246,20 +246,24 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param iterable<int, TValue> ...$lists
+     * Returns a `Vec` consisting of sub `Vec`s where each sub `Vec` is an aggregate of
+     * elements in `$iterables` at each position. The given `$iterables` must all be
+     * a list.
+     *
+     * @param iterable<int, TValue> ...$iterables
      * @return Vec<Vec<TValue|null>>
      */
-    public function zip(iterable ...$lists): self
+    public function zip(iterable ...$iterables): self
     {
-        if (count($lists) < 1) {
+        if (count($iterables) < 1) {
             throw new InvalidArgumentException('Expected: at least 1 argument. Got: 0.', [
                 'this' => $this,
-                'list' => $lists,
+                'iterables' => $iterables,
             ]);
         }
 
         return $this->newVec(
-            array_map(fn($v): self => $this->newVec($v), Arr::zip($this, ...$lists)),
+            array_map(fn($v): self => $this->newVec($v), Arr::zip($this, ...$iterables)),
         );
     }
 

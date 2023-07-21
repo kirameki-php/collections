@@ -5578,7 +5578,16 @@ final class Arr
     }
 
     /**
-     * TODO add description
+     * Returns a list consisting of sub lists where each sub array is an aggregate of
+     * elements in `$iterables` at each position. The given `$iterables` must all be
+     * a list.
+     *
+     * Example:
+     * ```php
+     * Arr::zip([1, 2], [3, 4], [5, 6]); // [[1, 3, 5], [2, 4, 6]]
+     * Arr::zip([1, 2], [3]); // [[1, 3], [2, null]]
+     * Arr::zip([1], [2, 3]); // [[1, 2]]
+     * ```
      *
      * @template TValue
      * @param iterable<int, TValue> $iterables
