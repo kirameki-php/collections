@@ -721,7 +721,7 @@ trait Enumerable
      *
      * This method will only merge the key value pairs of the root depth.
      *
-     * @param iterable<TKey, TValue> $iterable
+     * @param iterable<TKey, TValue> $iterables
      * Iterable(s) to be merged.
      * @return static
      */
