@@ -76,7 +76,6 @@ use const SORT_REGULAR;
 /**
  * TODO add takeEvery(int $nth)/dropEvery(int $nth)
  * TODO add splitAt
- * TODO add startsWith/endsWith
  * TODO add afterEvery($nth)
  * TODO add padLeft/padRight
  * TODO add assertExactKeys
@@ -1145,6 +1144,44 @@ final class Arr
     ): void
     {
         iterator_to_array(Iter::each($iterable, $callback));
+    }
+
+    /**
+     * Returns **true** if `$iterable` ends with the given `$values`, **false** otherwise.
+     *
+     * Example:
+     * ```php
+     * Arr::endsWith([1, 2, 3], [2, 3]); // true
+     * Arr::endsWith([1, 2, 3], [1, 3]); // false
+     * Arr::endsWith([1, 2, 3], [1, 2, 3, 4]); // false
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param iterable<array-key, TValue> $values
+     * @return bool
+     */
+    public static function endsWith(
+        iterable $iterable,
+        iterable $values,
+    ): bool
+    {
+        $array = self::values($iterable);
+        $values = self::values($values);
+        $sizeOfArray = count($array) - 1;
+        $sizeOfValues = count($values) - 1;
+
+        if ($sizeOfValues > $sizeOfArray) {
+            return false;
+        }
+
+        for ($i = $sizeOfValues, $j = $sizeOfArray; $i >= 0; $i--, $j--) {
+            if ($values[$i] !== $array[$j]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -5010,15 +5047,15 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::startsWith([1, 2, 3], 1, 2); // true
-     * Arr::startsWith([1, 2, 3], 1, 3); // false
-     * Arr::startsWith([1, 2, 3], 1, 2, 3, 4); // false
+     * Arr::startsWith([1, 2, 3], [1, 2]); // true
+     * Arr::startsWith([1, 2, 3], [1, 3]); // false
+     * Arr::startsWith([1, 2, 3], [1, 2, 3, 4]); // false
      * ```
      *
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
-     * @param TValue ...$values
+     * @param iterable<array-key, TValue> $values
      * @return bool
      */
     public static function startsWith(
@@ -5026,17 +5063,19 @@ final class Arr
         iterable $values,
     ): bool
     {
+        $values = self::values($values);
+        $sizeOfValues = count($values);
+        $index = 0;
         foreach ($iterable as $val) {
-            $index = key($values);
-            if ($index === null) {
+            if ($index === $sizeOfValues) {
                 break;
             }
             if ($values[$index] !== $val) {
                 return false;
             }
-            next($values);
+            ++$index;
         }
-        return true;
+        return count($values) <= $index;
     }
 
     /**

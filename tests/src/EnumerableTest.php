@@ -510,6 +510,26 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['xa' => 1, 'xb' => 2], (array) $obj);
     }
 
+    public function test_endsWith(): void
+    {
+        $this->assertTrue($this->vec([])->endsWith([]), 'empty both');
+        $this->assertTrue($this->vec([1])->endsWith([]), 'empty values');
+        $this->assertFalse($this->vec([])->endsWith([1]), 'empty vec');
+        $this->assertTrue($this->vec([1, 2])->endsWith([1, 2]), 'exact match');
+        $this->assertFalse($this->vec([1, 2])->endsWith([1]), 'start match');
+        $this->assertTrue($this->vec([1, 2])->endsWith([2]), 'end match');
+        $this->assertFalse($this->vec([1, 2])->endsWith([1, 2, 3]), 'values bigger');
+        $this->assertTrue($this->map([])->endsWith([]), 'empty both');
+        $this->assertTrue($this->map(['a' => 1])->endsWith([]), 'empty values');
+        $this->assertFalse($this->map([])->endsWith([1]), 'empty map');
+        $this->assertFalse($this->map(['a' => 1, 'b' => 2])->endsWith(['a' => 1]), 'start match');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->endsWith(['b' => 2]), 'end match');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->endsWith(['a' => 1, 'b' => 2]), 'exact match');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->endsWith([2]), 'key does not matter');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->endsWith(['c' => 2]), 'key does not matter 2');
+        $this->assertFalse($this->map(['a' => 1, 'b' => 2])->endsWith(['c' => 3]), 'different value');
+    }
+
     public function test_filter(): void
     {
         $this->assertSame([], $this->vec()->filter(fn() => true)->all(), 'empty');
@@ -1493,7 +1513,22 @@ final class EnumerableTest extends TestCase
 
     public function test_startsWith(): void
     {
-        $this->assertSame([], $this->vec()->startsWith()->toArray(), 'empty');
+        $this->assertTrue($this->vec([])->startsWith([]), 'empty both');
+        $this->assertTrue($this->vec([1])->startsWith([]), 'empty values');
+        $this->assertFalse($this->vec([])->startsWith([1]), 'empty vec');
+        $this->assertTrue($this->vec([1, 2])->startsWith([1, 2]), 'exact match');
+        $this->assertTrue($this->vec([1, 2])->startsWith([1]), 'start match');
+        $this->assertFalse($this->vec([1, 2])->startsWith([2]), 'end match');
+        $this->assertFalse($this->vec([1, 2])->startsWith([1, 2, 3]), 'values bigger');
+
+        $this->assertTrue($this->map([])->startsWith([]), 'empty both');
+        $this->assertTrue($this->map(['a' => 1])->startsWith([]), 'empty values');
+        $this->assertFalse($this->map([])->startsWith([1]), 'empty map');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->startsWith(['a' => 1]), 'start match');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->startsWith(['a' => 1, 'b' => 2]), 'exact match');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->startsWith([1]), 'key does not matter');
+        $this->assertTrue($this->map(['a' => 1, 'b' => 2])->startsWith(['c' => 1]), 'key does not matter 2');
+        $this->assertFalse($this->map(['a' => 1, 'b' => 2])->startsWith(['c' => 2]), 'different value');
     }
 
     public function test_swap(): void

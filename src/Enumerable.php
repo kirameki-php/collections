@@ -363,6 +363,20 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if the collection ends with the given `$values`, **false** otherwise.
+     *
+     * @param iterable<array-key, TValue> $values
+     * Items to check for.
+     * @return bool
+     */
+    public function endsWith(
+        iterable $values,
+    ): bool
+    {
+        return Arr::endsWith($this, $values);
+    }
+
+    /**
      * Creates a Generator that will send the key/value to the generator if the condition is **true**.
      *
      * Alias of `static::takeIf()`
@@ -1248,15 +1262,15 @@ trait Enumerable
     /**
      * Returns **true** if the collection starts with the given `$values`, **false** otherwise.
      *
-     * @param TValue ...$values
+     * @param iterable<array-key, TValue> $values
      * Items to check for.
      * @return bool
      */
     public function startsWith(
-        mixed ...$values,
+        iterable $values,
     ): bool
     {
-        return Arr::startsWith($this, ...$values);
+        return Arr::startsWith($this, $values);
     }
 
     /**

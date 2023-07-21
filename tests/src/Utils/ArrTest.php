@@ -726,6 +726,20 @@ final class ArrTest extends TestCase
         });
     }
 
+    public function test_endsWith(): void
+    {
+        self::assertTrue(Arr::endsWith([], []), 'both empty');
+        self::assertFalse(Arr::endsWith([], [1]), 'empty iterable');
+        self::assertTrue(Arr::endsWith([1], []), 'empty values');
+        self::assertTrue(Arr::endsWith([1, 2], [1, 2]), 'exact match');
+        self::assertFalse(Arr::endsWith([1, 2, 3], [1, 2]), 'match start');
+        self::assertTrue(Arr::endsWith([1, 2, 3], [2, 3]), 'match end');
+        self::assertFalse(Arr::endsWith([1, 2, 3], [1, 2, 4]), 'partial match');
+        self::assertTrue(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['b' => 2, 'c' => 3]), 'map: exact match');
+        self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2]), 'map: match start');
+        self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2, 'd' => 4]), 'map: partial match');
+    }
+
     public function test_get(): void
     {
         $list = [1, 2];
@@ -3131,6 +3145,24 @@ final class ArrTest extends TestCase
         $this->expectExceptionMessage('Expected: $parts > 0. Got: 0.');
         $this->expectException(InvalidArgumentException::class);
         Arr::splitEvenly([], 0);
+    }
+
+    public function test_startsWith(): void
+    {
+        $this->assertTrue(Arr::startsWith([], []), 'empty both');
+        $this->assertTrue(Arr::startsWith([1], []), 'empty values');
+        $this->assertFalse(Arr::startsWith([], [1]), 'empty list');
+        $this->assertTrue(Arr::startsWith([1, 2], [1, 2]), 'exact match');
+        $this->assertTrue(Arr::startsWith([1, 2], [1]), 'start match');
+        $this->assertFalse(Arr::startsWith([1, 2], [2]), 'end match');
+        $this->assertFalse(Arr::startsWith([1, 2], [1, 2, 3]), 'values bigger');
+
+        $this->assertTrue(Arr::startsWith(['a' => 1], []), 'empty values');
+        $this->assertTrue(Arr::startsWith(['a' => 1, 'b' => 2], ['a' => 1]), 'start match');
+        $this->assertTrue(Arr::startsWith(['a' => 1, 'b' => 2], ['a' => 1, 'b' => 2]), 'exact match');
+        $this->assertTrue(Arr::startsWith(['a' => 1, 'b' => 2], [1]), 'key does not matter');
+        $this->assertTrue(Arr::startsWith(['a' => 1, 'b' => 2], ['c' => 1]), 'key does not matter 2');
+        $this->assertFalse(Arr::startsWith(['a' => 1, 'b' => 2], ['c' => 2]), 'different value');
     }
 
     public function test_sum(): void
