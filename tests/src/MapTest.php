@@ -8,6 +8,7 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Collections\VecMutable;
 use Kirameki\Core\Exceptions\ErrorException;
@@ -454,6 +455,17 @@ final class MapTest extends TestCase
         $this->assertInstanceOf(Vec::class, $this->map()->values());
         $this->assertSame([], $this->map()->values()->all());
         $this->assertSame([1, 2], $this->map(['a' => 1, 'b' => 2])->values()->all());
+    }
+
+    public function test_withDefaults(): void
+    {
+        self::assertSame([], $this->map()->withDefaults([])->all(), 'empty');
+        self::assertSame([1], $this->map([1])->withDefaults([])->all(), 'empty defaults');
+        self::assertSame([1, 2], $this->map()->withDefaults([1, 2])->all(), 'empty iterable');
+        self::assertSame([1, 3], $this->map([1])->withDefaults([2, 3])->all(), 'first element exists');
+        self::assertSame(['a' => 1], $this->map()->withDefaults(['a' => 1])->all(), 'mix list and map');
+        self::assertSame(['a' => 1], $this->map(['a' => 1])->withDefaults(['a' => 2])->all(), 'map key exists');
+        self::assertSame([1, 'a' => 2], $this->map([1])->withDefaults(['a' => 2])->all(), 'mix list and map');
     }
 
     public function test_reindex(): void

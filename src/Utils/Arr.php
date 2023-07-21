@@ -79,6 +79,7 @@ use const SORT_REGULAR;
  * TODO add startsWith/endsWith
  * TODO add afterEvery($nth)
  * TODO add padLeft/padRight
+ * TODO add assertExactKeys
  */
 final class Arr
 {
@@ -5486,6 +5487,26 @@ final class Arr
             $reindex = array_is_list($iterable);
         }
         return iterator_to_array(Iter::windows($iterable, $size, $reindex));
+    }
+
+    /**
+     * Returns a copy of `$iterable` as array with the specified `$defaults` merged in
+     * if the corresponding key does not exist `$iterable`.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be checked for missing elements.
+     * @param iterable<TKey, TValue> $defaults
+     * Iterable to be set as default.
+     * @return array<TKey, TValue>
+     */
+    public static function withDefaults(
+        iterable $iterable,
+        iterable $defaults,
+    ): array
+    {
+        return self::from($iterable) + self::from($defaults);
     }
 
     /**

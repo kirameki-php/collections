@@ -3393,6 +3393,17 @@ final class ArrTest extends TestCase
         self::assertSame([], Arr::windows([], 0), 'zero');
     }
 
+    public function test_withDefaults(): void
+    {
+        self::assertSame([], Arr::withDefaults([], []), 'empty');
+        self::assertSame([1], Arr::withDefaults([1], []), 'empty defaults');
+        self::assertSame([1, 2], Arr::withDefaults([], [1, 2]), 'empty iterable');
+        self::assertSame([1, 3], Arr::withDefaults([1], [2, 3]), 'first element exists');
+        self::assertSame(['a' => 1], Arr::withDefaults([], ['a' => 1]), 'mix list and map');
+        self::assertSame(['a' => 1], Arr::withDefaults(['a' => 1], ['a' => 2]), 'map key exists');
+        self::assertSame([1, 'a' => 2], Arr::withDefaults([1], ['a' => 2]), 'mix list and map');
+    }
+
     public function test_zip(): void
     {
         self::assertSame([], Arr::zip([]), 'empty no 2+ args');

@@ -356,6 +356,18 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a copy of collection with the specified `$defaults` merged in if
+     * the corresponding key does not exist `$iterable`.
+     *
+     * @param iterable<TKey, TValue> $defaults
+     * @return static
+     */
+    public function withDefaults(iterable $defaults): static
+    {
+        return $this->instantiate(Arr::withDefaults($this, $defaults));
+    }
+
+    /**
      * @return Vec<TValue>
      */
     public function values(): Vec
