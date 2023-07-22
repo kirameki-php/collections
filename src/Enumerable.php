@@ -248,6 +248,18 @@ trait Enumerable
     }
 
     /**
+     * Returns a new instance with every nth elements dropped.
+     *
+     * @param int $nth
+     * Nth value to drop. Must be >= 1.
+     * @return static
+     */
+    public function dropEvery(int $nth): static
+    {
+        return $this->instantiate(Arr::dropEvery($this, $nth, $this->reindex()));
+    }
+
+    /**
      * Returns a new instance with the first n elements dropped.
      *
      * @param int $amount
@@ -260,7 +272,7 @@ trait Enumerable
     }
 
     /**
-     * Creates a Generator that will send the key/value to the generator if the condition is **false**.
+     * Returns a new collection that contains all elements where the `$condition` returned **false**.
      *
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition
@@ -377,7 +389,7 @@ trait Enumerable
     }
 
     /**
-     * Creates a Generator that will send the key/value to the generator if the condition is **true**.
+     * Returns a new collection that contains all elements where the `$condition` returned **true**.
      *
      * Alias of `static::takeIf()`
      *
@@ -1288,6 +1300,18 @@ trait Enumerable
     }
 
     /**
+     * Returns a new instance with every nth elements dropped.
+     *
+     * @param int $nth
+     * Nth value to drop. Must be >= 1.
+     * @return static
+     */
+    public function takeEvery(int $nth): static
+    {
+        return $this->instantiate(Arr::takeEvery($this, $nth, $this->reindex()));
+    }
+
+    /**
      * Take the first n elements from the collection and return a new instance
      * with those elements.
      *
@@ -1301,7 +1325,7 @@ trait Enumerable
     }
 
     /**
-     * Creates a Generator that will send the key/value to the generator if the condition is **true**.
+     * Returns a new collection that contains all elements where the `$condition` returned **true**.
      *
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition

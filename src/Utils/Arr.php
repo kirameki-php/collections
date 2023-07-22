@@ -39,6 +39,7 @@ use function arsort;
 use function asort;
 use function count;
 use function current;
+use function dump;
 use function end;
 use function get_resource_id;
 use function gettype;
@@ -74,7 +75,6 @@ use const SORT_DESC;
 use const SORT_REGULAR;
 
 /**
- * TODO add takeEvery(int $nth)/dropEvery(int $nth)
  * TODO add splitAt
  * TODO add padLeft
  * TODO add assertExactKeys
@@ -840,6 +840,38 @@ final class Arr
     ): bool
     {
         return !self::containsKey($iterable, $key);
+    }
+
+    /**
+     * Drop every `$nth` elements from `$iterable`.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $nth
+     * Nth value to drop. Must be >= 1.
+     * @return array<TKey, TValue>
+     */
+    public static function dropEvery(
+        iterable $iterable,
+        int $nth,
+        ?bool $reindex = null,
+    ): array
+    {
+        if ($nth <= 0) {
+            throw new InvalidArgumentException("Expected: \$nth >= 1. Got: {$nth}.", [
+                'iterable' => $iterable,
+                'nth' => $nth,
+                'reindex' => $reindex,
+            ]);
+        }
+
+        $i = 0;
+        return self::dropIf($iterable, static function() use (&$i, $nth) {
+            ++$i;
+            return $i % $nth === 0;
+        }, $reindex);
     }
 
     /**
@@ -5175,6 +5207,38 @@ final class Arr
             }
             return $swapped;
         }
+    }
+
+    /**
+     * Take every `$nth` element from `$iterable`.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $nth
+     * Nth value to take. Must be >= 1.
+     * @return array<TKey, TValue>
+     */
+    public static function takeEvery(
+        iterable $iterable,
+        int $nth,
+        ?bool $reindex = null,
+    ): array
+    {
+        if ($nth <= 0) {
+            throw new InvalidArgumentException("Expected: \$nth >= 1. Got: {$nth}.", [
+                'iterable' => $iterable,
+                'nth' => $nth,
+                'reindex' => $reindex,
+            ]);
+        }
+
+        $i = 0;
+        return self::takeIf($iterable, static function() use (&$i, $nth) {
+            ++$i;
+            return $i % $nth === 0;
+        }, $reindex);
     }
 
     /**

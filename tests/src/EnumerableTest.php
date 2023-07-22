@@ -353,6 +353,22 @@ final class EnumerableTest extends TestCase
         $this->assertTrue($this->map(['a' => 1])->doesNotContain($this->vec([1])), 'vec as arg');
     }
 
+    public function test_dropEvery(): void
+    {
+        self::assertSame([], $this->vec()->dropEvery(1)->all(), 'empty');
+        self::assertSame([], $this->vec([1, 2, 3])->dropEvery(1)->all(), 'drop every 1st');
+        self::assertSame([1, 3, 5], $this->vec(range(1, 5))->dropEvery(2)->all(), 'drop every 2nd');
+        self::assertSame([1, 2, 4, 5, 7], $this->vec(range(1, 7))->dropEvery(3)->all(), 'drop every 3rd');
+        self::assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 2])->dropEvery(2)->all(), 'assoc');
+    }
+
+    public function test_dropEvery_zero_nth(): void
+    {
+        $this->expectExceptionMessage('Expected: $nth >= 1. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec()->dropEvery(0);
+    }
+
     public function test_dropFirst(): void
     {
         $this->assertSame([], $this->vec()->dropFirst(0)->all(), 'zero on empty');
@@ -1549,6 +1565,22 @@ final class EnumerableTest extends TestCase
         $this->expectExceptionMessage('Key: 1 does not exist.');
         $this->expectException(InvalidKeyException::class);
         $this->vec([1])->swap(0, 1);
+    }
+
+    public function test_takeEvery(): void
+    {
+        self::assertSame([], $this->vec()->takeEvery(1)->all(), 'empty');
+        self::assertSame([1, 2, 3], $this->vec([1, 2, 3])->takeEvery(1)->all(), 'take every 1st');
+        self::assertSame([2, 4], $this->vec(range(1, 5))->takeEvery(2)->all(), 'take every 2nd');
+        self::assertSame([3, 6], $this->vec(range(1, 7))->takeEvery(3)->all(), 'take every 3rd');
+        self::assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->takeEvery(2)->all(), 'assoc');
+    }
+
+    public function test_takeEvery_zero_nth(): void
+    {
+        $this->expectExceptionMessage('Expected: $nth >= 1. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec()->takeEvery(0);
     }
 
     public function test_takeFirst(): void

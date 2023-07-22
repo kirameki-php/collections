@@ -494,6 +494,22 @@ final class ArrTest extends TestCase
         self::assertFalse(Arr::doesNotContainKey(['a' => 1, 0], 'a'));
     }
 
+    public function test_dropEvery(): void
+    {
+        self::assertSame([], Arr::dropEvery([], 1), 'empty');
+        self::assertSame([], Arr::dropEvery([1, 2, 3], 1), 'drop every 1st');
+        self::assertSame([1, 3, 5], Arr::dropEvery([1, 2, 3, 4, 5], 2), 'drop every 2nd');
+        self::assertSame([1, 2, 4, 5, 7], Arr::dropEvery(range(1, 7), 3), 'drop every 3rd');
+        self::assertSame(['a' => 1], Arr::dropEvery(['a' => 1, 'b' => 2], 2), 'assoc');
+    }
+
+    public function test_dropEvery_zero_nth(): void
+    {
+        $this->expectExceptionMessage('Expected: $nth >= 1. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::dropEvery([], 0);
+    }
+
     public function test_dropFirst(): void
     {
         // empty
@@ -3212,6 +3228,22 @@ final class ArrTest extends TestCase
         $this->expectException(InvalidElementException::class);
         $this->expectExceptionMessage('$iterable cannot contain NAN');
         Arr::sum([NAN]);
+    }
+
+    public function test_takeEvery(): void
+    {
+        self::assertSame([], Arr::takeEvery([], 1), 'empty');
+        self::assertSame([1, 2, 3], Arr::takeEvery([1, 2, 3], 1), 'take every 1st');
+        self::assertSame([2, 4], Arr::takeEvery([1, 2, 3, 4, 5], 2), 'take every 2nd');
+        self::assertSame([3, 6], Arr::takeEvery(range(1, 7), 3), 'take every 3rd');
+        self::assertSame(['b' => 2], Arr::takeEvery(['a' => 1, 'b' => 2], 2), 'assoc');
+    }
+
+    public function test_takeEvery_zero_nth(): void
+    {
+        $this->expectExceptionMessage('Expected: $nth >= 1. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::takeEvery([], 0);
     }
 
     public function test_takeFirst(): void
