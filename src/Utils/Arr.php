@@ -167,6 +167,21 @@ final class Arr
     }
 
     /**
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param iterable<int, TKey> $keys
+     * @return void
+     */
+    public static function assertExactKeys(iterable $iterable, iterable $keys): void
+    {
+        $array = self::from($iterable);
+        $keys = self::from($keys);
+        $excess = self::diffKeys($array, $keys);
+        $missing = self::diffKeys($keys, $array);
+    }
+
+    /**
      * Returns the item at the given index.
      * Returns `$default` if the given index does not exist.
      *
