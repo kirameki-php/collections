@@ -4,12 +4,14 @@ namespace Tests\Kirameki\Collections\Utils;
 
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
+use Kirameki\Collections\Exceptions\ExcessKeyException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\InvalidOrderException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
+use Kirameki\Collections\Map;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
@@ -61,6 +63,27 @@ final class ArrTest extends TestCase
         $this->expectExceptionMessage('$array must be a list, map given.');
         $arr = ['a' => 1];
         Arr::append($arr, 1);
+    }
+
+    public function test_assertExactKeys(): void
+    {
+        Arr::assertExactKeys([], []); // empty
+        Arr::assertExactKeys(['a' => 1, 'b' => 2], ['a', 'b']); // exact keys
+        $this->assertTrue(true);
+    }
+
+    public function test_assertExactKeys_excess_keys(): void
+    {
+        $this->expectExceptionMessage("Keys: ['b'] should not exist.");
+        $this->expectException(ExcessKeyException::class);
+        Arr::assertExactKeys(['a' => 1, 'b' => 2], ['a']);
+    }
+
+    public function test_assertExactKeys_missing_keys(): void
+    {
+        $this->expectExceptionMessage("Keys: ['b'] did not exist.");
+        $this->expectException(MissingKeyException::class);
+        Arr::assertExactKeys(['a' => 1], ['a', 'b']);
     }
 
     public function test_at(): void

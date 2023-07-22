@@ -87,6 +87,16 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
 
     /**
      * @param iterable<int, TKey> $keys
+     * @return $this
+     */
+    public function assertExactKeys(iterable $keys): static
+    {
+        Arr::assertExactKeys($this, $keys);
+        return $this;
+    }
+
+    /**
+     * @param iterable<int, TKey> $keys
      * @return bool
      */
     public function containsAllKeys(iterable $keys): bool

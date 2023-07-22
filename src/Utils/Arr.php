@@ -6,6 +6,7 @@ use Closure;
 use JsonException;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
+use Kirameki\Collections\Exceptions\ExcessKeyException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
@@ -175,10 +176,26 @@ final class Arr
      */
     public static function assertExactKeys(iterable $iterable, iterable $keys): void
     {
-        $array = self::from($iterable);
+        $asserting = array_keys(self::from($iterable));
         $keys = self::from($keys);
-        $excess = self::diffKeys($array, $keys);
-        $missing = self::diffKeys($keys, $array);
+
+        $excess = self::diff($asserting, $keys);
+        if (count($excess) > 0) {
+            throw new ExcessKeyException($excess, [
+                'iterable' => $iterable,
+                'keys' => $keys,
+                'excess' => $excess,
+            ]);
+        }
+
+        $missing = self::diff($keys, $asserting);
+        if (count($missing) > 0) {
+            throw new MissingKeyException($missing, [
+                'iterable' => $iterable,
+                'keys' => $keys,
+                'missing' => $missing,
+            ]);
+        }
     }
 
     /**

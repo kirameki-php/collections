@@ -3,14 +3,14 @@
 namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
+use Kirameki\Collections\Exceptions\ExcessKeyException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
-use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
-use Kirameki\Collections\VecMutable;
 use Kirameki\Core\Exceptions\ErrorException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\NotSupportedException;
@@ -96,6 +96,26 @@ final class MapTest extends TestCase
         $this->expectException(NotSupportedException::class);
         $map = $this->map(['a' => 1]);
         unset($map['a']);
+    }
+
+    public function test_assertExactKeys(): void
+    {
+        $this->assertInstanceOf(Map::class, $this->map()->assertExactKeys([]), 'empty');
+        $this->assertInstanceOf(Map::class, $this->map(['a' => 1, 'b' => 2])->assertExactKeys(['a', 'b']), 'exact keys');
+    }
+
+    public function test_assertExactKeys_excess_keys(): void
+    {
+        $this->expectExceptionMessage("Keys: ['b'] should not exist.");
+        $this->expectException(ExcessKeyException::class);
+        $this->map(['a' => 1, 'b' => 2])->assertExactKeys(['a']);
+    }
+
+    public function test_assertExactKeys_missing_keys(): void
+    {
+        $this->expectExceptionMessage("Keys: ['b'] did not exist.");
+        $this->expectException(MissingKeyException::class);
+        $this->map(['a' => 1])->assertExactKeys(['a', 'b']);
     }
 
     public function test_containsAllKeys(): void
