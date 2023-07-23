@@ -40,7 +40,6 @@ use function arsort;
 use function asort;
 use function count;
 use function current;
-use function dump;
 use function end;
 use function get_resource_id;
 use function gettype;
@@ -77,8 +76,6 @@ use const SORT_REGULAR;
 
 /**
  * TODO add splitAt
- * TODO add padLeft
- * TODO add assertExactKeys
  */
 final class Arr
 {
@@ -3055,9 +3052,64 @@ final class Arr
     }
 
     /**
+     * Returns a list (array) with a given value padded to the left side of
+     * `$iterable` up to `$length`.
+     *
+     * Padding can only be applied to a list, so make sure to provide an iterable
+     * that only contain int as key. If an iterable with a string key is given,
+     * a `TypeMismatchException` will be thrown.
+     *
+     * Example:
+     * ```php
+     * Arr::padLeft(['a'], 3, 'b'); // ['b', 'b', 'a']
+     * Arr::padLeft(['a' => 1], 2, 2); // TypeMismatchException
+     * ```
+     *
+     * @template TValue
+     * @param iterable<int, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $length
+     * Apply padding until the array size reaches the given length. Must be >= 0.
+     * @param TValue $value
+     * Value inserted into each padding.
+     * @return array<int, TValue>
+     */
+    public static function padLeft(
+        iterable $iterable,
+        int $length,
+        mixed $value,
+    ): array
+    {
+        $array = self::from($iterable);
+        $arrSize = count($array);
+
+        if (!array_is_list($array)) {
+            throw new TypeMismatchException('Padding can only be applied to a list, map given.', [
+                'iterable' => $iterable,
+                'length' => $length,
+                'value' => $value,
+            ]);
+        }
+
+        if ($length < 0) {
+            throw new InvalidArgumentException("Expected: \$length >= 0. Got: {$length}.", [
+                'iterable' => $iterable,
+                'length' => $length,
+                'value' => $value,
+            ]);
+        }
+
+        if ($arrSize <= $length) {
+            $repeated = array_fill(0, $length - $arrSize, $value);
+            return self::merge($repeated, $array);
+        }
+
+        return $array;
+    }
+
+    /**
      * Returns a list (array) with a given value padded to the right side of
      * `$iterable` up to `$length`.
-     * To apply padding to the left instead, use a negative integer for `$length`.
      *
      * Padding can only be applied to a list, so make sure to provide an iterable
      * that only contain int as key. If an iterable with a string key is given,
@@ -3066,16 +3118,14 @@ final class Arr
      * Example:
      * ```php
      * Arr::padRight(['a'], 3, 'b'); // ['a', 'b', 'b']
-     * Arr::padRight([1], -3, 2); // [2, 2, 1]
-     * Arr::padRight('a' => 1], 2, 2); // TypeMismatchException
+     * Arr::padRight(['a' => 1], 2, 2); // TypeMismatchException
      * ```
      *
      * @template TValue
      * @param iterable<int, TValue> $iterable
      * Iterable to be traversed.
      * @param int $length
-     * Apply padding until the array size reaches the given length.
-     * If the given length is negative, padding will be applied to the left.
+     * Apply padding until the array size reaches the given length. Must be >= 0.
      * @param TValue $value
      * Value inserted into each padding.
      * @return array<int, TValue>
@@ -3088,7 +3138,6 @@ final class Arr
     {
         $array = self::from($iterable);
         $arrSize = count($array);
-        $absSize = abs($length);
 
         if (!array_is_list($array)) {
             throw new TypeMismatchException('Padding can only be applied to a list, map given.', [
@@ -3098,11 +3147,17 @@ final class Arr
             ]);
         }
 
-        if ($arrSize <= $absSize) {
-            $repeated = array_fill(0, $absSize - $arrSize, $value);
-            return $length > 0
-                ? self::merge($array, $repeated)
-                : self::merge($repeated, $array);
+        if ($length < 0) {
+            throw new InvalidArgumentException("Expected: \$length >= 0. Got: {$length}.", [
+                'iterable' => $iterable,
+                'length' => $length,
+                'value' => $value,
+            ]);
+        }
+
+        if ($arrSize <= $length) {
+            $repeated = array_fill(0, $length - $arrSize, $value);
+            return self::merge($array, $repeated);
         }
 
         return $array;

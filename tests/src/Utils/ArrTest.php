@@ -1770,6 +1770,33 @@ final class ArrTest extends TestCase
         self::assertSame([1, 'a' => 2], Arr::of(1, a: 2));
     }
 
+    public function test_padLeft(): void
+    {
+        // empty
+        self::assertSame([], Arr::padLeft([], 0, 1));
+
+        // not padded
+        self::assertSame([1], Arr::padLeft([1], 0, 1));
+
+        self::assertSame([0], Arr::padLeft([], 1, 0));
+        self::assertSame([1, 1], Arr::padLeft([1], 2, 1));
+        self::assertSame([2, 2, 1], Arr::padLeft([1], 3, 2));
+    }
+
+    public function test_padLeft_on_assoc(): void
+    {
+        $this->expectExceptionMessage('Padding can only be applied to a list, map given.');
+        $this->expectException(TypeMismatchException::class);
+        Arr::padLeft(['a' => 1], 1, 2);
+    }
+
+    public function test_padLeft_with_negative_length(): void
+    {
+        $this->expectExceptionMessage('Expected: $length >= 0. Got: -1');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::padLeft([1], -1, 2);
+    }
+
     public function test_padRight(): void
     {
         // empty
@@ -1782,18 +1809,20 @@ final class ArrTest extends TestCase
         self::assertSame([0], Arr::padRight([], 1, 0));
         self::assertSame([1, 1], Arr::padRight([1], 2, 1));
         self::assertSame([1, 2, 2], Arr::padRight([1], 3, 2));
-
-        // pad left
-        self::assertSame([0], Arr::padRight([], -1, 0));
-        self::assertSame([1, 1], Arr::padRight([1], -2, 1));
-        self::assertSame([2, 2, 1], Arr::padRight([1], -3, 2));
     }
 
     public function test_paddRight_on_assoc(): void
     {
-        $this->expectException(TypeMismatchException::class);
         $this->expectExceptionMessage('Padding can only be applied to a list, map given.');
+        $this->expectException(TypeMismatchException::class);
         Arr::padRight(['a' => 1], 1, 2);
+    }
+
+    public function test_padRight_with_negative_length(): void
+    {
+        $this->expectExceptionMessage('Expected: $length >= 0. Got: -1');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::padRight([1], -1, 2);
     }
 
     public function test_partition(): void

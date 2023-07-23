@@ -175,12 +175,24 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Returns a new instance with a `$value` padded to the right side up to `$length`.
-     * To apply padding to the left instead, use a negative integer for `$length`.
+     * Returns a new instance with a `$value` padded to the left side up to `$length`.
      *
      * @param int $length
-     * Apply padding until the array size reaches the given length.
-     * If the given length is negative, padding will be applied to the left.
+     * Apply padding until the array size reaches this length. Must be >= 0.
+     * @param TValue $value
+     * Value inserted into each padding.
+     * @return static
+     */
+    public function padLeft(int $length, mixed $value): static
+    {
+        return $this->instantiate(Arr::padLeft($this, $length, $value));
+    }
+
+    /**
+     * Returns a new instance with a `$value` padded to the right side up to `$length`.
+     *
+     * @param int $length
+     * Apply padding until the array size reaches this length. Must be >= 0.
      * @param TValue $value
      * Value inserted into each padding.
      * @return static

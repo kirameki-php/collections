@@ -162,14 +162,35 @@ final class VecTest extends TestCase
         self::assertInstanceOf(VecMutable::class, $this->vec([1])->lazy()->mutable());
     }
 
+    public function test_padLeft(): void
+    {
+        self::assertSame([], $this->vec()->padLeft(0, 1)->all(), 'zero pad');
+        self::assertSame([1, 1], $this->vec()->padLeft(2, 1)->all(), 'on empty');
+        self::assertSame([0], $this->vec([0])->padLeft(1, 1)->all(), 'no pad');
+        self::assertSame([0], $this->vec([0])->padLeft(1, 1)->all(), 'pad');
+        self::assertSame([1, 1, 0], $this->vec([0])->padLeft(3, 1)->all(), 'pad');
+    }
+
+    public function test_padLeft_with_negative_length(): void
+    {
+        $this->expectExceptionMessage('Expected: $length >= 0. Got: -1');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([0])->padLeft(-1, 2);
+    }
+
     public function test_padRight(): void
     {
         self::assertSame([], $this->vec()->padRight(0, 1)->all(), 'zero pad');
         self::assertSame([1, 1], $this->vec()->padRight(2, 1)->all(), 'on empty');
         self::assertSame([0], $this->vec([0])->padRight(1, 1)->all(), 'no pad');
-        self::assertSame([0], $this->vec([0])->padRight(-1, 1)->all(), 'negative pad');
-        self::assertSame([1, 1, 0], $this->vec([0])->padRight(-3, 1)->all(), 'negative pad');
-        self::assertSame([0, 1, 1], $this->vec([0])->padRight(3, 1)->all(), 'pad left');
+        self::assertSame([0, 1, 1], $this->vec([0])->padRight(3, 1)->all(), 'pad');
+    }
+
+    public function test_padRight_with_negative_length(): void
+    {
+        $this->expectExceptionMessage('Expected: $length >= 0. Got: -1');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec([0])->padRight(-1, 2);
     }
 
     public function test_prepend(): void
