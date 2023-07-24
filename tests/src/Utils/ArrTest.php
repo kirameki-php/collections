@@ -3235,17 +3235,24 @@ final class ArrTest extends TestCase
 
     public function test_sum(): void
     {
-        // empty
-        self::assertSame(0, Arr::sum([]));
+        self::assertSame(0, Arr::sum([]), 'empty');
+        self::assertSame(3, Arr::sum([1, 1, 1]), 'int');
+        self::assertEqualsWithDelta(0.3, Arr::sum([0.1, 0.2]), 0.001, 'float');
+        self::assertSame(6, Arr::sum(['b' => 1, 'a' => 3, 'c' => 2]), 'map');
+    }
 
-        // int
-        self::assertSame(3, Arr::sum([1, 1, 1]));
+    public function test_sum_throw_on_sum_of_string(): void
+    {
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('Unsupported operand types: int + string');
+        Arr::sum(['a', 'b']);
+    }
 
-        // float
-        self::assertEqualsWithDelta(0.3, Arr::sum([0.1, 0.2]), 0.001);
-
-        // assoc
-        self::assertSame(6, Arr::sum(['b' => 1, 'a' => 3, 'c' => 2]));
+    public function test_sum_with_NAN(): void
+    {
+        $this->expectException(InvalidElementException::class);
+        $this->expectExceptionMessage('$iterable cannot contain NAN');
+        Arr::sum([NAN]);
     }
 
     public function test_swap(): void
@@ -3268,18 +3275,31 @@ final class ArrTest extends TestCase
         Arr::swap([1], 0, 1);
     }
 
-    public function test_sum_throw_on_sum_of_string(): void
+    public function test_symDiff(): void
     {
-        $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('Unsupported operand types: int + string');
-        Arr::sum(['a', 'b']);
+        self::assertSame([1], Arr::symDiff([], [1]), 'empty array1');
+        self::assertSame([1], Arr::symDiff([1], []), 'empty array2');
+        self::assertSame([], Arr::symDiff([1, 2], [2, 1]), 'same but not same order');
+        self::assertSame([1, 3], Arr::symDiff([1, 2], [2, 3]), 'basic usage');
+        self::assertSame(
+            [[1], [3]],
+            Arr::symDiff([[1], [2]], [[2], [3]], fn($a, $b) => $a[0] <=> $b[0]),
+            'use by callback',
+        );
     }
 
-    public function test_sum_with_NAN(): void
+    public function test_symDiff_cannot_use_map_on_iterable1(): void
     {
-        $this->expectException(InvalidElementException::class);
-        $this->expectExceptionMessage('$iterable cannot contain NAN');
-        Arr::sum([NAN]);
+        $this->expectExceptionMessage('$iterable1 must be a list, map given.');
+        $this->expectException(TypeMismatchException::class);
+        Arr::symDiff(['a' => 1], [1]);
+    }
+
+    public function test_symDiff_cannot_use_map_on_iterable2(): void
+    {
+        $this->expectExceptionMessage('$iterable2 must be a list, map given.');
+        $this->expectException(TypeMismatchException::class);
+        Arr::symDiff([1], ['a' => 1]);
     }
 
     public function test_takeEvery(): void

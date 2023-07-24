@@ -20,8 +20,6 @@ use function is_null;
 use const PHP_INT_MAX;
 
 /**
- * TODO add symDiff
- *
  * @template TValue
  * @extends Enumerator<int, TValue>
  * @implements ArrayAccess<int, TValue>
@@ -255,6 +253,26 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     ): self
     {
         return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
+    }
+
+    /**
+     * Returns the symmetric difference between the collection and `$iterable`.
+     * `$iterable` must be of type list.
+     * Throws `TypeMismatchException` if map is given.
+     *
+     * @param iterable<int, TValue> $iterable
+     * Iterable to be diffed.
+     * @param Closure(TValue, TValue): int<-1, 1>|null $by
+     * [Optional] User defined comparison callback.
+     * Return 1 if first argument is greater than the 2nd.
+     * Return 0 if first argument is equal to the 2nd.
+     * Return -1 if first argument is less than the 2nd.
+     * Defaults to **null**.
+     * @return static
+     */
+    public function symDiff(iterable $iterable, Closure $by = null): static
+    {
+        return $this->instantiate(Arr::symDiff($this, $iterable, $by));
     }
 
     /**

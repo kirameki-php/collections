@@ -5297,6 +5297,58 @@ final class Arr
     }
 
     /**
+     * Returns the symmetric difference of the given iterables.
+     * The given iterable must be of type list.
+     * Throws `TypeMismatchException` if map is given.
+     *
+     * Example:
+     * ```php
+     * Arr::symDiff([1, 2], [2, 3]); // [1, 3]
+     * Arr::symDiff([], [1]); // [1]
+     * Arr::symDiff([1], []); // [1]
+     * ```
+     *
+     * @template TValue
+     * @param iterable<int, TValue> $iterable1
+     * Iterable to be traversed.
+     * @param iterable<int, TValue> $iterable2
+     * Iterable to be traversed.
+     * @param Closure(TValue, TValue): int<-1, 1>|null $by
+     * [Optional] User defined comparison callback.
+     * Return 1 if first argument is greater than the 2nd.
+     * Return 0 if first argument is equal to the 2nd.
+     * Return -1 if first argument is less than the 2nd.
+     * Defaults to **null**.
+     * @return array<int, TValue>
+     */
+    public static function symDiff(
+        iterable $iterable1,
+        iterable $iterable2,
+        Closure $by = null,
+    ): array
+    {
+        $array1 = self::from($iterable1);
+        $array2 = self::from($iterable2);
+
+        foreach ([$array1, $array2] as $i => $list) {
+            if (!array_is_list($list)) {
+                throw new TypeMismatchException('$iterable' . ($i+1) . ' must be a list, map given.', [
+                    'iterable1' => $iterable1,
+                    'iterable2' => $iterable2,
+                    'by' => $by,
+                ]);
+            }
+        }
+
+        $by ??= static fn(mixed $a, mixed $b): int => $a <=> $b;
+
+        $diff1 = array_values(array_udiff($array1, $array2, $by));
+        $diff2 = array_values(array_udiff($array2, $array1, $by));
+
+        return self::merge($diff1, $diff2);
+    }
+
+    /**
      * Take every `$nth` element from `$iterable`.
      *
      * @template TKey of array-key

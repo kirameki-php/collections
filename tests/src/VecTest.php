@@ -276,6 +276,26 @@ final class VecTest extends TestCase
         $this->vec([1])->sampleIndexes(2);
     }
 
+    public function test_symDiff(): void
+    {
+        self::assertSame([1], $this->vec()->symDiff([1])->toArray(), 'empty array1');
+        self::assertSame([1], $this->vec([1])->symDiff([])->toArray(), 'empty array2');
+        self::assertSame([], $this->vec([1, 2])->symDiff([2, 1])->toArray(), 'same but not same order');
+        self::assertSame([1, 3], $this->vec([1, 2])->symDiff([2, 3])->toArray(), 'basic usage');
+        self::assertSame(
+            [[1], [3]],
+            $this->vec([[1], [2]])->symDiff([[2], [3]], fn($a, $b) => $a[0] <=> $b[0])->toArray(),
+            'use by callback',
+        );
+    }
+
+    public function test_symDiff_cannot_use_map(): void
+    {
+        $this->expectExceptionMessage('$iterable2 must be a list, map given.');
+        $this->expectException(TypeMismatchException::class);
+        $this->vec([1])->symDiff(['a' => 1]);
+    }
+
     public function test_zip(): void
     {
         self::assertSame([], $this->vec()->zip([])->toArray(), 'empty list');
