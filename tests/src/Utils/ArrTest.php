@@ -389,6 +389,21 @@ final class ArrTest extends TestCase
         self::assertFalse(Arr::containsNone(['a' => 1, 'b' => 2], ['y' => 1, 'z' => 2]), 'map both');
     }
 
+    public function test_containsSlice(): void
+    {
+        self::assertTrue(Arr::containsSlice([], []), 'empty both');
+        self::assertFalse(Arr::containsSlice([], [1, 2]), 'empty iterable');
+        self::assertTrue(Arr::containsSlice([1, 2], []), 'empty values');
+        self::assertFalse(Arr::containsSlice([1, 2], [3]), 'simple slice');
+        self::assertFalse(Arr::containsSlice([1, 2], [2, 3]), 'partial match fails');
+        self::assertTrue(Arr::containsSlice([1, 2, 3, 4], [3, 4]), 'full match');
+        self::assertFalse(Arr::containsSlice([1, 2, 3, 4], [2, 4]), 'not all match');
+        self::assertFalse(Arr::containsSlice([1, 2], [2, 1]), 'exact match but opposite order');
+        self::assertTrue(Arr::containsSlice([2, 2, 3], [2, 3]), 'full match');
+        self::assertTrue(Arr::containsSlice(['a' => 1, 'b' => 2], [1, 2]), 'map iterable');
+        self::assertTrue(Arr::containsSlice(['a' => 1, 'b' => 2], ['y' => 1, 'z' => 2]), 'map both');
+    }
+
     public function test_count(): void
     {
         // empty
@@ -1811,7 +1826,7 @@ final class ArrTest extends TestCase
         self::assertSame([1, 2, 2], Arr::padRight([1], 3, 2));
     }
 
-    public function test_paddRight_on_assoc(): void
+    public function test_padRight_on_assoc(): void
     {
         $this->expectExceptionMessage('Padding can only be applied to a list, map given.');
         $this->expectException(TypeMismatchException::class);

@@ -266,6 +266,21 @@ final class EnumerableTest extends TestCase
         $this->assertTrue($this->map(['a' => 1, 'b' => null])->containsAny([null, 1]), 'match out of order');
     }
 
+    public function test_containsSlice(): void
+    {
+        self::assertTrue($this->vec()->containsSlice([]), 'empty both');
+        self::assertFalse($this->vec()->containsSlice([1, 2]), 'empty iterable');
+        self::assertTrue($this->vec([1, 2])->containsSlice([]), 'empty values');
+        self::assertFalse($this->vec([1, 2])->containsSlice([3]), 'simple slice');
+        self::assertFalse($this->vec([1, 2])->containsSlice([2, 3]), 'partial match fails');
+        self::assertTrue($this->vec([1, 2, 3, 4])->containsSlice([3, 4]), 'full match');
+        self::assertFalse($this->vec([1, 2, 3, 4])->containsSlice([2, 4]), 'not all match');
+        self::assertFalse($this->vec([1, 2])->containsSlice([2, 1]), 'exact match but opposite order');
+        self::assertTrue($this->vec([2, 2, 3])->containsSlice([2, 3]), 'full match');
+        self::assertTrue($this->map(['a' => 1, 'b' => 2])->containsSlice([1, 2]), 'map iterable');
+        self::assertTrue($this->map(['a' => 1, 'b' => 2])->containsSlice(['y' => 1, 'z' => 2]), 'map both');
+    }
+
     public function test_count(): void
     {
         $this->assertSame(0, $this->vec()->count());

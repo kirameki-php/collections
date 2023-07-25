@@ -18,7 +18,6 @@ use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Random\Randomizer;
 use Traversable;
-use function abs;
 use function array_diff_ukey;
 use function array_fill;
 use function array_intersect;
@@ -348,8 +347,6 @@ final class Arr
     }
 
     /**
-     * TODO add filler option
-     *
      * Splits the iterable into chunks of new arrays.
      *
      * Example:
@@ -693,6 +690,52 @@ final class Arr
             }
         }
         return true;
+    }
+
+    /**
+     * Returns **true** if `$iterable` contains the given slice of `$values`,
+     * **false** otherwise.
+     *
+     * Example:
+     * ```php
+     * Arr::containsSlice([1, 2, 3], [2, 3]); // true
+     * Arr::containsSlice([1, 2, 3, 4], [2, 4]); // false
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param iterable<array-key, TValue> $values
+     * Values to be searched.
+     * @return bool
+     */
+    public static function containsSlice(
+        iterable $iterable,
+        iterable $values,
+    ): bool
+    {
+        $array = self::values($iterable);
+        $values = self::values($values);
+
+        if ($values === []) {
+            return true;
+        }
+
+        for ($i = 0, $aCount = count($array); $i < $aCount; $i++) {
+            if ($array[$i] === $values[0]) {
+                for ($j = 0, $vCount = count($values); $j < $vCount; $j++) {
+                    if (($i + $j) > ($aCount - 1)) {
+                        break 2;
+                    }
+                    if ($array[$i + $j] !== $values[$j]) {
+                        continue 2;
+                    }
+                }
+                return true;
+            }
+        }
+        return $array === $values;
     }
 
     /**

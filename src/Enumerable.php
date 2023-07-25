@@ -172,6 +172,19 @@ trait Enumerable
     }
 
     /**
+     * Returns **true** if collection contains the given slice of `$values`,
+     * **false** otherwise.
+     *
+     * @param iterable<int, TValue> $values
+     * Values to be searched.
+     * @return bool
+     */
+    public function containsSlice(iterable $values): bool
+    {
+        return Arr::containsSlice($this, $values);
+    }
+
+    /**
      * Counts all the elements in the collection.
      * If a condition is given, it will only increase the count if the condition returns **true**.
      *
