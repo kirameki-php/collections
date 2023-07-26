@@ -213,11 +213,12 @@ final class Iter
      *
      * @template TKey of array-key
      * @template TValue
+     * @template TMapValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param Closure(TValue, TKey): mixed $callback
+     * @param Closure(TValue, TKey): iterable<int, TMapValue> $callback
      * Closure that will be called for each key/value. The returned value will be yielded.
-     * @return Generator<int, mixed>
+     * @return Generator<int, TMapValue>
      */
     public static function flatMap(
         iterable $iterable,
@@ -231,6 +232,7 @@ final class Iter
                     yield $each;
                 }
             } else {
+                // TODO fail with error instead.
                 yield $result;
             }
         }

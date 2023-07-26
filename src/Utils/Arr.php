@@ -1605,11 +1605,12 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
+     * @template TMapValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param Closure(TValue, TKey): mixed $callback
+     * @param Closure(TValue, TKey): iterable<int, TMapValue> $callback
      * Callback to be used to map the values.
-     * @return array<int, mixed>
+     * @return array<int, TMapValue>
      */
     public static function flatMap(
         iterable $iterable,
