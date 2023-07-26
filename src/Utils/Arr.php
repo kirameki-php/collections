@@ -2701,6 +2701,7 @@ final class Arr
     public static function mapWithKey(
         iterable $iterable,
         Closure $callback,
+        // TODO allow/disallow overwrite
     ): array
     {
         return iterator_to_array(Iter::mapWithKey($iterable, $callback));

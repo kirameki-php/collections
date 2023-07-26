@@ -1569,6 +1569,14 @@ final class ArrTest extends TestCase
         self::assertSame(['a' => 2, 'b' => 4], Arr::map(['a' => 1, 'b' => 2], static fn($i) => $i * 2), 'assoc: retains key');
     }
 
+    public function test_mapWithKey(): void
+    {
+        self::assertSame([], Arr::mapWithKey([], static fn($i) => $i), 'empty');
+        self::assertSame(['a1' => 1, 'b2' => 2], Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => yield "$k$v" => $v), 'use generator');
+        self::assertSame(['b' => 2], Arr::mapWithKey(['a' => 1], fn($v, $k) => ['b' => 2]), 'use array');
+        self::assertSame(['b' => 2], Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => ['b' => 2]), 'overwrite');
+    }
+
     public function test_max(): void
     {
         self::assertSame(10, Arr::max([1, 2, 3, 10, 1]), 'list');
