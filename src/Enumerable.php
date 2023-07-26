@@ -3,6 +3,8 @@
 namespace Kirameki\Collections;
 
 use Closure;
+use Kirameki\Collections\Exceptions\DuplicateKeyException;
+use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
@@ -597,7 +599,7 @@ trait Enumerable
      * @param Closure(TValue, TKey): TNewKey $callback
      * Callback which returns the key for the new map.
      * @param bool $overwrite
-     * [Optional] If **true**, duplicate keys will be overwritten.
+     * [Optional] If **true**, duplicate keys will be overwritten. Defaults to **false**.
      * If **false**, exception will be thrown on duplicate keys.
      * @return Map<TNewKey, TValue>
      */
@@ -703,15 +705,32 @@ trait Enumerable
     /**
      * Returns a new Map with key value pair returned for each iterable returned by calling `$callback`.
      *
-     * @template TMapKey as string
+     * @template TMapKey as array-key
      * @template TMapValue
      * @param Closure(TValue, int): iterable<TMapKey, TMapValue> $callback
      * Callback to be used to map the values.
+     * @param bool $overwrite
+     * [Optional] If **true**, duplicate keys will be overwritten. Defaults to **false**.
+     * If **false**, exception will be thrown on duplicate keys.
      * @return Map<TMapKey, TMapValue>
      */
-    public function mapWithKey(Closure $callback): self
+    public function mapWithKey(
+        Closure $callback,
+        bool $overwrite = false,
+    ): self
     {
-        return $this->newMap(Iter::mapWithKey($this, $callback));
+        $result = [];
+        foreach(Iter::mapWithKey($this, $callback) as $key => $val) {
+            if (!$overwrite && array_key_exists($key, $result)) {
+                throw new DuplicateKeyException("Tried to overwrite existing key: {$key}.", [
+                    'this' => $this,
+                    'key' => $key,
+                ]);
+            }
+            $result[$key] = $val;
+        }
+
+        return $this->newMap($result);
     }
 
     /**

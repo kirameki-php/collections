@@ -926,8 +926,17 @@ final class EnumerableTest extends TestCase
     public function test_mapWithKey(): void
     {
         self::assertSame([], $this->map()->mapWithKey(static fn($i) => $i)->all(), 'empty');
+        self::assertSame([':01' => 1], $this->vec([1])->mapWithKey(fn($v, $k) => yield ":$k$v" => $v)->all(), 'use vec');
         self::assertSame(['a1' => 1, 'b2' => 2], $this->map(['a' => 1, 'b' => 2])->mapWithKey(fn($v, $k) => yield "$k$v" => $v)->all(), 'use generator');
         self::assertSame(['b' => 2], $this->map(['a' => 1])->mapWithKey(fn($v, $k) => ['b' => 2])->all(), 'use array');
+        self::assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->mapWithKey(fn($v, $k) => ['b' => 2], true)->all(), 'overwrite');
+    }
+
+    public function test_mapWithKey_cant_overwrite(): void
+    {
+        $this->expectExceptionMessage('Tried to overwrite existing key: b');
+        $this->expectException(DuplicateKeyException::class);
+        $this->map(['a' => 1, 'b' => 2])->mapWithKey(fn($v, $k) => ['b' => 2])->all();
     }
 
     public function test_max(): void
