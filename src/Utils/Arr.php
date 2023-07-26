@@ -88,6 +88,13 @@ final class Arr
     private static ?Randomizer $defaultRandomizer = null;
 
     /**
+     * Only used for `self::miss()`.
+     */
+    private function __construct()
+    {
+    }
+
+    /**
      * Append value(s) to the end of the given iterable.
      * The iterable must be convertible to a list.
      * Will throw `TypeMismatchException` if map is given.
