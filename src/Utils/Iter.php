@@ -382,6 +382,40 @@ final class Iter
     }
 
     /**
+     * Creates a Generator that will map and also flatten the result of the callback.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @template TMapKey of array-key
+     * @template TMapValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): iterable<TMapKey, TMapValue> $callback
+     * Closure that will be called for each key/value. The returned value will be yielded.
+     * @return Generator<TMapKey, TMapValue>
+     */
+    public static function mapWithKey(
+        iterable $iterable,
+        Closure $callback,
+    ): Generator
+    {
+        foreach ($iterable as $key => $val) {
+            $each = $callback($val, $key);
+            if (!is_iterable($each)) {
+                throw new InvalidArgumentException('Expected: $callback to return a iterable. Got: ' . get_debug_type($each), [
+                    'iterable' => $iterable,
+                    'callback' => $callback,
+                    'each' => $each,
+                ]);
+            }
+            foreach ($each as $k => $v) {
+                yield $k => $v;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Creates a Generator that will repeat through the iterable for a given amount of times.
      *
      * @template TKey of array-key

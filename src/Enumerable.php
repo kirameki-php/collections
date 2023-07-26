@@ -701,6 +701,20 @@ trait Enumerable
     }
 
     /**
+     * Returns a new Map with key value pair returned for each iterable returned by calling `$callback`.
+     *
+     * @template TMapKey as string
+     * @template TMapValue
+     * @param Closure(TValue, int): iterable<TMapKey, TMapValue> $callback
+     * Callback to be used to map the values.
+     * @return Map<TMapKey, TMapValue>
+     */
+    public function mapWithKey(Closure $callback): self
+    {
+        return $this->newMap(Iter::mapWithKey($this, $callback));
+    }
+
+    /**
      * Returns the largest element in the collection.
      * If `$by` is given, each element will be passed to the closure and the
      * largest value returned from the closure will be returned instead.

@@ -923,6 +923,13 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['a' => 2, 'b' => 3], $this->map(['a' => 1, 'b' => 2])->map(fn($i) => $i + 1)->toArray(), 'non-empty');
     }
 
+    public function test_mapWithKey(): void
+    {
+        self::assertSame([], $this->map()->mapWithKey(static fn($i) => $i)->all(), 'empty');
+        self::assertSame(['a1' => 1, 'b2' => 2], $this->map(['a' => 1, 'b' => 2])->mapWithKey(fn($v, $k) => yield "$k$v" => $v)->all(), 'use generator');
+        self::assertSame(['b' => 2], $this->map(['a' => 1])->mapWithKey(fn($v, $k) => ['b' => 2])->all(), 'use array');
+    }
+
     public function test_max(): void
     {
         $this->assertSame(2, $this->vec([1, 2])->max(), 'basic use');
@@ -1544,17 +1551,17 @@ final class EnumerableTest extends TestCase
 
     public function test_startsWith(): void
     {
-        $this->assertTrue($this->vec([])->startsWith([]), 'empty both');
+        $this->assertTrue($this->vec()->startsWith([]), 'empty both');
         $this->assertTrue($this->vec([1])->startsWith([]), 'empty values');
-        $this->assertFalse($this->vec([])->startsWith([1]), 'empty vec');
+        $this->assertFalse($this->vec()->startsWith([1]), 'empty vec');
         $this->assertTrue($this->vec([1, 2])->startsWith([1, 2]), 'exact match');
         $this->assertTrue($this->vec([1, 2])->startsWith([1]), 'start match');
         $this->assertFalse($this->vec([1, 2])->startsWith([2]), 'end match');
         $this->assertFalse($this->vec([1, 2])->startsWith([1, 2, 3]), 'values bigger');
 
-        $this->assertTrue($this->map([])->startsWith([]), 'empty both');
+        $this->assertTrue($this->map()->startsWith([]), 'empty both');
         $this->assertTrue($this->map(['a' => 1])->startsWith([]), 'empty values');
-        $this->assertFalse($this->map([])->startsWith([1]), 'empty map');
+        $this->assertFalse($this->map()->startsWith([1]), 'empty map');
         $this->assertTrue($this->map(['a' => 1, 'b' => 2])->startsWith(['a' => 1]), 'start match');
         $this->assertTrue($this->map(['a' => 1, 'b' => 2])->startsWith(['a' => 1, 'b' => 2]), 'exact match');
         $this->assertTrue($this->map(['a' => 1, 'b' => 2])->startsWith([1]), 'key does not matter');

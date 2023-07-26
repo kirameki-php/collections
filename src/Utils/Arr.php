@@ -3,6 +3,7 @@
 namespace Kirameki\Collections\Utils;
 
 use Closure;
+use Generator;
 use JsonException;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
@@ -2676,6 +2677,32 @@ final class Arr
     ): array
     {
         return iterator_to_array(Iter::map($iterable, $callback));
+    }
+
+    /**
+     * Applies the `$callback` to every element in the array, and flatten the results.
+     *
+     * Example:
+     * ```php
+     * Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => yield "$k$v" => $v) // ['a1' => 1, 'b2' => 2]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @template TMapKey of array-key
+     * @template TMapValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): iterable<TMapKey, TMapValue> $callback
+     * Callback to be used to map the values.
+     * @return array<TMapKey, TMapValue>
+     */
+    public static function mapWithKey(
+        iterable $iterable,
+        Closure $callback,
+    ): array
+    {
+        return iterator_to_array(Iter::mapWithKey($iterable, $callback));
     }
 
     /**
