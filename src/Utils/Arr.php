@@ -3,7 +3,6 @@
 namespace Kirameki\Collections\Utils;
 
 use Closure;
-use Generator;
 use JsonException;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;

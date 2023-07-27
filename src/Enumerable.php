@@ -3,8 +3,6 @@
 namespace Kirameki\Collections;
 
 use Closure;
-use Kirameki\Collections\Exceptions\DuplicateKeyException;
-use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
