@@ -106,7 +106,7 @@ final class Iter
     ): Generator
     {
         foreach ($iterable as $key => $val) {
-            if (!self::verify($condition, $key, $val)) {
+            if (!self::verifyBool($condition, $key, $val)) {
                 if ($reindex) {
                     yield $val;
                 } else {
@@ -137,7 +137,7 @@ final class Iter
     {
         $drop = true;
         foreach ($iterable as $key => $item) {
-            if ($drop && self::verify($condition, $key, $item)) {
+            if ($drop && self::verifyBool($condition, $key, $item)) {
                 $drop = false;
             }
 
@@ -172,7 +172,7 @@ final class Iter
     {
         $drop = true;
         foreach ($iterable as $key => $item) {
-            if ($drop && !self::verify($condition, $key, $item)) {
+            if ($drop && !self::verifyBool($condition, $key, $item)) {
                 $drop = false;
             }
 
@@ -226,14 +226,8 @@ final class Iter
     ): Generator
     {
         foreach ($iterable as $key => $val) {
-            $result = $callback($val, $key);
-            if (is_iterable($result)) {
-                foreach ($result as $each) {
-                    yield $each;
-                }
-            } else {
-                // TODO fail with error instead.
-                yield $result;
+            foreach (self::verifyIterable($callback, $key, $val) as $each) {
+                yield $each;
             }
         }
     }
@@ -402,19 +396,10 @@ final class Iter
     ): Generator
     {
         foreach ($iterable as $key => $val) {
-            $each = $callback($val, $key);
-            if (!is_iterable($each)) {
-                throw new InvalidArgumentException('Expected: $callback to return iterable. Got: ' . get_debug_type($each) . '.', [
-                    'iterable' => $iterable,
-                    'callback' => $callback,
-                    'each' => $each,
-                ]);
-            }
-            foreach ($each as $k => $v) {
+            foreach (self::verifyIterable($callback, $key, $val) as $k => $v) {
                 yield $k => $v;
             }
         }
-        return null;
     }
 
     /**
@@ -553,7 +538,7 @@ final class Iter
     ): Generator
     {
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 if ($reindex) {
                     yield $val;
                 } else {
@@ -580,7 +565,7 @@ final class Iter
     ): Generator
     {
         foreach ($iterable as $key => $item) {
-            if (!self::verify($condition, $key, $item)) {
+            if (!self::verifyBool($condition, $key, $item)) {
                 yield $key => $item;
             } else {
                 break;
@@ -605,7 +590,7 @@ final class Iter
     ): Generator
     {
         foreach ($iterable as $key => $item) {
-            if (self::verify($condition, $key, $item)) {
+            if (self::verifyBool($condition, $key, $item)) {
                 yield $key => $item;
             } else {
                 break;
@@ -696,11 +681,35 @@ final class Iter
      * 1st argument for the condition closure.
      * @return bool
      */
-    private static function verify(
+    private static function verifyBool(
         Closure $condition,
         mixed $key,
         mixed $val,
     ): bool
+    {
+        return $condition($val, $key);
+    }
+
+    /**
+     * Invoke the condition closure and make sure that it returns a iterable value.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @template TMapKey of array-key
+     * @template TMapValue
+     * @param Closure(TValue, TKey): iterable<TMapKey, TMapValue> $condition
+     * The condition that returns a boolean value.
+     * @param TKey $key
+     * the 2nd argument for the condition closure.
+     * @param TValue $val
+     * 1st argument for the condition closure.
+     * @return iterable<TMapKey, TMapValue>
+     */
+    private static function verifyIterable(
+        Closure $condition,
+        mixed $key,
+        mixed $val,
+    ): iterable
     {
         return $condition($val, $key);
     }

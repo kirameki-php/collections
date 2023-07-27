@@ -777,7 +777,7 @@ final class Arr
         $count = 0;
         $condition ??= static fn() => true;
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 ++$count;
             }
         }
@@ -1439,7 +1439,7 @@ final class Arr
 
         $count = 0;
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 return $count;
             }
             ++$count;
@@ -1517,7 +1517,7 @@ final class Arr
     {
         $condition ??= static fn() => true;
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 return $key;
             }
         }
@@ -1556,7 +1556,7 @@ final class Arr
         $condition ??= static fn() => true;
 
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 return $val;
             }
         }
@@ -1600,7 +1600,7 @@ final class Arr
      * Example:
      * ```php
      * Arr::flatMap([1, 2], fn($i) => [$i, -$i]); // [1, -1, 2, -2]
-     * Arr::flatMap([['a' => 1], [2], 2], fn($a) => $a); // [1, 2, 2]
+     * Arr::flatMap([['a' => 1], [2]], fn($a) => $a); // [1, 2]
      * ```
      *
      * @template TKey of array-key
@@ -1608,7 +1608,7 @@ final class Arr
      * @template TMapValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param Closure(TValue, TKey): iterable<int, TMapValue> $callback
+     * @param Closure(TValue, TKey): iterable<array-key, TMapValue> $callback
      * Callback to be used to map the values.
      * @return array<int, TMapValue>
      */
@@ -2479,7 +2479,7 @@ final class Arr
                 $val = current($array);
                 /** @var TKey $key */
                 /** @var TValue $val */
-                if (self::verify($condition, $key, $val)) {
+                if (self::verifyBool($condition, $key, $val)) {
                     return $count;
                 }
                 prev($array);
@@ -2565,7 +2565,7 @@ final class Arr
             $val = current($copy);
             /** @var TKey $key */
             /** @var TValue $val */
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 return $key;
             }
             prev($copy);
@@ -2613,7 +2613,7 @@ final class Arr
             /** @var TKey $key */
             /** @var TValue $val */
             $val = current($array);
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 return $val;
             }
             prev($array);
@@ -3285,7 +3285,7 @@ final class Arr
         $truthy = [];
         $falsy = [];
         foreach ($arr as $key => $value) {
-            if (self::verify($condition, $key, $value)) {
+            if (self::verifyBool($condition, $key, $value)) {
                 $isList
                     ? $truthy[] = $value
                     : $truthy[$key] = $value;
@@ -3462,7 +3462,7 @@ final class Arr
         $count = 0;
         $limit ??= PHP_INT_MAX;
         foreach ($array as $key => $val) {
-            if ($count < $limit && self::verify($condition, $key, $val)) {
+            if ($count < $limit && self::verifyBool($condition, $key, $val)) {
                 $isList
                     ? $prioritized[] = $val
                     : $prioritized[$key] = $val;
@@ -4392,7 +4392,7 @@ final class Arr
     ): bool
     {
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val) === false) {
+            if (self::verifyBool($condition, $key, $val) === false) {
                 return false;
             }
         }
@@ -4425,7 +4425,7 @@ final class Arr
     ): bool
     {
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 return true;
             }
         }
@@ -4458,7 +4458,7 @@ final class Arr
     ): bool
     {
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 return false;
             }
         }
@@ -4492,7 +4492,7 @@ final class Arr
     {
         $satisfied = false;
         foreach ($iterable as $key => $val) {
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 if ($satisfied) {
                     return false;
                 }
@@ -5139,7 +5139,7 @@ final class Arr
             $reindex
                 ? $groups[$i][] = $val
                 : $groups[$i][$key] = $val;
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 ++$i;
                 $groups[$i] = [];
             }
@@ -5184,7 +5184,7 @@ final class Arr
                 $groups[$i] = [];
                 $init = false;
             }
-            if (self::verify($condition, $key, $val)) {
+            if (self::verifyBool($condition, $key, $val)) {
                 ++$i;
                 $groups[$i] = [];
             }
@@ -5995,7 +5995,7 @@ final class Arr
      * Value to pass on to the given condition.
      * @return bool
      */
-    private static function verify(
+    private static function verifyBool(
         Closure $condition,
         mixed $key,
         mixed $val,

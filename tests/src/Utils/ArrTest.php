@@ -672,7 +672,7 @@ final class ArrTest extends TestCase
 
         // drop until null does not work
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage(Iter::class . '::verify(): Return value must be of type bool, null returned');
+        $this->expectExceptionMessage(Iter::class . '::verifyBool(): Return value must be of type bool, null returned');
         Arr::dropUntil([1], static fn(int $v, int $k) => null);
     }
 
@@ -723,7 +723,7 @@ final class ArrTest extends TestCase
 
         // drop while null does not work
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage(Iter::class . '::verify(): Return value must be of type bool, null returned');
+        $this->expectExceptionMessage(Iter::class . '::verifyBool(): Return value must be of type bool, null returned');
         Arr::dropWhile([1], static fn(int $v, int $k) => null);
     }
 
@@ -1011,7 +1011,14 @@ final class ArrTest extends TestCase
         self::assertSame(['a', 'b'], Arr::flatMap([['a'], ['b']], static fn($a) => $a));
 
         // keys are lost since it cannot be retained
-        self::assertSame([1, 2, 2], Arr::flatMap([['a' => 1], [2], 2], static fn($a) => $a));
+        self::assertSame([1, 2], Arr::flatMap([['a' => 1], [2]], static fn($a) => $a));
+    }
+
+    public function test_flatMap_invalid_type(): void
+    {
+        $this->expectExceptionMessage(Iter::class . '::verifyIterable(): Return value must be of type Traversable|array, int returned');
+        $this->expectException(TypeError::class);
+        Arr::flatMap([[1], 2], static fn($a) => $a);
     }
 
     public function test_flatten(): void
@@ -1579,8 +1586,8 @@ final class ArrTest extends TestCase
 
     public function test_mapWithKey_with_invalid_callback(): void
     {
-        $this->expectExceptionMessage('Expected: $callback to return iterable. Got: bool.');
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(Iter::class . '::verifyIterable(): Return value must be of type Traversable|array, bool returned');
+        $this->expectException(TypeError::class);
         Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => true);
     }
 
