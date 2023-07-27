@@ -404,7 +404,7 @@ final class Iter
         foreach ($iterable as $key => $val) {
             $each = $callback($val, $key);
             if (!is_iterable($each)) {
-                throw new InvalidArgumentException('Expected: $callback to return a iterable. Got: ' . get_debug_type($each), [
+                throw new InvalidArgumentException('Expected: $callback to return iterable. Got: ' . get_debug_type($each) . '.', [
                     'iterable' => $iterable,
                     'callback' => $callback,
                     'each' => $each,

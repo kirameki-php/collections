@@ -1574,7 +1574,21 @@ final class ArrTest extends TestCase
         self::assertSame([], Arr::mapWithKey([], static fn($i) => $i), 'empty');
         self::assertSame(['a1' => 1, 'b2' => 2], Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => yield "$k$v" => $v), 'use generator');
         self::assertSame(['b' => 2], Arr::mapWithKey(['a' => 1], fn($v, $k) => ['b' => 2]), 'use array');
-        self::assertSame(['b' => 2], Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => ['b' => 2]), 'overwrite');
+        self::assertSame(['b' => 2], Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => ['b' => 2], true), 'overwrite');
+    }
+
+    public function test_mapWithKey_with_invalid_callback(): void
+    {
+        $this->expectExceptionMessage('Expected: $callback to return iterable. Got: bool.');
+        $this->expectException(InvalidArgumentException::class);
+        Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => true);
+    }
+
+    public function test_mapWithKey_with_duplicate_key(): void
+    {
+        $this->expectExceptionMessage('Tried to overwrite existing key: b.');
+        $this->expectException(DuplicateKeyException::class);
+        Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => ['b' => 2]);
     }
 
     public function test_max(): void
