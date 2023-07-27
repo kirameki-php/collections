@@ -2696,15 +2696,28 @@ final class Arr
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): iterable<TMapKey, TMapValue> $callback
      * Callback to be used to map the values.
+     * @param bool $overwrite
+     * [Optional] If **true**, duplicate keys will be overwritten. Defaults to **false**.
+     * If **false**, exception will be thrown on duplicate keys.
      * @return array<TMapKey, TMapValue>
      */
     public static function mapWithKey(
         iterable $iterable,
         Closure $callback,
-        // TODO allow/disallow overwrite
+        bool $overwrite = false,
     ): array
     {
-        return iterator_to_array(Iter::mapWithKey($iterable, $callback));
+        $result = [];
+        foreach(Iter::mapWithKey($iterable, $callback) as $key => $val) {
+            if (!$overwrite && array_key_exists($key, $result)) {
+                throw new DuplicateKeyException("Tried to overwrite existing key: {$key}.", [
+                    'iterable' => $iterable,
+                    'key' => $key,
+                ]);
+            }
+            $result[$key] = $val;
+        }
+        return $result;
     }
 
     /**

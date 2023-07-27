@@ -719,18 +719,7 @@ trait Enumerable
         bool $overwrite = false,
     ): self
     {
-        $result = [];
-        foreach(Iter::mapWithKey($this, $callback) as $key => $val) {
-            if (!$overwrite && array_key_exists($key, $result)) {
-                throw new DuplicateKeyException("Tried to overwrite existing key: {$key}.", [
-                    'this' => $this,
-                    'key' => $key,
-                ]);
-            }
-            $result[$key] = $val;
-        }
-
-        return $this->newMap($result);
+        return $this->newMap(Arr::mapWithKey($this, $callback, $overwrite));
     }
 
     /**
