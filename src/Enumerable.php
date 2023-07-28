@@ -390,8 +390,8 @@ trait Enumerable
     /**
      * Returns **true** if the collection ends with the given `$values`, **false** otherwise.
      *
-     * @param iterable<array-key, TValue> $values
-     * Items to check for.
+     * @param iterable<int, TValue> $values
+     * Values to be searched.
      * @return bool
      */
     public function endsWith(
@@ -1307,8 +1307,8 @@ trait Enumerable
     /**
      * Returns **true** if the collection starts with the given `$values`, **false** otherwise.
      *
-     * @param iterable<array-key, TValue> $values
-     * Items to check for.
+     * @param iterable<int, TValue> $values
+     * Values to be searched.
      * @return bool
      */
     public function startsWith(

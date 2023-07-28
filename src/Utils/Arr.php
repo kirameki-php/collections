@@ -516,7 +516,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * Values to be searched.
      * @return bool
      */
@@ -590,7 +590,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * Values to be searched.
      * @return bool
      */
@@ -681,7 +681,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * Values to be searched.
      * @return bool
      */
@@ -713,7 +713,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * Values to be searched.
      * @return bool
      */
@@ -1269,7 +1269,7 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * @return bool
      */
     public static function endsWith(
@@ -1607,7 +1607,7 @@ final class Arr
      * @template TMapValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param Closure(TValue, TKey): iterable<array-key, TMapValue> $callback
+     * @param Closure(TValue, TKey): iterable<int, TMapValue> $callback
      * Callback to be used to map the values.
      * @return array<int, TMapValue>
      */
@@ -5264,7 +5264,7 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
-     * @param iterable<array-key, TValue> $values
+     * @param iterable<int, TValue> $values
      * @return bool
      */
     public static function startsWith(
