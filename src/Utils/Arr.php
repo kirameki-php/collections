@@ -73,9 +73,6 @@ use const SORT_ASC;
 use const SORT_DESC;
 use const SORT_REGULAR;
 
-/**
- * TODO add splitAt
- */
 final class Arr
 {
     private const EMPTY = [];
@@ -5197,6 +5194,46 @@ final class Arr
                 : $groups[$i][$key] = $val;
         }
         return $groups;
+    }
+
+    /**
+     * Splits the `$iterable` right before the index where `$condition` returned **true**.
+     *
+     * Example:
+     * ```php
+     * Arr::splitBeforeIndex([1, 2, 3], 2) // [[1, 2], [3]]
+     * Arr::splitBeforeIndex([1, 2, 3], 10) // [1, 2, 3], []]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $index
+     * The index where the `$iterable` will be split starting from 0.
+     * Negative index will count from the end.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
+     * @return array{ 0: array<TKey, TValue>, 1: array<TKey, TValue> }
+     */
+    public static function splitBeforeIndex(
+        iterable $iterable,
+        int $index,
+        ?bool $reindex = null,
+    ): array
+    {
+        $array = self::from($iterable);
+        if ($index < 0) {
+            $index = count($array) + $index;
+        }
+        $i = 0;
+        return self::partition(
+            $array,
+            static fn() => $i++ < $index,
+            $reindex,
+        );
     }
 
     /**
