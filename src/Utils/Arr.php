@@ -3272,24 +3272,29 @@ final class Arr
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): bool $condition
      * Closure to evaluate each element.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * Defaults to **null**.
      * @return array{ array<TKey, TValue>, array<TKey, TValue> }
      */
     public static function partition(
         iterable $iterable,
         Closure $condition,
+        ?bool $reindex = null,
     ): array
     {
-        $arr = self::from($iterable);
-        $isList = array_is_list($arr);
+        $array = self::from($iterable);
+        $reindex ??= array_is_list($array);
         $truthy = [];
         $falsy = [];
-        foreach ($arr as $key => $value) {
+        foreach ($array as $key => $value) {
             if (self::verifyBool($condition, $key, $value)) {
-                $isList
+                $reindex
                     ? $truthy[] = $value
                     : $truthy[$key] = $value;
             } else {
-                $isList
+                $reindex
                     ? $falsy[] = $value
                     : $falsy[$key] = $value;
             }

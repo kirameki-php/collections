@@ -1876,6 +1876,7 @@ final class ArrTest extends TestCase
         self::assertSame([[], [1, 2, 3]], Arr::partition([1, 2, 3], fn($v) => $v === 0), ' all false');
         self::assertSame([[1, 3], [2]], Arr::partition([1, 2, 3], fn($v) => (bool)($v % 2)), 'list');
         self::assertSame([['a' => 1], ['b' => 2]], Arr::partition(['a' => 1, 'b' => 2], fn($v) => $v === 1), 'map');
+        self::assertSame([[1], [2]], Arr::partition(['a' => 1, 'b' => 2], fn($v) => $v === 1, true), 'map');
     }
 
     public function test_pop(): void

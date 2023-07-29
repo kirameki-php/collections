@@ -860,7 +860,7 @@ trait Enumerable
      */
     public function partition(Closure $condition): array
     {
-        [$true, $false] = Arr::partition($this, $condition);
+        [$true, $false] = Arr::partition($this, $condition, $this->reindex());
         return [
             $this->instantiate($true),
             $this->instantiate($false),
