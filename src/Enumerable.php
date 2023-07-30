@@ -1275,6 +1275,22 @@ trait Enumerable
     }
 
     /**
+     * Splits the collection after the given `$index`.
+     *
+     * @param int $index
+     * The index where the `$iterable` will be split starting from 0.
+     * Negative index will count from the end.
+     * @return Vec<static>
+     */
+    public function splitAfterIndex(int $index): Vec
+    {
+        return $this->newVec(array_map(
+            $this->instantiate(...),
+            Arr::splitAfterIndex($this, $index, $this->reindex())
+        ));
+    }
+
+    /**
      * Splits the collection right before the index where `$condition` returned **true**.
      *
      * @param Closure(TValue, TKey): bool $condition
@@ -1286,6 +1302,22 @@ trait Enumerable
         return $this->newVec(array_map(
             $this->instantiate(...),
             Arr::splitBefore($this, $condition, $this->reindex())
+        ));
+    }
+
+    /**
+     * Splits the collection before the given `$index`.
+     *
+     * @param int $index
+     * The index where the `$iterable` will be split starting from 0.
+     * Negative index will count from the end.
+     * @return Vec<static>
+     */
+    public function splitBeforeIndex(int $index): Vec
+    {
+        return $this->newVec(array_map(
+            $this->instantiate(...),
+            Arr::splitBeforeIndex($this, $index, $this->reindex())
         ));
     }
 

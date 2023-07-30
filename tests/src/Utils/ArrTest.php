@@ -3227,6 +3227,19 @@ final class ArrTest extends TestCase
         );
     }
 
+    public function test_splitAfterIndex(): void
+    {
+        $this->assertSame([[], []], Arr::splitAfterIndex([], 0), 'empty');
+        $this->assertSame([[1], [2, 3]], Arr::splitAfterIndex([1, 2, 3], 0), 'split at 0');
+        $this->assertSame([[1, 2], [3]], Arr::splitAfterIndex([1, 2, 3], 1), 'split at 2');
+        $this->assertSame([[1, 2, 3], []], Arr::splitAfterIndex([1, 2, 3], 2), 'split at overflow');
+        $this->assertSame([[1, 2, 3], []], Arr::splitAfterIndex([1, 2, 3], -1), 'split at -1');
+        $this->assertSame([[1, 2], [3]], Arr::splitAfterIndex([1, 2, 3], -2), 'split at -2');
+        $this->assertSame([[], [1, 2, 3]], Arr::splitAfterIndex([1, 2, 3], -4), 'split at negative overflow');
+        $this->assertSame([['a' => 1], ['b' => 2]], Arr::splitAfterIndex(['a' => 1, 'b' => 2], 0), 'split on map');
+        $this->assertSame([[1], [2]], Arr::splitAfterIndex(['a' => 1, 'b' => 2], 0, true), 'split on map');
+    }
+
     public function test_splitBefore(): void
     {
         $this->assertSame([], Arr::splitBefore([], fn() => true), 'empty');
@@ -3240,6 +3253,20 @@ final class ArrTest extends TestCase
             Arr::splitBefore(['a' => 1, 'b' => 2, 'c' => 3], fn($v, $k) => $k === 'b'),
             'split map',
         );
+    }
+
+    public function test_splitBeforeIndex(): void
+    {
+        $this->assertSame([[], []], Arr::splitBeforeIndex([], 0), 'empty');
+        $this->assertSame([[], [1, 2, 3]], Arr::splitBeforeIndex([1, 2, 3], 0), 'split at 0');
+        $this->assertSame([[1], [2, 3]], Arr::splitBeforeIndex([1, 2, 3], 1), 'split at 1');
+        $this->assertSame([[1, 2], [3]], Arr::splitBeforeIndex([1, 2, 3], 2), 'split at 2');
+        $this->assertSame([[1, 2, 3], []], Arr::splitBeforeIndex([1, 2, 3], 3), 'split at overflow');
+        $this->assertSame([[1, 2], [3]], Arr::splitBeforeIndex([1, 2, 3], -1), 'split at -1');
+        $this->assertSame([[1], [2, 3]], Arr::splitBeforeIndex([1, 2, 3], -2), 'split at -2');
+        $this->assertSame([[], [1, 2, 3]], Arr::splitBeforeIndex([1, 2, 3], -3), 'split at negative overflow');
+        $this->assertSame([['a' => 1], ['b' => 2]], Arr::splitBeforeIndex(['a' => 1, 'b' => 2], 1), 'split on map');
+        $this->assertSame([[1], [2]], Arr::splitBeforeIndex(['a' => 1, 'b' => 2], 1, true), 'split on map');
     }
 
     public function test_splitEvenly(): void
