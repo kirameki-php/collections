@@ -4,9 +4,7 @@ namespace Kirameki\Collections;
 
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
-use Kirameki\Core\Exceptions\NotSupportedException;
 use function gettype;
-use function is_array;
 use function is_int;
 
 /**
@@ -67,6 +65,8 @@ trait MutatesSelf
     }
 
     /**
+     * Clears all items in the collection.
+     *
      * @return $this
      */
     public function clear(): static
@@ -77,6 +77,11 @@ trait MutatesSelf
     }
 
     /**
+     * Inserts `$values` at the given `$index`.
+     *
+     * Throws `DuplicateKeyException` when the keys in `$values` already exist in the collection.
+     * Change the `overwrite` argument to **true** to suppress this error.
+     *
      * @param int $index
      * The position where the values will be inserted.
      * @param iterable<TKey, TValue> $values
@@ -95,6 +100,9 @@ trait MutatesSelf
     }
 
     /**
+     * Pops the element off the end of the collection.
+     * Throws `EmptyNotAllowedException`, if the collection is empty.
+     *
      * @return TValue
      */
     public function pop(): mixed
@@ -104,6 +112,9 @@ trait MutatesSelf
     }
 
     /**
+     * Pops the element off the end of the collection.
+     * Returns **null**, if the collection is empty.
+     *
      * @return TValue|null
      */
     public function popOrNull(): mixed
@@ -113,7 +124,11 @@ trait MutatesSelf
     }
 
     /**
+     * Pops elements off the end of the collection.
+     * Returns the popped elements in a new instance.
+     *
      * @param int $amount
+     * Amount of elements to pop. Must be a positive integer.
      * @return static
      */
     public function popMany(int $amount): static
@@ -123,7 +138,11 @@ trait MutatesSelf
     }
 
     /**
+     * Removes `$key` from the collection and returns the pulled value.
+     * Throws `InvalidKeyException` if `$key` is not found.
+     *
      * @param TKey $key
+     * Key to be pulled from the collection.
      * @return TValue
      */
     public function pull(int|string $key): mixed
@@ -133,9 +152,14 @@ trait MutatesSelf
     }
 
     /**
+     * Removes `$key` from the collection and returns the pulled value.
+     * If `$key` is not found, value of `$default` is returned instead.
+     *
      * @template TDefault
      * @param TKey $key
+     * Key to be pulled from the collection.
      * @param TDefault $default
+     * Default value to be returned if `$key` is not found.
      * @return TValue|TDefault
      */
     public function pullOr(int|string $key, mixed $default): mixed
@@ -145,7 +169,11 @@ trait MutatesSelf
     }
 
     /**
+     * Removes `$key` from the collection and returns the pulled value.
+     * If `$key` is not found, **null** is returned instead.
+     *
      * @param TKey $key
+     * Key to be pulled from the collection.
      * @return TValue|null
      */
     public function pullOrNull(int|string $key): mixed
@@ -155,6 +183,9 @@ trait MutatesSelf
     }
 
     /**
+     * Removes `$keys` from the collection and returns the pulled values as list.
+     * If `$key` does not exist, the missing key will be added to `$missed`.
+     *
      * @param iterable<TKey> $keys
      * Keys or indexes to be pulled.
      * @param array<int, TKey>|null &$missed
@@ -168,17 +199,26 @@ trait MutatesSelf
     }
 
     /**
+     * Removes `$value` from the collection.
+     * Limit can be set to specify the number of times a value should be removed.
+     * Returns the keys of the removed value.
+     *
      * @param TValue $value
+     * Value to be removed.
      * @param int|null $limit
-     * @return array<int, array-key>
+     * [Optional] Limits the number of items to be removed.
+     * @return Vec<TKey>
      */
-    public function remove(mixed $value, ?int $limit = null): array
+    public function remove(mixed $value, ?int $limit = null): Vec
     {
         $ref = &$this->getItemsAsRef();
-        return Arr::remove($ref, $value, $limit, $this->reindex());
+        return $this->newVec(Arr::remove($ref, $value, $limit, $this->reindex()));
     }
 
     /**
+     * Shift an element off the beginning of the collection.
+     * Returns **null** if the collection is empty.
+     *
      * @return TValue
      */
     public function shift(): mixed
@@ -188,6 +228,9 @@ trait MutatesSelf
     }
 
     /**
+     * Shift an element off the beginning of the collection.
+     * Returns **null** if the collection is empty.
+     *
      * @return TValue|null
      */
     public function shiftOrNull(): mixed
@@ -197,7 +240,12 @@ trait MutatesSelf
     }
 
     /**
+     * Shift an element off the beginning of the collection up to `$amount`.
+     * Returns the shifted elements as an array.
+     *
      * @param int $amount
+     * Amount of elements to be shifted.
+     * Must be an integer with value >= 1.
      * @return static
      */
     public function shiftMany(int $amount): static

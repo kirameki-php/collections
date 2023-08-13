@@ -3398,7 +3398,7 @@ final class Arr
 
     /**
      * Pops the element off the end of the given array (reference).
-     * Returns **null**, if the array is empty.
+     * Returns **null**, if the `&$array` is empty.
      *
      * Example:
      * ```php
@@ -3553,8 +3553,8 @@ final class Arr
 
     /**
      * Removes the given key from `&$array` and returns the pulled value.
-     * If the given array is a list, the list will be re-indexed.
-     * Throws `InvalidKeyException` if the given key is not found.
+     * If the `&$array` is a list, the list will be re-indexed.
+     * Throws `InvalidKeyException` if `$key` is not found.
      *
      * Example:
      * ```php
@@ -3595,8 +3595,8 @@ final class Arr
 
     /**
      * Removes the given key from the array and returns the pulled value.
-     * If the given key is not found, value of `$default` is returned instead.
-     * If the given array is a list, the list will be re-indexed.
+     * If `$key` is not found, value of `$default` is returned instead.
+     * If `&$array` is a list, the list will be re-indexed.
      *
      * Example:
      * ```php
@@ -3644,8 +3644,8 @@ final class Arr
     }
 
     /**
-     * Removes the given key from the array and returns the pulled value.
-     * If the given key is not found, **null** is returned instead.
+     * Removes `$key` from `&$array` and returns the pulled value.
+     * If `$key` is not found, **null** is returned instead.
      * If `&$array` is a list, the list will be re-indexed.
      *
      * Example:
@@ -3678,8 +3678,8 @@ final class Arr
 
     /**
      * Removes `$keys` from the `&$array` and returns the pulled values as list.
-     * If the given array is a list, the list will be re-indexed.
-     * If the given key does not exist, the missing key will be added to `$missed`.
+     * If `&$array` is a list, the list will be re-indexed.
+     * If `$key` does not exist, the missing key will be added to `$missed`.
      *
      * Example:
      * ```php
@@ -3910,7 +3910,7 @@ final class Arr
     }
 
     /**
-     * Removes the given value from `&$array`.
+     * Removes `$value` from `&$array`.
      * Limit can be set to specify the number of times a value should be removed.
      * Returns the keys of the removed value.
      *
@@ -4667,7 +4667,7 @@ final class Arr
     }
 
     /**
-     * Shift an element off the beginning of array n times.
+     * Shift an element off the beginning of `&$array` up to `$amount`.
      * Returns the shifted elements as an array.
      *
      * Example:
@@ -4701,8 +4701,8 @@ final class Arr
     }
 
     /**
-     * Shift an element off the beginning of array.
-     * Returns **null** if the given array is empty.
+     * Shift an element off the beginning of `&$array`.
+     * Returns **null** if `&$array` is empty.
      *
      * Example:
      * ```php
