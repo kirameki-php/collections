@@ -43,6 +43,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
 
     /**
      * @param int $times
+     * Number of times to loop. Defaults to `PHP_INT_MAX`.
      * @return self<int>
      */
     public static function loop(int $times = PHP_INT_MAX): self
@@ -59,8 +60,12 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
 
     /**
      * @param int $start
+     * Starting number of the range.
      * @param int $end
+     * Ending number of the range.
      * @param bool $includeEnd
+     * Whether to include the end number or not.
+     * Defaults to **true**.
      * @return self<int>
      */
     public static function range(
@@ -152,8 +157,12 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new instance containing results returned from invoking
+     * `$callback` on each element of the collection.
+     *
      * @template TMapValue
      * @param Closure(TValue, int): TMapValue $callback
+     * Callback to be used to map the values.
      * @return self<TMapValue>
      */
     public function map(Closure $callback): self
@@ -219,6 +228,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * repeated for a given number of times.
      *
      * @param int<0, max> $times
+     * Number of times `$iterable` will be repeated.
      * @return static
      */
     public function repeat(int $times): static
@@ -231,6 +241,9 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `EmptyNotAllowedException` if the collection is empty.
      *
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return int
      */
     public function sampleIndex(?Randomizer $randomizer = null): mixed
@@ -243,6 +256,9 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * Returns **null** if the collection is empty.
      *
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return int|null
      */
     public function sampleIndexOrNull(?Randomizer $randomizer = null): ?int
@@ -257,8 +273,14 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `InvalidArgumentException` if `$amount` is larger than the collection's size.
      *
      * @param int $amount
+     * Amount of items to sample.
      * @param bool $replace
+     * If **true**, same elements can be chosen more than once.
+     * Defaults to **false**.
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return self<int>
      */
     public function sampleIndexes(
@@ -296,6 +318,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * a list.
      *
      * @param iterable<int, TValue> ...$iterables
+     * Iterables to be zipped.
      * @return Vec<Vec<TValue|null>>
      */
     public function zip(iterable ...$iterables): self

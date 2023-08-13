@@ -93,7 +93,7 @@ final class Arr
     }
 
     /**
-     * Append value(s) to the end of the given iterable.
+     * Append value(s) to the end of `$iterable`.
      * The iterable must be convertible to a list.
      * Will throw `TypeMismatchException` if map is given.
      *
@@ -469,7 +469,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains all of the provided `$values`,
+     * Returns **true** if `$iterable` contains all the provided `$values`,
      * **false** otherwise.
      *
      * Example:
@@ -511,7 +511,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains all of the provided `$keys`,
+     * Returns **true** if `$iterable` contains all the provided `$keys`,
      * **false** otherwise.
      *
      * Example:
@@ -544,7 +544,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains any of the provided `$values`,
+     * Returns **true** if `$iterable` contains any of the provided `$values`,
      * **false** otherwise.
      *
      * Example:
@@ -576,7 +576,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains any of the provided `$keys`,
+     * Returns **true** if `$iterable` contains any of the provided `$keys`,
      * **false** otherwise.
      *
      * Example:
@@ -635,7 +635,7 @@ final class Arr
     }
 
     /**
-     * Returns **true** if given iterable contains none of the provided `$values`,
+     * Returns **true** if `$iterable` contains none of the provided `$values`,
      * **false** otherwise.
      *
      * Example:
@@ -921,7 +921,7 @@ final class Arr
     }
 
     /**
-     * Drop the first n elements from given iterable.
+     * Drop the first n elements from `$iterable`.
      *
      * Example:
      * ```php
@@ -1048,7 +1048,7 @@ final class Arr
     }
 
     /**
-     * Drop the last n elements from given iterable.
+     * Drop the last n elements from `$iterable`.
      *
      * Example:
      * ```php
@@ -2077,7 +2077,7 @@ final class Arr
     }
 
     /**
-     * Returns the intersection of given iterables using keys for comparison.
+     * Returns the intersection of `$iterables` using keys for comparison.
      *
      * Example:
      * ```php
@@ -2365,7 +2365,7 @@ final class Arr
     }
 
     /**
-     * Returns all the keys of the given iterable as an array.
+     * Returns all the keys of `$iterable` as an array.
      *
      * Example:
      * ```php
@@ -2682,7 +2682,7 @@ final class Arr
 
     /**
      * Returns a new array containing results returned from invoking
-     * `$callback` on each element on `$iterable`.
+     * `$callback` on each element of `$iterable`.
      *
      * Example:
      * ```php
@@ -4919,7 +4919,7 @@ final class Arr
     }
 
     /**
-     * Sort the given iterable by value in ascending order.
+     * Sort the `$iterable` by value in ascending order.
      *
      * Example:
      * ```php
@@ -4955,7 +4955,7 @@ final class Arr
     }
 
     /**
-     * Sort the given iterable by key in ascending order.
+     * Sort `$iterable` by key in ascending order.
      *
      * Example:
      * ```php
@@ -4966,6 +4966,8 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
+     * @param bool $ascending
+     * Sort in ascending order if **true**, descending order if **false**.
      * @param int $flag
      * [Optional] Sort flag to change the behavior of the sort.
      * See https://www.php.net/manual/en/function.sort.php for more info.
@@ -4986,7 +4988,7 @@ final class Arr
     }
 
     /**
-     * Sort the given iterable by key in ascending order.
+     * Sort the `$iterable` by key in ascending order.
      *
      * Example:
      * ```php
@@ -5012,7 +5014,7 @@ final class Arr
     }
 
     /**
-     * Sort the given iterable by key in descending order.
+     * Sort the `$iterable` by key in descending order.
      *
      * Example:
      * ```php
@@ -5109,7 +5111,7 @@ final class Arr
     }
 
     /**
-     * Sorts the given iterable by key using the provided comparison function.
+     * Sorts the `$iterable` by key using the provided comparison function.
      *
      * Example:
      * ```php
@@ -6003,6 +6005,7 @@ final class Arr
      *
      * @template TValue
      * @param iterable<int, TValue> $iterables
+     * Iterables to be zipped.
      * @return list<array<int, TValue|null>>
      */
     public static function zip(

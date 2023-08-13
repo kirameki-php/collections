@@ -14,8 +14,12 @@ final readonly class Range implements Countable, IteratorAggregate
 {
     /**
      * @param int $start
+     * Starting number of the range.
      * @param int $end
+     * Ending number of the range.
      * @param bool $includeEnd
+     * Whether to include the end number or not.
+     * Defaults to **true**.
      */
     public function __construct(
         private int $start,

@@ -174,6 +174,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `InvalidKeyException` if key does not exist.
      *
      * @param TKey $key
+     * Key to look for.
      * @return TValue
      */
     public function get(int|string $key): mixed
@@ -186,7 +187,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      *
      * @template TDefault
      * @param TKey $key
+     * Key to look for.
      * @param TDefault $default
+     * Default value to return if key is not found.
      * @return TValue|TDefault
      */
     public function getOr(int|string $key, mixed $default): mixed
@@ -198,6 +201,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Returns the element of `$key` if it exists, `null` otherwise.
      *
      * @param TKey $index
+     * Index to look for.
      * @return TValue|null
      */
     public function getOrNull(int|string $index): mixed
@@ -210,6 +214,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `IndexOutOfBoundsException` if the index does not exist.
      *
      * @param int $index
+     * Index to look for.
      * @return TKey
      */
     public function keyAt(int $index): int|string
@@ -223,6 +228,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Returns **null** if the index does not exist.
      *
      * @param int $index
+     * Index to look for.
      * @return TKey|null
      */
     public function keyAtOrNull(int $index): string|int|null
@@ -231,7 +237,10 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the intersection of the collection using keys for comparison.
+     *
      * @param iterable<TKey, TValue> $items
+     * Items to be intersected.
      * @return static
      */
     public function intersectKeys(iterable $items): static
@@ -245,6 +254,8 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `EmptyNotAllowedException` if the collection is empty.
      *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TKey
      */
     public function lastKey(?Closure $condition = null): mixed
@@ -257,6 +268,8 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Returns **null** if condition is not met.
      *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TKey|null
      */
     public function lastKeyOrNull(?Closure $condition = null): mixed
@@ -265,8 +278,12 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new instance containing results returned from invoking
+     * `$callback` on each element of the collection.
+     *
      * @template TMapValue
      * @param Closure(TValue, TKey): TMapValue $callback
+     * Callback to be used to map the values.
      * @return self<TKey, TMapValue>
      */
     public function map(Closure $callback): self
@@ -292,6 +309,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `EmptyNotAllowedException` if the collection is empty.
      *
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return TKey
      */
     public function sampleKey(?Randomizer $randomizer = null): mixed
@@ -304,6 +324,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Returns **null** if the collection is empty.
      *
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return TKey|null
      */
     public function sampleKeyOrNull(?Randomizer $randomizer = null): mixed
@@ -318,8 +341,14 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `InvalidArgumentException` if `$amount` is larger than `$iterable`'s size.
      *
      * @param int $amount
+     * Amount of items to sample.
      * @param bool $replace
+     * If **true**, same elements can be chosen more than once.
+     * Defaults to **false**.
      * @param Randomizer|null $randomizer
+     * [Optional] Randomizer to be used.
+     * Default randomizer (Secure) will be used if **null**.
+     * Defaults to **null**.
      * @return Vec<TKey>
      */
     public function sampleKeys(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
@@ -328,8 +357,14 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Sort the collection by key in ascending order.
+     *
      * @param bool $ascending
+     * Sort in ascending order if **true**, descending order if **false**.
      * @param int $flag
+     * [Optional] Sort flag to change the behavior of the sort.
+     * See https://www.php.net/manual/en/function.sort.php for more info.
+     * Defaults to `SORT_REGULAR`.
      * @return static
      */
     public function sortByKey(bool $ascending, int $flag = SORT_REGULAR): static
@@ -338,7 +373,12 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Sort the `$iterable` by key in ascending order.
+     *
      * @param int $flag
+     * [Optional] Sort flag to change the behavior of the sort.
+     * See https://www.php.net/manual/en/function.sort.php for more info.
+     * Defaults to `SORT_REGULAR`.
      * @return static
      */
     public function sortByKeyAsc(int $flag = SORT_REGULAR): static
@@ -347,7 +387,12 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Sort the `$iterable` by key in descending order.
+     *
      * @param int $flag
+     * [Optional] Sort flag to change the behavior of the sort.
+     * See https://www.php.net/manual/en/function.sort.php for more info.
+     * Defaults to `SORT_REGULAR`.
      * @return static
      */
     public function sortByKeyDesc(int $flag = SORT_REGULAR): static
@@ -356,16 +401,25 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param Closure(TKey, TKey): int $comparison
+     * Sorts the `$iterable` by key using the provided comparison function.
+     *
+     * @param Closure(TKey, TKey): int $comparator
+     * The comparison function to use.
+     * Utilize the spaceship operator (`<=>`) to easily compare two values.
      * @return static
      */
-    public function sortWithKey(Closure $comparison): static
+    public function sortWithKey(Closure $comparator): static
     {
-        return $this->instantiate(Arr::sortWithKey($this, $comparison));
+        return $this->instantiate(Arr::sortWithKey($this, $comparator));
     }
 
     /**
+     * Generates URL encoded query string from the elements of the collection.
+     * Encoding follows RFC3986 (spaces will be converted to `%20`).
+     *
      * @param string|null $namespace
+     * [Optional] Adds namespace to wrap the iterable.
+     * Defaults to **null**.
      * @return string
      */
     public function toUrlQuery(?string $namespace = null): string
@@ -378,6 +432,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * the corresponding key does not exist `$iterable`.
      *
      * @param iterable<TKey, TValue> $defaults
+     * Iterable to be set as default.
      * @return static
      */
     public function withDefaults(iterable $defaults): static
@@ -386,6 +441,8 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new `Vec` which contains the values of the collection.
+     *
      * @return Vec<TValue>
      */
     public function values(): Vec
