@@ -16,6 +16,7 @@ use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
+use Kirameki\Core\Type;
 use Random\Randomizer;
 use Traversable;
 use function array_diff_ukey;
@@ -129,6 +130,37 @@ final class Arr
     }
 
     /**
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param iterable<int, TKey> $keys
+     * @return void
+     */
+    public static function assertExactKeys(iterable $iterable, iterable $keys): void
+    {
+        $asserting = array_keys(self::from($iterable));
+        $keys = self::from($keys);
+
+        $excess = self::diff($asserting, $keys);
+        if (count($excess) > 0) {
+            throw new ExcessKeyException($excess, [
+                'iterable' => $iterable,
+                'keys' => $keys,
+                'excess' => $excess,
+            ]);
+        }
+
+        $missing = self::diff($keys, $asserting);
+        if (count($missing) > 0) {
+            throw new MissingKeyException($missing, [
+                'iterable' => $iterable,
+                'keys' => $keys,
+                'missing' => $missing,
+            ]);
+        }
+    }
+
+    /**
      * Returns the item at the given index.
      * Throws `IndexOutOfBoundsException` if the index does not exist.
      *
@@ -165,37 +197,6 @@ final class Arr
         }
 
         return $result;
-    }
-
-    /**
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * @param iterable<int, TKey> $keys
-     * @return void
-     */
-    public static function assertExactKeys(iterable $iterable, iterable $keys): void
-    {
-        $asserting = array_keys(self::from($iterable));
-        $keys = self::from($keys);
-
-        $excess = self::diff($asserting, $keys);
-        if (count($excess) > 0) {
-            throw new ExcessKeyException($excess, [
-                'iterable' => $iterable,
-                'keys' => $keys,
-                'excess' => $excess,
-            ]);
-        }
-
-        $missing = self::diff($keys, $asserting);
-        if (count($missing) > 0) {
-            throw new MissingKeyException($missing, [
-                'iterable' => $iterable,
-                'keys' => $keys,
-                'missing' => $missing,
-            ]);
-        }
     }
 
     /**
@@ -1289,6 +1290,34 @@ final class Arr
             }
         }
         return true;
+    }
+
+    /**
+     * Ensures that all elements of `$iterable` are of the given `$expected` type.
+     * Throws `InvalidArgumentException` if `$expected` is not a valid type.
+     * Throws `TypeMismatchException` if any element is not of the expected type.
+     * Empty `$iterable` are considered valid.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param string $type
+     * @return void
+     */
+    public static function ensureValuesOfType(iterable $iterable, string $type): void
+    {
+        foreach ($iterable as $key => $val) {
+            if (Type::is($val, $type)) {
+                continue;
+            }
+
+            $given = Type::of($val);
+            throw new TypeMismatchException("Expected type: {$type}, Got: {$given} at {$key}.", [
+                'iterable' => $iterable,
+                'type' => $type,
+                'got' => $given,
+            ]);
+        }
     }
 
     /**

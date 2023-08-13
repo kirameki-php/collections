@@ -388,6 +388,21 @@ trait Enumerable
     }
 
     /**
+     * Ensures that all elements of the collection are of the given `$expected` type.
+     * Throws `InvalidArgumentException` if `$expected` is not a valid type.
+     * Throws `TypeMismatchException` if any element is not of the expected type.
+     * Empty collections are considered valid.
+     *
+     * @param string $expected
+     * @return $this
+     */
+    public function ensureValuesOfType(string $type): static
+    {
+        Arr::ensureValuesOfType($this, $type);
+        return $this;
+    }
+
+    /**
      * Returns **true** if the collection ends with the given `$values`, **false** otherwise.
      *
      * @param iterable<int, TValue> $values

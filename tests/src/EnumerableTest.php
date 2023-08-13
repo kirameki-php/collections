@@ -2,6 +2,8 @@
 
 namespace Tests\Kirameki\Collections;
 
+use Closure;
+use DateTime;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
@@ -13,6 +15,7 @@ use Kirameki\Collections\Map;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\InvalidTypeException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Dumper\Config;
@@ -559,6 +562,45 @@ final class EnumerableTest extends TestCase
         $this->assertTrue($this->map(['a' => 1, 'b' => 2])->endsWith([2]), 'key does not matter');
         $this->assertTrue($this->map(['a' => 1, 'b' => 2])->endsWith(['c' => 2]), 'key does not matter 2');
         $this->assertFalse($this->map(['a' => 1, 'b' => 2])->endsWith(['c' => 3]), 'different value');
+    }
+
+    public function test_ensureValuesOfType(): void
+    {
+        // on empty
+        foreach (['int', 'float', 'bool', 'string', 'array', 'object'] as $type) {
+            $this->vec()->ensureValuesOfType($type);
+        }
+
+        // valid primitive types
+        $this->vec([1])->ensureValuesOfType('int');
+        $this->vec([1.0, INF, NAN])->ensureValuesOfType('float');
+        $this->vec(['1', ''])->ensureValuesOfType('string');
+        $this->vec([true, false])->ensureValuesOfType('bool');
+        $this->vec([null, NULL])->ensureValuesOfType('null');
+
+        // valid complex types
+        $this->vec([[]])->ensureValuesOfType('array');
+        $this->vec([new DateTime()])->ensureValuesOfType('object');
+        $this->vec([date(...)])->ensureValuesOfType('object');
+        $this->vec([date(...)])->ensureValuesOfType(Closure::class);
+        $this->vec([1, 'string'])->ensureValuesOfType('string|int');
+        $this->vec([1, null])->ensureValuesOfType('int|null');
+
+        $this->assertTrue(true, 'no exception');
+    }
+
+    public function test_ensureValuesOfType_with_invalid_type(): void
+    {
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid type: invalid');
+        $this->vec([1])->ensureValuesOfType('invalid');
+    }
+
+    public function test_ensureValuesOfType_with_mismatch_value(): void
+    {
+        $this->expectExceptionMessage('Expected type: string|float, Got: int at 0.');
+        $this->expectException(TypeMismatchException::class);
+        $this->vec([1])->ensureValuesOfType('string|float');
     }
 
     public function test_filter(): void
