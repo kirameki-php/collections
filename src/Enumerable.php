@@ -1204,6 +1204,24 @@ trait Enumerable
     }
 
     /**
+     * Converts the collection to an overlapping sub-slices of `$size`.
+     * Also known as sliding window.
+     *
+     * @param int $size
+     * Size of the window. Must be >= 1.
+     * @return Vec<static>
+     */
+    public function slide(int $size): Vec
+    {
+        $generator = (function() use ($size) {
+            foreach (Iter::slide($this, $size, $this->reindex()) as $window) {
+                yield $this->instantiate($window);
+            }
+        })();
+        return $this->newVec($generator);
+    }
+
+    /**
      * Sort the collection by value in the given order.
      *
      * @param int $order
@@ -1597,23 +1615,6 @@ trait Enumerable
     ): mixed
     {
         return $this->when($this->isNotEmpty(), $callback, $fallback);
-    }
-
-    /**
-     * Converts the collection to an overlapping sub-slices of `$size`.
-     *
-     * @param int $size
-     * Size of the window. Must be >= 1.
-     * @return Vec<static>
-     */
-    public function windows(int $size): Vec
-    {
-        $generator = (function() use ($size) {
-            foreach (Iter::windows($this, $size, $this->reindex()) as $window) {
-                yield $this->instantiate($window);
-            }
-        })();
-        return $this->newVec($generator);
     }
 
     /**

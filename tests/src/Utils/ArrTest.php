@@ -3121,6 +3121,44 @@ final class ArrTest extends TestCase
         self::assertSame([1 => 2], Arr::slice([1, 2, 3], 1, 1, reindex: false));
     }
 
+    public function test_side(): void
+    {
+        self::assertSame([[1]], Arr::slide([1], 1, true), 'list 1 size 1 (exact)');
+        self::assertSame([[1, 2]], Arr::slide([1, 2], 2, true), 'list 2 size 2 (exact)');
+        self::assertSame([[1, 2], [2, 3]], Arr::slide([1, 2, 3], 2, true), 'list 3 size 2');
+        self::assertSame([[1, 2], [1 => 2, 2 => 3]], Arr::slide([1, 2, 3], 2, false), 'list but no reindex');
+
+        self::assertSame(
+            [['a' => 1]],
+            Arr::slide(['a' => 1], 1),
+            'map 1 size 1',
+        );
+        self::assertSame(
+            [['a' => 1], ['b' => 2]],
+            Arr::slide(['a' => 1, 'b' => 2], 1),
+            'map 2 size 1',
+        );
+        self::assertSame(
+            [['a' => 1, 'b' => 2], ['b' => 2, 'c' => 3]],
+            Arr::slide(['a' => 1, 'b' => 2, 'c' => 3], 2),
+            'map 3 size 2',
+        );
+    }
+
+    public function test_side_negative_size(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected: $size > 0. Got: -1.');
+        self::assertSame([], Arr::slide([], -1), 'empty');
+    }
+
+    public function test_side_zero_size(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
+        self::assertSame([], Arr::slide([], 0), 'zero');
+    }
+
     public function test_sort(): void
     {
         self::assertSame([1, 2, 3, 4], Arr::sort([4, 2, 1, 3], SORT_ASC));
@@ -3602,44 +3640,6 @@ final class ArrTest extends TestCase
         self::assertSame([1, 1, 2], Arr::values([1, 1, 2]),'list');
         self::assertSame([1, 2], Arr::values(['a' => 1, 'b' => 2]), 'assoc');
         self::assertSame([1, 2], Arr::values([1 => 1, 0 => 2]), 'unordered');
-    }
-
-    public function test_windows(): void
-    {
-        self::assertSame([[1]], Arr::windows([1], 1, true), 'list 1 size 1 (exact)');
-        self::assertSame([[1, 2]], Arr::windows([1, 2], 2, true), 'list 2 size 2 (exact)');
-        self::assertSame([[1, 2], [2, 3]], Arr::windows([1, 2, 3], 2, true), 'list 3 size 2');
-        self::assertSame([[1, 2], [1 => 2, 2 => 3]], Arr::windows([1, 2, 3], 2, false), 'list but no reindex');
-
-        self::assertSame(
-            [['a' => 1]],
-            Arr::windows(['a' => 1], 1),
-            'map 1 size 1',
-        );
-        self::assertSame(
-            [['a' => 1], ['b' => 2]],
-            Arr::windows(['a' => 1, 'b' => 2], 1),
-            'map 2 size 1',
-        );
-        self::assertSame(
-            [['a' => 1, 'b' => 2], ['b' => 2, 'c' => 3]],
-            Arr::windows(['a' => 1, 'b' => 2, 'c' => 3], 2),
-            'map 3 size 2',
-        );
-    }
-
-    public function test_windows_negative_size(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $size > 0. Got: -1.');
-        self::assertSame([], Arr::windows([], -1), 'empty');
-    }
-
-    public function test_windows_zero_size(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
-        self::assertSame([], Arr::windows([], 0), 'zero');
     }
 
     public function test_withDefaults(): void

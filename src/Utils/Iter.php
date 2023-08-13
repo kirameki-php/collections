@@ -519,6 +519,59 @@ final class Iter
     }
 
     /**
+     * Creates a Generator that yields sub-slices of `$size`.
+     * Also known as sliding window.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $size
+     * Size of the window. Must be >= 1.
+     * @param bool $reindex
+     * If set to **true** the array will be re-indexed.
+     * @return Generator<int, array<TKey, TValue>>
+     */
+    public static function slide(
+        iterable $iterable,
+        int $size,
+        bool $reindex = false,
+    ): Generator
+    {
+        if ($size <= 0) {
+            throw new InvalidArgumentException("Expected: \$size > 0. Got: {$size}.", [
+                'iterable' => $iterable,
+                'size' => $size,
+                'reindex' => $reindex,
+            ]);
+        }
+
+        $window = [];
+        $filled = false;
+        foreach ($iterable as $key => $val) {
+            $reindex
+                ? $window[] = $val
+                : $window[$key] = $val;
+
+            // Backfill until window size is at $size
+            if ($filled === false) {
+                $filled = count($window) === $size;
+                if ($filled === false) {
+                    continue;
+                }
+            }
+
+            yield $window;
+
+            $window = array_slice($window, 1, null, !$reindex);
+        }
+
+        if (!$filled) {
+            yield $window;
+        }
+    }
+
+    /**
      * Creates a Generator that will send the key/value to the generator if the condition is **true**.
      *
      * @template TKey of array-key
@@ -613,58 +666,6 @@ final class Iter
     {
         foreach ($iterable as $val) {
             yield $val;
-        }
-    }
-
-    /**
-     * Creates a Generator that yields sub-slices of `$size`.
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param int $size
-     * Size of the window. Must be >= 1.
-     * @param bool $reindex
-     * If set to **true** the array will be re-indexed.
-     * @return Generator<int, array<TKey, TValue>>
-     */
-    public static function windows(
-        iterable $iterable,
-        int $size,
-        bool $reindex = false,
-    ): Generator
-    {
-        if ($size <= 0) {
-            throw new InvalidArgumentException("Expected: \$size > 0. Got: {$size}.", [
-                'iterable' => $iterable,
-                'size' => $size,
-                'reindex' => $reindex,
-            ]);
-        }
-
-        $window = [];
-        $filled = false;
-        foreach ($iterable as $key => $val) {
-            $reindex
-                ? $window[] = $val
-                : $window[$key] = $val;
-
-            // Backfill until window size is at $size
-            if ($filled === false) {
-                $filled = count($window) === $size;
-                if ($filled === false) {
-                    continue;
-                }
-            }
-
-            yield $window;
-
-            $window = array_slice($window, 1, null, !$reindex);
-        }
-
-        if (!$filled) {
-            yield $window;
         }
     }
 

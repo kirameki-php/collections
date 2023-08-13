@@ -1485,6 +1485,32 @@ final class EnumerableTest extends TestCase
         $this->assertSame([2, 3], $this->vec([1, 2, 3, 4])->slice(-3, -2)->all(), 'negative length');
     }
 
+    public function test_side(): void
+    {
+        $arr = range(0, 2);
+        $this->assertSame([[0], [1], [2]], $this->vec($arr)->slide(1)->map(fn(Vec $a) => $a->all())->all(), 'size 1');
+        $this->assertSame([[0, 1], [1, 2]], $this->vec($arr)->slide(2)->map(fn(Vec $a) => $a->all())->all(), 'size 2');
+        $this->assertSame([[0, 1, 2]], $this->vec($arr)->slide(3)->map(fn(Vec $a) => $a->all())->all(), 'size exact');
+        $this->assertSame([[0, 1, 2]], $this->vec($arr)->slide(5)->map(fn(Vec $a) => $a->all())->all(), 'size overflow');
+        $windowed = $this->vec($arr)->slide(2);
+        $this->assertInstanceOf(Vec::class, $windowed);
+        $windowed->each(fn($a) => $this->assertInstanceOf(Vec::class, $a));
+
+        $arr = ['a' => 1, 'b' => 2, 'c' => 3];
+        $windowed = $this->map($arr)->slide(2);
+        $this->assertInstanceOf(Vec::class, $windowed);
+        $windowed->each(fn($a) => $this->assertInstanceOf(Map::class, $a));
+        $this->assertSame(['a' => 1, 'b' => 2], $windowed[0]->all(), 'Mapped window 1');
+        $this->assertSame(['b' => 2, 'c' => 3], $windowed[1]->all(), 'Mapped window 2');
+    }
+
+    public function test_side_zero_size(): void
+    {
+        $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->vec()->slide(0);
+    }
+
     public function test_sort(): void
     {
         $this->assertSame([], $this->vec()->sort(SORT_ASC)->all(), 'empty');
@@ -1852,25 +1878,6 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['a' => 1], $this->map()->whenNotEmpty(fn($s) => $s, fn(Map $s) => $s->set('a', 1))->all(), 'map fallback');
     }
 
-    public function test_windows(): void
-    {
-        $arr = range(0, 2);
-        $this->assertSame([[0], [1], [2]], $this->vec($arr)->windows(1)->map(fn(Vec $a) => $a->all())->all(), 'size 1');
-        $this->assertSame([[0, 1], [1, 2]], $this->vec($arr)->windows(2)->map(fn(Vec $a) => $a->all())->all(), 'size 2');
-        $this->assertSame([[0, 1, 2]], $this->vec($arr)->windows(3)->map(fn(Vec $a) => $a->all())->all(), 'size exact');
-        $this->assertSame([[0, 1, 2]], $this->vec($arr)->windows(5)->map(fn(Vec $a) => $a->all())->all(), 'size overflow');
-        $windowed = $this->vec($arr)->windows(2);
-        $this->assertInstanceOf(Vec::class, $windowed);
-        $windowed->each(fn($a) => $this->assertInstanceOf(Vec::class, $a));
-
-        $arr = ['a' => 1, 'b' => 2, 'c' => 3];
-        $windowed = $this->map($arr)->windows(2);
-        $this->assertInstanceOf(Vec::class, $windowed);
-        $windowed->each(fn($a) => $this->assertInstanceOf(Map::class, $a));
-        $this->assertSame(['a' => 1, 'b' => 2], $windowed[0]->all(), 'Mapped window 1');
-        $this->assertSame(['b' => 2, 'c' => 3], $windowed[1]->all(), 'Mapped window 2');
-    }
-
     public function test_without(): void
     {
         $this->assertSame([], $this->vec()->without(1)->all(), 'empty');
@@ -1879,12 +1886,5 @@ final class EnumerableTest extends TestCase
         $this->assertSame([2], $this->vec([1, 2, 1, 1])->without(1)->all(), 'multi');
         $this->assertSame([1, 2, 'a'], $this->vec([1, 2, 'a'])->without('x')->all(), 'miss');
         $this->assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->without(1)->all(), 'map');
-    }
-
-    public function test_windows_zero_size(): void
-    {
-        $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
-        $this->expectException(InvalidArgumentException::class);
-        $this->vec()->windows(0);
     }
 }

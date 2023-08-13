@@ -4862,6 +4862,40 @@ final class Arr
     }
 
     /**
+     * Converts `$iterable` to an overlapping sub-slices of `$size`.
+     * Also known as sliding window.
+     *
+     * Example:
+     * ```php
+     * Arr::windows(range(0, 4), 3) // [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+     * Arr::windows(['a' => 1, 'b' => 2, 'c' => 3], 2) // [['a' => 1, 'b' => 2], ['b' => 2, , 'c' => 3]]
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param int $size
+     * Size of the window. Must be >= 1.
+     * @param bool|null $reindex
+     * [Optional] Result will be re-indexed if **true**.
+     * If **null**, the result will be re-indexed only if it's a list.
+     * @return array<int, array<TKey, TValue>>
+     */
+    public static function slide(
+        iterable $iterable,
+        int $size,
+        ?bool $reindex = null,
+    ): array
+    {
+        if ($reindex === null) {
+            $iterable = self::from($iterable);
+            $reindex = array_is_list($iterable);
+        }
+        return iterator_to_array(Iter::slide($iterable, $size, $reindex));
+    }
+
+    /**
      * Sort the `$iterable` by value in the given order.
      *
      * @param iterable<TKey, TValue> $iterable
@@ -5907,39 +5941,6 @@ final class Arr
     ): array
     {
         return iterator_to_array(Iter::values($iterable));
-    }
-
-    /**
-     * Converts `$iterable` to an overlapping sub-slices of `$size`.
-     *
-     * Example:
-     * ```php
-     * Arr::windows(range(0, 4), 3) // [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
-     * Arr::windows(['a' => 1, 'b' => 2, 'c' => 3], 2) // [['a' => 1, 'b' => 2], ['b' => 2, , 'c' => 3]]
-     * ```
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * Iterable to be traversed.
-     * @param int $size
-     * Size of the window. Must be >= 1.
-     * @param bool|null $reindex
-     * [Optional] Result will be re-indexed if **true**.
-     * If **null**, the result will be re-indexed only if it's a list.
-     * @return array<int, array<TKey, TValue>>
-     */
-    public static function windows(
-        iterable $iterable,
-        int $size,
-        ?bool $reindex = null,
-    ): array
-    {
-        if ($reindex === null) {
-            $iterable = self::from($iterable);
-            $reindex = array_is_list($iterable);
-        }
-        return iterator_to_array(Iter::windows($iterable, $size, $reindex));
     }
 
     /**
