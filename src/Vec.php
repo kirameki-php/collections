@@ -42,6 +42,8 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Creates a new instance which will lazily iterate for given `$times`.
+     *
      * @param int $times
      * Number of times to loop. Defaults to `PHP_INT_MAX`.
      * @return self<int>
@@ -59,6 +61,8 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Creates a new instance which will lazily iterate for the given range.
+     *
      * @param int $start
      * Starting number of the range.
      * @param int $end
