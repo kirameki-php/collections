@@ -1485,7 +1485,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([2, 3], $this->vec([1, 2, 3, 4])->slice(-3, -2)->all(), 'negative length');
     }
 
-    public function test_side(): void
+    public function test_slide(): void
     {
         $arr = range(0, 2);
         $this->assertSame([[0], [1], [2]], $this->vec($arr)->slide(1)->map(fn(Vec $a) => $a->all())->all(), 'size 1');
@@ -1504,7 +1504,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['b' => 2, 'c' => 3], $windowed[1]->all(), 'Mapped window 2');
     }
 
-    public function test_side_zero_size(): void
+    public function test_slide_zero_size(): void
     {
         $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
         $this->expectException(InvalidArgumentException::class);

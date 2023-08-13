@@ -3121,7 +3121,7 @@ final class ArrTest extends TestCase
         self::assertSame([1 => 2], Arr::slice([1, 2, 3], 1, 1, reindex: false));
     }
 
-    public function test_side(): void
+    public function test_slide(): void
     {
         self::assertSame([[1]], Arr::slide([1], 1, true), 'list 1 size 1 (exact)');
         self::assertSame([[1, 2]], Arr::slide([1, 2], 2, true), 'list 2 size 2 (exact)');
@@ -3145,14 +3145,14 @@ final class ArrTest extends TestCase
         );
     }
 
-    public function test_side_negative_size(): void
+    public function test_slide_negative_size(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $size > 0. Got: -1.');
         self::assertSame([], Arr::slide([], -1), 'empty');
     }
 
-    public function test_side_zero_size(): void
+    public function test_slide_zero_size(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected: $size > 0. Got: 0.');
