@@ -98,24 +98,24 @@ final class MapTest extends TestCase
         unset($map['a']);
     }
 
-    public function test_assertExactKeys(): void
+    public function test_ensureExactKeys(): void
     {
-        $this->assertInstanceOf(Map::class, $this->map()->assertExactKeys([]), 'empty');
-        $this->assertInstanceOf(Map::class, $this->map(['a' => 1, 'b' => 2])->assertExactKeys(['a', 'b']), 'exact keys');
+        $this->assertInstanceOf(Map::class, $this->map()->ensureExactKeys([]), 'empty');
+        $this->assertInstanceOf(Map::class, $this->map(['a' => 1, 'b' => 2])->ensureExactKeys(['a', 'b']), 'exact keys');
     }
 
-    public function test_assertExactKeys_excess_keys(): void
+    public function test_ensureExactKeys_excess_keys(): void
     {
         $this->expectExceptionMessage("Keys: ['b'] should not exist.");
         $this->expectException(ExcessKeyException::class);
-        $this->map(['a' => 1, 'b' => 2])->assertExactKeys(['a']);
+        $this->map(['a' => 1, 'b' => 2])->ensureExactKeys(['a']);
     }
 
-    public function test_assertExactKeys_missing_keys(): void
+    public function test_ensureExactKeys_missing_keys(): void
     {
         $this->expectExceptionMessage("Keys: ['b'] did not exist.");
         $this->expectException(MissingKeyException::class);
-        $this->map(['a' => 1])->assertExactKeys(['a', 'b']);
+        $this->map(['a' => 1])->ensureExactKeys(['a', 'b']);
     }
 
     public function test_containsAllKeys(): void

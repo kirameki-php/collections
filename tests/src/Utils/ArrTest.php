@@ -67,27 +67,6 @@ final class ArrTest extends TestCase
         Arr::append($arr, 1);
     }
 
-    public function test_assertExactKeys(): void
-    {
-        Arr::assertExactKeys([], []); // empty
-        Arr::assertExactKeys(['a' => 1, 'b' => 2], ['a', 'b']); // exact keys
-        $this->assertTrue(true);
-    }
-
-    public function test_assertExactKeys_excess_keys(): void
-    {
-        $this->expectExceptionMessage("Keys: ['b'] should not exist.");
-        $this->expectException(ExcessKeyException::class);
-        Arr::assertExactKeys(['a' => 1, 'b' => 2], ['a']);
-    }
-
-    public function test_assertExactKeys_missing_keys(): void
-    {
-        $this->expectExceptionMessage("Keys: ['b'] did not exist.");
-        $this->expectException(MissingKeyException::class);
-        Arr::assertExactKeys(['a' => 1], ['a', 'b']);
-    }
-
     public function test_at(): void
     {
         self::assertSame(2, Arr::at([1, 2], 1));
@@ -794,6 +773,27 @@ final class ArrTest extends TestCase
         self::assertTrue(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['b' => 2, 'c' => 3]), 'map: exact match');
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2]), 'map: match start');
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2, 'd' => 4]), 'map: partial match');
+    }
+
+    public function test_ensureExactKeys(): void
+    {
+        Arr::ensureExactKeys([], []); // empty
+        Arr::ensureExactKeys(['a' => 1, 'b' => 2], ['a', 'b']); // exact keys
+        $this->assertTrue(true);
+    }
+
+    public function test_ensureExactKeys_excess_keys(): void
+    {
+        $this->expectExceptionMessage("Keys: ['b'] should not exist.");
+        $this->expectException(ExcessKeyException::class);
+        Arr::ensureExactKeys(['a' => 1, 'b' => 2], ['a']);
+    }
+
+    public function test_ensureExactKeys_missing_keys(): void
+    {
+        $this->expectExceptionMessage("Keys: ['b'] did not exist.");
+        $this->expectException(MissingKeyException::class);
+        Arr::ensureExactKeys(['a' => 1], ['a', 'b']);
     }
 
     public function test_ensureValuesOfType(): void

@@ -87,16 +87,6 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
 
     /**
      * @param iterable<int, TKey> $keys
-     * @return $this
-     */
-    public function assertExactKeys(iterable $keys): static
-    {
-        Arr::assertExactKeys($this, $keys);
-        return $this;
-    }
-
-    /**
-     * @param iterable<int, TKey> $keys
      * @return bool
      */
     public function containsAllKeys(iterable $keys): bool
@@ -138,6 +128,20 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function doesNotContainKey(mixed $key): bool
     {
         return Arr::doesNotContainKey($this, $key);
+    }
+
+    /**
+     * Ensures that collection only contains the given `$keys`.
+     * Throws `ExcessKeyException` if `$iterable` contains more keys than `$keys`.
+     * Throws `MissingKeyException` if `$iterable` contains less keys than `$keys`.
+     *
+     * @param iterable<int, TKey> $keys
+     * @return $this
+     */
+    public function ensureExactKeys(iterable $keys): static
+    {
+        Arr::ensureExactKeys($this, $keys);
+        return $this;
     }
 
     /**
