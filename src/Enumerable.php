@@ -32,6 +32,8 @@ trait Enumerable
     abstract protected function reindex(): bool;
 
     /**
+     * Returns the inner items as array.
+     *
      * @return array<TKey, TValue>
      */
     public function all(): array
