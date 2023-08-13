@@ -1294,7 +1294,7 @@ final class Arr
 
     /**
      * Ensures that all elements of `$iterable` are of the given `$expected` type.
-     * Throws `InvalidArgumentException` if `$expected` is not a valid type.
+     * Throws `InvalidTypeException` if `$expected` is not a valid type.
      * Throws `TypeMismatchException` if any element is not of the expected type.
      * Empty `$iterable` are considered valid.
      *

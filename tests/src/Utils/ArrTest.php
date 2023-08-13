@@ -2,6 +2,8 @@
 
 namespace Tests\Kirameki\Collections\Utils;
 
+use Closure;
+use DateTime;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\ExcessKeyException;
@@ -15,6 +17,7 @@ use Kirameki\Collections\Map;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
+use Kirameki\Core\Exceptions\InvalidTypeException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Random\Engine\Xoshiro256StarStar;
@@ -37,7 +40,6 @@ use function tmpfile;
 use function urlencode;
 use const INF;
 use const NAN;
-use const PHP_INT_MAX;
 use const SORT_ASC;
 use const SORT_DESC;
 use const SORT_NATURAL;
@@ -792,6 +794,45 @@ final class ArrTest extends TestCase
         self::assertTrue(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['b' => 2, 'c' => 3]), 'map: exact match');
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2]), 'map: match start');
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2, 'd' => 4]), 'map: partial match');
+    }
+
+    public function test_ensureValuesOfType(): void
+    {
+        // on empty
+        foreach (['int', 'float', 'bool', 'string', 'array', 'object'] as $type) {
+            Arr::ensureValuesOfType([], $type);
+        }
+
+        // valid primitive types
+        Arr::ensureValuesOfType([1], 'int');
+        Arr::ensureValuesOfType([1.0, INF, NAN], 'float');
+        Arr::ensureValuesOfType(['1', ''], 'string');
+        Arr::ensureValuesOfType([true, false], 'bool');
+        Arr::ensureValuesOfType([null, NULL], 'null');
+
+        // valid complex types
+        Arr::ensureValuesOfType([[]], 'array');
+        Arr::ensureValuesOfType([new DateTime()], 'object');
+        Arr::ensureValuesOfType([date(...)], 'object');
+        Arr::ensureValuesOfType([date(...)], Closure::class);
+        Arr::ensureValuesOfType([1, 'string'], 'string|int');
+        Arr::ensureValuesOfType([1, null], 'int|null');
+
+        $this->assertTrue(true, 'no exception');
+    }
+
+    public function test_ensureValuesOfType_with_invalid_type(): void
+    {
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid type: invalid');
+        $this->vec([1])->ensureValuesOfType('invalid');
+    }
+
+    public function test_ensureValuesOfType_with_mismatch_value(): void
+    {
+        $this->expectExceptionMessage('Expected type: string|float, Got: int at 0.');
+        $this->expectException(TypeMismatchException::class);
+        $this->vec([1])->ensureValuesOfType('string|float');
     }
 
     public function test_get(): void

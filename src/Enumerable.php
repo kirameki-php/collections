@@ -389,11 +389,11 @@ trait Enumerable
 
     /**
      * Ensures that all elements of the collection are of the given `$expected` type.
-     * Throws `InvalidArgumentException` if `$expected` is not a valid type.
+     * Throws `InvalidTypeException` if `$expected` is not a valid type.
      * Throws `TypeMismatchException` if any element is not of the expected type.
      * Empty collections are considered valid.
      *
-     * @param string $expected
+     * @param string $type
      * @return $this
      */
     public function ensureValuesOfType(string $type): static
