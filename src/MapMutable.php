@@ -31,4 +31,39 @@ class MapMutable extends Map
     {
         return new Map($this->items);
     }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @return $this
+     */
+    public function set(int|string $key, mixed $value): static
+    {
+        Arr::set($this->items, $key, $value);
+        return $this;
+    }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @param bool $result
+     * @return $this
+     */
+    public function setIfExists(int|string $key, mixed $value, bool &$result = false): static
+    {
+        $result = Arr::setIfExists($this->items, $key, $value);
+        return $this;
+    }
+
+    /**
+     * @param TKey $key
+     * @param TValue $value
+     * @param bool $result
+     * @return $this
+     */
+    public function setIfNotExists(int|string $key, mixed $value, bool &$result = false): static
+    {
+        $result = Arr::setIfNotExists($this->items, $key, $value);
+        return $this;
+    }
 }
