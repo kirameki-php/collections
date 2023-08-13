@@ -145,6 +145,10 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the first key of the collection which meets the given `$condition`.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if the collection is empty.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TKey
      */
@@ -154,6 +158,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the first key of the collection which meets the given `$condition`.
+     * Returns **null** if the collection is empty or if there were no matching conditions.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TKey|null
      */
@@ -163,7 +170,10 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param int|string $key
+     * Returns the element of `$key`.
+     * Throws `InvalidKeyException` if key does not exist.
+     *
+     * @param TKey $key
      * @return TValue
      */
     public function get(int|string $key): mixed
@@ -172,8 +182,10 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the element of `$key` if it exists, `$default` is returned otherwise.
+     *
      * @template TDefault
-     * @param int|string $key
+     * @param TKey $key
      * @param TDefault $default
      * @return TValue|TDefault
      */
@@ -183,7 +195,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param int|string $index
+     * Returns the element of `$key` if it exists, `null` otherwise.
+     *
+     * @param TKey $index
      * @return TValue|null
      */
     public function getOrNull(int|string $index): mixed
@@ -192,17 +206,24 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the key at `$index`.
+     * Throws `IndexOutOfBoundsException` if the index does not exist.
+     *
      * @param int $index
-     * @return int|string
+     * @return TKey
      */
     public function keyAt(int $index): int|string
     {
+        /** @var TKey */
         return Arr::keyAt($this, $index);
     }
 
     /**
+     * Returns the key at `$index`.
+     * Returns **null** if the index does not exist.
+     *
      * @param int $index
-     * @return string|int|null
+     * @return TKey|null
      */
     public function keyAtOrNull(int $index): string|int|null
     {
@@ -219,6 +240,10 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the last key of the collection which meets the `$condition`.
+     * Throws `NoMatchFoundException` if no condition is met.
+     * Throws `EmptyNotAllowedException` if the collection is empty.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TKey
      */
@@ -228,6 +253,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the last key of the collection which meets the `$condition`.
+     * Returns **null** if condition is not met.
+     *
      * @param Closure(TValue, TKey): bool|null $condition
      * @return TKey|null
      */
@@ -297,42 +325,6 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function sampleKeys(int $amount, bool $replace = false, ?Randomizer $randomizer = null): Vec
     {
         return $this->newVec(Arr::sampleKeys($this, $amount, $replace, $randomizer));
-    }
-
-
-    /**
-     * @param TKey $key
-     * @param TValue $value
-     * @return $this
-     */
-    public function set(int|string $key, mixed $value): static
-    {
-        Arr::set($this->items, $key, $value);
-        return $this;
-    }
-
-    /**
-     * @param TKey $key
-     * @param TValue $value
-     * @param bool $result
-     * @return $this
-     */
-    public function setIfExists(int|string $key, mixed $value, bool &$result = false): static
-    {
-        $result = Arr::setIfExists($this->items, $key, $value);
-        return $this;
-    }
-
-    /**
-     * @param TKey $key
-     * @param TValue $value
-     * @param bool $result
-     * @return $this
-     */
-    public function setIfNotExists(int|string $key, mixed $value, bool &$result = false): static
-    {
-        $result = Arr::setIfNotExists($this->items, $key, $value);
-        return $this;
     }
 
     /**

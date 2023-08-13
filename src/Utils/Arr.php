@@ -1520,8 +1520,7 @@ final class Arr
 
     /**
      * Returns the first key of `$iterable` which meets the given `$condition`.
-     * Returns **null** if the given iterable is empty or if there were no
-     * matching conditions.
+     * Returns **null** if `$iterable` is empty or if there were no matching conditions.
      *
      * Example:
      * ```php
@@ -2519,7 +2518,7 @@ final class Arr
     }
 
     /**
-     * Returns the last key of `$iterable` which meets the given condition.
+     * Returns the last key of `$iterable` which meets the `$condition`.
      * Throws `NoMatchFoundException` if no condition is met.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
@@ -2561,7 +2560,7 @@ final class Arr
     }
 
     /**
-     * Returns the last key of `$iterable` which meets the given condition.
+     * Returns the last key of `$iterable` which meets the `$condition`.
      * Returns **null** if condition is not met.
      *
      * Example:
