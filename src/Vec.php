@@ -113,7 +113,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param int|string|null $offset
+     * @param int|null $offset
      * @param TValue $value
      * @return void
      */
@@ -123,7 +123,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param mixed $offset
+     * @param TValue $offset
      * @return void
      */
     public function offsetUnset(mixed $offset): void
@@ -132,7 +132,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, TValue>
      */
     public function jsonSerialize(): array
     {
@@ -162,6 +162,8 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Converts collection to a mutable instance.
+     *
      * @return VecMutable<TValue>
      */
     public function mutable(): VecMutable
@@ -213,6 +215,9 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new instance which contains the current collection
+     * repeated for a given number of times.
+     *
      * @param int<0, max> $times
      * @return static
      */
@@ -222,6 +227,9 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a random index picked from the collection.
+     * Throws `EmptyNotAllowedException` if the collection is empty.
+     *
      * @param Randomizer|null $randomizer
      * @return int
      */
@@ -231,6 +239,9 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a random index picked from the collection.
+     * Returns **null** if the collection is empty.
+     *
      * @param Randomizer|null $randomizer
      * @return int|null
      */
@@ -241,6 +252,10 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new `Vec` of random elements picked from the collection.
+     * If `$replace` is set to **false**, each index will be chosen only once.
+     * Throws `InvalidArgumentException` if `$amount` is larger than the collection's size.
+     *
      * @param int $amount
      * @param bool $replace
      * @param Randomizer|null $randomizer

@@ -1264,7 +1264,7 @@ final class Arr
     /**
      * Ensures that `$iterable` only contains the given `$keys`.
      * Throws `ExcessKeyException` if `$iterable` contains more keys than `$keys`.
-     * Throws `MissingKeyException` if `$iterable` contains less keys than `$keys`.
+     * Throws `MissingKeyException` if `$iterable` contains fewer keys than `$keys`.
      *
      * @template TKey of array-key
      * @template TValue
@@ -3967,7 +3967,6 @@ final class Arr
 
     /**
      * Returns an array which contains `$iterable` for a given number of times.
-     *
      * Note: All keys will be discarded.
      *
      * Example

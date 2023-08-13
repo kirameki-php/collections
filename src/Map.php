@@ -59,7 +59,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param int|string|null $offset
+     * @param TKey $offset
      * @param TValue $value
      * @return void
      */
@@ -69,7 +69,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * @param mixed $offset
+     * @param TKey $offset
      * @return void
      */
     public function offsetUnset(mixed $offset): void
@@ -133,7 +133,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     /**
      * Ensures that collection only contains the given `$keys`.
      * Throws `ExcessKeyException` if `$iterable` contains more keys than `$keys`.
-     * Throws `MissingKeyException` if `$iterable` contains less keys than `$keys`.
+     * Throws `MissingKeyException` if `$iterable` contains fewer keys than `$keys`.
      *
      * @param iterable<int, TKey> $keys
      * @return $this
@@ -247,6 +247,8 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Converts collection to a mutable instance.
+     *
      * @return MapMutable<TKey, TValue>
      */
     public function mutable(): MapMutable
@@ -258,6 +260,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a random key picked from the collection.
+     * Throws `EmptyNotAllowedException` if the collection is empty.
+     *
      * @param Randomizer|null $randomizer
      * @return TKey
      */
@@ -267,6 +272,9 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a random key picked from the collection.
+     * Returns **null** if the collection is empty.
+     *
      * @param Randomizer|null $randomizer
      * @return TKey|null
      */
@@ -277,6 +285,10 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a list of random elements picked as `Vec`.
+     * If `$replace` is set to **false**, each key will be chosen only once.
+     * Throws `InvalidArgumentException` if `$amount` is larger than `$iterable`'s size.
+     *
      * @param int $amount
      * @param bool $replace
      * @param Randomizer|null $randomizer
