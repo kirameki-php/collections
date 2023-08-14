@@ -627,16 +627,6 @@ trait Enumerable
     }
 
     /**
-     * Returns all the keys as `Vec`.
-     *
-     * @return Vec<TKey>
-     */
-    public function keys(): Vec
-    {
-        return $this->newVec(Iter::keys($this));
-    }
-
-    /**
      * Returns the last element in the collection.
      * If `$condition` is set, the last element which meets the condition is returned instead.
      * Throws `NoMatchFoundException` if no condition is met.
