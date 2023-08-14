@@ -209,10 +209,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      */
     public function mutable(): VecMutable
     {
-        $items = is_object($this->items)
-            ? clone $this->items
-            : $this->items;
-        return new VecMutable($items);
+        return new VecMutable($this->items);
     }
 
     /**
