@@ -439,6 +439,20 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new collection with the elements of the two keys swapped.
+     *
+     * @param TKey $key1
+     * Key to be swapped.
+     * @param TKey $key2
+     * Key to be swapped.
+     * @return static
+     */
+    public function swap(int|string $key1, int|string $key2): static
+    {
+        return $this->instantiate(Arr::swap($this, $key1, $key2, $this->reindex()));
+    }
+
+    /**
      * Returns a new collection which only contains the elements that has matching
      * keys in the collection. Non-existent keys will be ignored.
      * If `$safe` is set to **true**, `MissingKeyException` will be thrown

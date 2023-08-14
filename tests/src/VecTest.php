@@ -320,6 +320,25 @@ final class VecTest extends TestCase
         $this->vec([1])->symDiff(['a' => 1]);
     }
 
+    public function test_swap(): void
+    {
+        $this->assertSame([1, 3, 2, 4], $this->vec([1, 2, 3, 4])->swap(1, 2)->all(), 'swap list');
+    }
+
+    public function test_swap_non_existing_key1(): void
+    {
+        $this->expectExceptionMessage('Key: 0 does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        $this->vec()->swap(0, 1);
+    }
+
+    public function test_swap_non_existing_key2(): void
+    {
+        $this->expectExceptionMessage('Key: 1 does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        $this->vec([1])->swap(0, 1);
+    }
+
     public function test_takeIndices(): void
     {
         $this->assertSame([], $this->vec()->takeIndices([])->all(), 'empty');

@@ -345,6 +345,20 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new collection with the elements of the two indices swapped.
+     *
+     * @param int $index1
+     * Index to be swapped.
+     * @param int $index2
+     * Index to be swapped.
+     * @return static
+     */
+    public function swap(int $index1, int $index2): static
+    {
+        return $this->instantiate(Arr::swap($this, $index1, $index2, $this->reindex()));
+    }
+
+    /**
      * Returns a new collection which only contains the elements that has matching
      * indices in the collection. Non-existent indices will be ignored.
      * If `$safe` is set to **true**, `MissingKeyException` will be thrown

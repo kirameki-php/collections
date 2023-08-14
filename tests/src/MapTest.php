@@ -472,6 +472,25 @@ final class MapTest extends TestCase
         self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortWithKey(fn($a, $b) => $b <=> $a)->all(), 'sort by key reverse');
     }
 
+    public function test_swap(): void
+    {
+        $this->assertSame(['c' => 3, 'b' => 2, 'a' => 1], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->swap('c', 'a')->all(), 'swap map');
+    }
+
+    public function test_swap_non_existing_key1(): void
+    {
+        $this->expectExceptionMessage('Key: a does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        $this->map([])->swap('a', 'b');
+    }
+
+    public function test_swap_non_existing_key2(): void
+    {
+        $this->expectExceptionMessage('Key: b does not exist.');
+        $this->expectException(InvalidKeyException::class);
+        $this->map(['a' => 1])->swap('a', 'b');
+    }
+
     public function test_takeKeys(): void
     {
         $this->assertSame([], $this->map()->takeKeys([])->all(), 'empty');

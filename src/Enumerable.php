@@ -1357,20 +1357,6 @@ trait Enumerable
     }
 
     /**
-     * Returns a new collection with the elements of the two keys swapped.
-     *
-     * @param TKey $key1
-     * Key to be swapped.
-     * @param TKey $key2
-     * Key to be swapped.
-     * @return static
-     */
-    public function swap(int|string $key1, int|string $key2): static
-    {
-        return $this->instantiate(Arr::swap($this, $key1, $key2, $this->reindex()));
-    }
-
-    /**
      * Returns a new instance with every nth elements dropped.
      *
      * @param int $nth
