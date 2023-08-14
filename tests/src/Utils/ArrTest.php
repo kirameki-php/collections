@@ -775,6 +775,45 @@ final class ArrTest extends TestCase
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2, 'd' => 4]), 'map: partial match');
     }
 
+    public function test_ensureElementType(): void
+    {
+        // on empty
+        foreach (['int', 'float', 'bool', 'string', 'array', 'object'] as $type) {
+            Arr::ensureElementType([], $type);
+        }
+
+        // valid primitive types
+        Arr::ensureElementType([1], 'int');
+        Arr::ensureElementType([1.0, INF, NAN], 'float');
+        Arr::ensureElementType(['1', ''], 'string');
+        Arr::ensureElementType([true, false], 'bool');
+        Arr::ensureElementType([null, NULL], 'null');
+
+        // valid complex types
+        Arr::ensureElementType([[]], 'array');
+        Arr::ensureElementType([new DateTime()], 'object');
+        Arr::ensureElementType([date(...)], 'object');
+        Arr::ensureElementType([date(...)], Closure::class);
+        Arr::ensureElementType([1, 'string'], 'string|int');
+        Arr::ensureElementType([1, null], 'int|null');
+
+        $this->assertTrue(true, 'no exception');
+    }
+
+    public function test_ensureElementType_with_invalid_type(): void
+    {
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid type: invalid');
+        $this->vec([1])->ensureElementType('invalid');
+    }
+
+    public function test_ensureElementType_with_mismatch_value(): void
+    {
+        $this->expectExceptionMessage('Expected type: string|float, Got: int at 0.');
+        $this->expectException(TypeMismatchException::class);
+        $this->vec([1])->ensureElementType('string|float');
+    }
+
     public function test_ensureExactKeys(): void
     {
         Arr::ensureExactKeys([], []); // empty
@@ -794,45 +833,6 @@ final class ArrTest extends TestCase
         $this->expectExceptionMessage("Keys: ['b'] did not exist.");
         $this->expectException(MissingKeyException::class);
         Arr::ensureExactKeys(['a' => 1], ['a', 'b']);
-    }
-
-    public function test_ensureValuesOfType(): void
-    {
-        // on empty
-        foreach (['int', 'float', 'bool', 'string', 'array', 'object'] as $type) {
-            Arr::ensureValuesOfType([], $type);
-        }
-
-        // valid primitive types
-        Arr::ensureValuesOfType([1], 'int');
-        Arr::ensureValuesOfType([1.0, INF, NAN], 'float');
-        Arr::ensureValuesOfType(['1', ''], 'string');
-        Arr::ensureValuesOfType([true, false], 'bool');
-        Arr::ensureValuesOfType([null, NULL], 'null');
-
-        // valid complex types
-        Arr::ensureValuesOfType([[]], 'array');
-        Arr::ensureValuesOfType([new DateTime()], 'object');
-        Arr::ensureValuesOfType([date(...)], 'object');
-        Arr::ensureValuesOfType([date(...)], Closure::class);
-        Arr::ensureValuesOfType([1, 'string'], 'string|int');
-        Arr::ensureValuesOfType([1, null], 'int|null');
-
-        $this->assertTrue(true, 'no exception');
-    }
-
-    public function test_ensureValuesOfType_with_invalid_type(): void
-    {
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid type: invalid');
-        $this->vec([1])->ensureValuesOfType('invalid');
-    }
-
-    public function test_ensureValuesOfType_with_mismatch_value(): void
-    {
-        $this->expectExceptionMessage('Expected type: string|float, Got: int at 0.');
-        $this->expectException(TypeMismatchException::class);
-        $this->vec([1])->ensureValuesOfType('string|float');
     }
 
     public function test_get(): void

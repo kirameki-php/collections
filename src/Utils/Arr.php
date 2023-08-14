@@ -1262,6 +1262,34 @@ final class Arr
     }
 
     /**
+     * Ensures that all elements of `$iterable` are of the given `$type`.
+     * Throws `InvalidTypeException` if `$type` is not a valid type.
+     * Throws `TypeMismatchException` if any element is not of the expected type.
+     * Empty `$iterable` are considered valid.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * @param string $type
+     * @return void
+     */
+    public static function ensureElementType(iterable $iterable, string $type): void
+    {
+        foreach ($iterable as $key => $val) {
+            if (Type::is($val, $type)) {
+                continue;
+            }
+
+            $given = Type::of($val);
+            throw new TypeMismatchException("Expected type: {$type}, Got: {$given} at {$key}.", [
+                'iterable' => $iterable,
+                'type' => $type,
+                'got' => $given,
+            ]);
+        }
+    }
+
+    /**
      * Ensures that `$iterable` only contains the given `$keys`.
      * Throws `ExcessKeyException` if `$iterable` contains more keys than `$keys`.
      * Throws `MissingKeyException` if `$iterable` contains fewer keys than `$keys`.
@@ -1292,34 +1320,6 @@ final class Arr
                 'iterable' => $iterable,
                 'keys' => $keys,
                 'missing' => $missing,
-            ]);
-        }
-    }
-
-    /**
-     * Ensures that all elements of `$iterable` are of the given `$expected` type.
-     * Throws `InvalidTypeException` if `$expected` is not a valid type.
-     * Throws `TypeMismatchException` if any element is not of the expected type.
-     * Empty `$iterable` are considered valid.
-     *
-     * @template TKey of array-key
-     * @template TValue
-     * @param iterable<TKey, TValue> $iterable
-     * @param string $type
-     * @return void
-     */
-    public static function ensureValuesOfType(iterable $iterable, string $type): void
-    {
-        foreach ($iterable as $key => $val) {
-            if (Type::is($val, $type)) {
-                continue;
-            }
-
-            $given = Type::of($val);
-            throw new TypeMismatchException("Expected type: {$type}, Got: {$given} at {$key}.", [
-                'iterable' => $iterable,
-                'type' => $type,
-                'got' => $given,
             ]);
         }
     }

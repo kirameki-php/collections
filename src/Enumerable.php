@@ -371,17 +371,17 @@ trait Enumerable
     }
 
     /**
-     * Ensures that all elements of the collection are of the given `$expected` type.
-     * Throws `InvalidTypeException` if `$expected` is not a valid type.
+     * Ensures that all elements of the collection are of the given `$type`.
+     * Throws `InvalidTypeException` if `$type` is not a valid type.
      * Throws `TypeMismatchException` if any element is not of the expected type.
      * Empty collections are considered valid.
      *
      * @param string $type
      * @return $this
      */
-    public function ensureValuesOfType(string $type): static
+    public function ensureElementType(string $type): static
     {
-        Arr::ensureValuesOfType($this, $type);
+        Arr::ensureElementType($this, $type);
         return $this;
     }
 

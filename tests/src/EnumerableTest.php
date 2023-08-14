@@ -540,23 +540,23 @@ final class EnumerableTest extends TestCase
     {
         // on empty
         foreach (['int', 'float', 'bool', 'string', 'array', 'object'] as $type) {
-            $this->vec()->ensureValuesOfType($type);
+            $this->vec()->ensureElementType($type);
         }
 
         // valid primitive types
-        $this->vec([1])->ensureValuesOfType('int');
-        $this->vec([1.0, INF, NAN])->ensureValuesOfType('float');
-        $this->vec(['1', ''])->ensureValuesOfType('string');
-        $this->vec([true, false])->ensureValuesOfType('bool');
-        $this->vec([null, NULL])->ensureValuesOfType('null');
+        $this->vec([1])->ensureElementType('int');
+        $this->vec([1.0, INF, NAN])->ensureElementType('float');
+        $this->vec(['1', ''])->ensureElementType('string');
+        $this->vec([true, false])->ensureElementType('bool');
+        $this->vec([null, NULL])->ensureElementType('null');
 
         // valid complex types
-        $this->vec([[]])->ensureValuesOfType('array');
-        $this->vec([new DateTime()])->ensureValuesOfType('object');
-        $this->vec([date(...)])->ensureValuesOfType('object');
-        $this->vec([date(...)])->ensureValuesOfType(Closure::class);
-        $this->vec([1, 'string'])->ensureValuesOfType('string|int');
-        $this->vec([1, null])->ensureValuesOfType('int|null');
+        $this->vec([[]])->ensureElementType('array');
+        $this->vec([new DateTime()])->ensureElementType('object');
+        $this->vec([date(...)])->ensureElementType('object');
+        $this->vec([date(...)])->ensureElementType(Closure::class);
+        $this->vec([1, 'string'])->ensureElementType('string|int');
+        $this->vec([1, null])->ensureElementType('int|null');
 
         $this->assertTrue(true, 'no exception');
     }
@@ -565,14 +565,14 @@ final class EnumerableTest extends TestCase
     {
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid type: invalid');
-        $this->vec([1])->ensureValuesOfType('invalid');
+        $this->vec([1])->ensureElementType('invalid');
     }
 
     public function test_ensureValuesOfType_with_mismatch_value(): void
     {
         $this->expectExceptionMessage('Expected type: string|float, Got: int at 0.');
         $this->expectException(TypeMismatchException::class);
-        $this->vec([1])->ensureValuesOfType('string|float');
+        $this->vec([1])->ensureElementType('string|float');
     }
 
     public function test_filter(): void

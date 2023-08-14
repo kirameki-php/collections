@@ -90,7 +90,7 @@ abstract class Enumerator implements Countable, IteratorAggregate
      */
     public function isEager(): bool
     {
-        return ! $this->isLazy();
+        return !$this->isLazy();
     }
 
     /**
