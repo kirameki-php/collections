@@ -10,7 +10,7 @@ use Traversable;
  * @template-covariant TValue
  * @implements IteratorAggregate<TKey, TValue>
  */
-class LazyIterator implements IteratorAggregate
+final readonly class LazyIterator implements IteratorAggregate
 {
     /**
      * @param iterable<TKey, TValue> $items
