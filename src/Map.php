@@ -308,9 +308,6 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      */
     public function mutable(): MapMutable
     {
-        $items = is_object($this->items)
-            ? clone $this->items
-            : $this->items;
         return new MapMutable($this->items);
     }
 

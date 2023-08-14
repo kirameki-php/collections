@@ -47,9 +47,9 @@ final class VecTest extends TestCase
 
     public function test_indices(): void
     {
-        $this->assertInstanceOf(Vec::class, $this->vec()->keys(), 'instance');
-        $this->assertSame([], $this->vec()->keys()->all(), 'empty');
-        $this->assertSame([0, 1], $this->vec([1, 2])->keys()->all(), 'keys');
+        $this->assertInstanceOf(Vec::class, $this->vec()->indices(), 'instance');
+        $this->assertSame([], $this->vec()->indices()->all(), 'empty');
+        $this->assertSame([0, 1], $this->vec([1, 2])->indices()->all(), 'indices');
     }
 
     public function test_loop(): void
