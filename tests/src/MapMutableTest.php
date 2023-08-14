@@ -113,7 +113,7 @@ final class MapMutableTest extends TestCase
         self::assertSame([], $map->remove('a')->all(), 'remove on empty map');
 
         $map = $this->mapMut(['a' => 1, 'b' => 2, 'c' => 2]);
-        self::assertSame(['b', 'c'], $map->remove(2), 'remove existing value');
+        self::assertSame(['b', 'c'], $map->remove(2)->all(), 'remove existing value');
         self::assertSame([], $map->remove(2)->all(), 'remove non-existing value');
         self::assertSame(['a' => 1], $map->all(), 'check remains');
 
@@ -284,7 +284,7 @@ final class MapMutableTest extends TestCase
         self::assertSame(['a' => 1], $map->setIfExists('b', 2, $result)->all(), 'key does not exist');
         self::assertFalse($result, 'result');
 
-        $map = $this->map(['a' => 1, 'b' => 2]);
+        $map = $this->mapMut(['a' => 1, 'b' => 2]);
         $result = false;
         self::assertSame(['a' => 1, 'b' => 3], $map->setIfExists('b', 3, $result)->all(), 'key exists');
         self::assertTrue($result, 'result');

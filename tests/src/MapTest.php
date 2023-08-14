@@ -231,6 +231,13 @@ final class MapTest extends TestCase
         self::assertNull($map->getOrNull(1), 'non-existing key');
     }
 
+    public function test_keys(): void
+    {
+        $this->assertInstanceOf(Vec::class, $this->map()->keys(), 'instance');
+        $this->assertSame([], $this->map()->keys()->all(), 'empty');
+        $this->assertSame(['a', 'b'], $this->map(['a' => 1, 'b' => 2])->keys()->all(), 'keys');
+    }
+
     public function test_intersectKeys(): void
     {
         $map = $this->map();

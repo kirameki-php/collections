@@ -161,6 +161,16 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns all the indices as `Vec`.
+     *
+     * @return Vec<int>
+     */
+    public function indices(): Vec
+    {
+        return $this->newVec(Iter::keys($this));
+    }
+
+    /**
      * Returns a new instance containing results returned from invoking
      * `$callback` on each element of the collection.
      *

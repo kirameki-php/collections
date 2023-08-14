@@ -237,6 +237,16 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns all the keys as `Vec`.
+     *
+     * @return Vec<TKey>
+     */
+    public function keys(): Vec
+    {
+        return $this->newVec(Iter::keys($this));
+    }
+
+    /**
      * Returns the intersection of the collection using keys for comparison.
      *
      * @param iterable<TKey, TValue> $items

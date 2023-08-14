@@ -12,6 +12,7 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Map;
+use Kirameki\Collections\MapMutable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
@@ -852,17 +853,6 @@ final class EnumerableTest extends TestCase
         $this->vec([1, 1])->keyBy(fn(int $i) => "{$i}")->all();
     }
 
-    public function test_keys(): void
-    {
-        $this->assertInstanceOf(Vec::class, $this->vec()->keys(), 'instance');
-        $this->assertSame([], $this->vec()->keys()->all(), 'empty');
-        $this->assertSame([0, 1], $this->vec([1, 2])->keys()->all(), 'keys');
-
-        $this->assertInstanceOf(Vec::class, $this->map()->keys(), 'instance');
-        $this->assertSame([], $this->map()->keys()->all(), 'empty');
-        $this->assertSame(['a', 'b'], $this->map(['a' => 1, 'b' => 2])->keys()->all(), 'keys');
-    }
-
     public function test_last(): void
     {
         $this->assertSame(2, $this->vec([1, 2])->last(), 'last');
@@ -1172,7 +1162,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame(2, $this->vec([1, 2])->pipe(fn($i) => $i->last()));
         $this->assertSame(0, $this->vec([1, 2])->pipe(fn($i) => 0));
 
-        $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1])->pipe(fn(Map $v) => $v->set('b', 2))->all());
+        $this->assertSame(['a' => 1, 'b' => 2], $this->mapMut(['a' => 1])->pipe(fn(MapMutable $v) => $v->set('b', 2))->all());
         $this->assertSame(2, $this->map(['a' => 1, 'b' => 2])->pipe(fn($i) => $i->last()));
         $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->pipe(fn($i) => 0));
     }
@@ -1845,7 +1835,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([1], $this->vec()->when(fn() => true, $callback, $fallback)->all(), 'when callback true');
         $this->assertSame([2], $this->vec()->when(fn() => false, $callback, $fallback)->all(), 'when callback false');
 
-        $this->assertSame(['a' => 1], $this->map()->when(true, fn(Map $s) => $s->set('a', 1))->all(), 'used on map');
+        $this->assertSame(['a' => 1], $this->mapMut()->when(true, fn(MapMutable $s) => $s->set('a', 1))->all(), 'used on map');
     }
 
     public function test_when_with_wrong_bool_return_type(): void
@@ -1863,7 +1853,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame([1], $this->vec()->whenEmpty($callback)->all(), 'when empty');
         $this->assertSame([1], $this->vec([1])->whenEmpty($callback)->all(), 'when non-empty no fallback');
         $this->assertSame([1, 2], $this->vec([1])->whenEmpty($callback, $fallback)->all(), 'when non-empty with fallback');
-        $this->assertSame(['a' => 1], $this->map()->whenEmpty(fn(Map $s) => $s->set('a', 1))->all(), 'used on map');
+        $this->assertSame(['a' => 1], $this->mapMut()->whenEmpty(fn(MapMutable $s) => $s->set('a', 1))->all(), 'used on map');
     }
 
     public function test_whenNotEmpty(): void
@@ -1874,8 +1864,8 @@ final class EnumerableTest extends TestCase
         $this->assertSame([], $this->vec()->whenNotEmpty($callback)->all(), 'when not empty no fallback');
         $this->assertSame([2], $this->vec()->whenNotEmpty($callback, $fallback)->all(), 'when not empty with fallback');
         $this->assertSame([1, 1], $this->vec([1])->whenNotEmpty($callback, $fallback)->all(), 'when non-empty no fallback');
-        $this->assertSame(['a' => 1, 'b' => 1], $this->map(['a' => 1])->whenNotEmpty(fn(Map $s) => $s->set('b', 1))->all(), 'map callback');
-        $this->assertSame(['a' => 1], $this->map()->whenNotEmpty(fn($s) => $s, fn(Map $s) => $s->set('a', 1))->all(), 'map fallback');
+        $this->assertSame(['a' => 1, 'b' => 1], $this->mapMut(['a' => 1])->whenNotEmpty(fn(MapMutable $s) => $s->set('b', 1))->all(), 'map callback');
+        $this->assertSame(['a' => 1], $this->mapMut()->whenNotEmpty(fn($s) => $s, fn(MapMutable $s) => $s->set('a', 1))->all(), 'map fallback');
     }
 
     public function test_without(): void
