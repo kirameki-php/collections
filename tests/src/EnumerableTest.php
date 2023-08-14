@@ -425,35 +425,6 @@ final class EnumerableTest extends TestCase
         );
     }
 
-    public function test_dropKeys(): void
-    {
-        $this->assertSame([], $this->vec()->dropKeys([])->all(), 'empty');
-        $this->assertSame([1], $this->vec([1])->dropKeys([])->all(), 'remove none');
-        $this->assertSame([1], $this->vec([1, 2])->dropKeys([1])->all(), 'remove one');
-        $this->assertSame([], $this->vec([1, 2])->dropKeys([0, 1])->all(), 'remove all');
-        $this->assertSame(['a'], $this->vec(['a'])->dropKeys([1], false)->all(), 'remove missing unsafe');
-
-        $this->assertSame([], $this->map()->dropKeys([])->all(), 'empty');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1])->dropKeys([])->all(), 'remove none');
-        $this->assertSame(['b' => 1], $this->map(['a' => 1, 'b' => 1])->dropKeys(['a'])->all(), 'remove one');
-        $this->assertSame([], $this->map(['a' => 1, 'b' => 1])->dropKeys(['a', 'b'])->all(), 'remove all');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1])->dropKeys(['b'], false)->all(), 'remove missing unsafe');
-    }
-
-    public function test_dropKeys_safe_vec(): void
-    {
-        $this->expectExceptionMessage('Keys: [0, 1] did not exist.');
-        $this->expectException(MissingKeyException::class);
-        $this->vec()->dropKeys([0, 1])->all();
-    }
-
-    public function test_dropKeys_safe_map(): void
-    {
-        $this->expectExceptionMessage("Keys: ['a', 'b'] did not exist.");
-        $this->expectException(MissingKeyException::class);
-        $this->map()->dropKeys(['a', 'b'])->all();
-    }
-
     public function test_dropLast(): void
     {
         $this->assertSame([], $this->vec()->dropLast(0)->all(), 'zero on empty');
@@ -1727,21 +1698,6 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['a' => 1, 'b' => 2], $this->map(['a' => 1, 'b' => 2])->takeIf(fn() => true)->all(), 'match all');
         $this->assertSame(['b' => 2], $this->map(['a' => 1, 'b' => 2])->takeIf(fn($v) => $v > 1)->all(), 'match some');
         $this->assertSame([], $this->map(['a' => 1, 'b' => 2])->takeIf(fn($v) => $v > 2)->all(), 'match none');
-    }
-
-    public function test_takeKeys(): void
-    {
-        $this->assertSame([], $this->vec()->takeKeys([])->all(), 'empty');
-        $this->assertSame([], $this->vec([1])->takeKeys([])->all(), 'take none');
-        $this->assertSame([2], $this->vec([1, 2])->takeKeys([1])->all(), 'take one');
-        $this->assertSame([1, 2], $this->vec([1, 2])->takeKeys([0, 1])->all(), 'take all');
-        $this->assertSame([], $this->vec(['a'])->takeKeys([1], false)->all(), 'take missing unsafe');
-
-        $this->assertSame([], $this->map()->takeKeys([])->all(), 'empty');
-        $this->assertSame([], $this->map(['a' => 1])->takeKeys([])->all(), 'take none');
-        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 1])->takeKeys(['a'])->all(), 'take one');
-        $this->assertSame(['a' => 1, 'b' => 1], $this->map(['a' => 1, 'b' => 1])->takeKeys(['a', 'b'])->all(), 'take all');
-        $this->assertSame([], $this->map(['a' => 1])->takeKeys(['b'], false)->all(), 'take missing unsafe');
     }
 
     public function test_takeLast(): void

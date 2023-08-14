@@ -161,6 +161,24 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new instance with the given indices removed. Missing indices will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown if index does not exist.
+     *
+     * @param iterable<int, int> $indices
+     * Indices to be excluded.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in the collection.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
+     * @return static
+     */
+    public function dropIndices(iterable $indices, bool $safe = true): static
+    {
+        return $this->instantiate(Arr::dropKeys($this, $indices, $safe, $this->reindex()));
+    }
+
+    /**
      * Returns all the indices as `Vec`.
      *
      * @return Vec<int>
@@ -324,6 +342,26 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     public function symDiff(iterable $iterable, Closure $by = null): static
     {
         return $this->instantiate(Arr::symDiff($this, $iterable, $by));
+    }
+
+    /**
+     * Returns a new collection which only contains the elements that has matching
+     * indices in the collection. Non-existent indices will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if index does not exist in the collection.
+     *
+     * @param iterable<int, int> $indices
+     * Indices to be included.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if index does not exist in the collection.
+     * If set to **false**, non-existing indices will be filled with **null**.
+     * Defaults to **true**.
+     * @return static
+     */
+    public function takeIndices(iterable $indices, bool $safe = true): static
+    {
+        return $this->instantiate(Arr::takeKeys($this, $indices, $safe, $this->reindex()));
     }
 
     /**

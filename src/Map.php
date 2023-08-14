@@ -131,6 +131,24 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns a new instance with the given keys removed. Missing keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown if a key does not exist.
+     *
+     * @param iterable<int, TKey> $keys
+     * Keys to be excluded.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in the collection.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
+     * @return static
+     */
+    public function dropKeys(iterable $keys, bool $safe = true): static
+    {
+        return $this->instantiate(Arr::dropKeys($this, $keys, $safe, $this->reindex()));
+    }
+
+    /**
      * Ensures that collection only contains the given `$keys`.
      * Throws `ExcessKeyException` if `$iterable` contains more keys than `$keys`.
      * Throws `MissingKeyException` if `$iterable` contains fewer keys than `$keys`.
@@ -418,6 +436,26 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function sortWithKey(Closure $comparator): static
     {
         return $this->instantiate(Arr::sortWithKey($this, $comparator));
+    }
+
+    /**
+     * Returns a new collection which only contains the elements that has matching
+     * keys in the collection. Non-existent keys will be ignored.
+     * If `$safe` is set to **true**, `MissingKeyException` will be thrown
+     * if a key does not exist in the collection.
+     *
+     * @param iterable<int, TKey> $keys
+     * Keys to be included.
+     * @param bool $safe
+     * [Optional] If this is set to **true**, `MissingKeyException` will be
+     * thrown if key does not exist in the collection.
+     * If set to **false**, non-existing keys will be filled with **null**.
+     * Defaults to **true**.
+     * @return static
+     */
+    public function takeKeys(iterable $keys, bool $safe = true): static
+    {
+        return $this->instantiate(Arr::takeKeys($this, $keys, $safe, $this->reindex()));
     }
 
     /**

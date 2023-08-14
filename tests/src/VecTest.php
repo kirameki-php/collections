@@ -5,6 +5,7 @@ namespace Tests\Kirameki\Collections;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
+use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
@@ -157,6 +158,22 @@ final class VecTest extends TestCase
         self::assertSame([1, 2, 3], $this->vec([1, 2])->append(a: 3)->all(), 'named args');
     }
 
+    public function test_dropIndices(): void
+    {
+        $this->assertSame([], $this->vec()->dropIndices([])->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->dropIndices([])->all(), 'remove none');
+        $this->assertSame([1], $this->vec([1, 2])->dropIndices([1])->all(), 'remove one');
+        $this->assertSame([], $this->vec([1, 2])->dropIndices([0, 1])->all(), 'remove all');
+        $this->assertSame(['a'], $this->vec(['a'])->dropIndices([1], false)->all(), 'remove missing unsafe');
+    }
+
+    public function test_dropIndices_safe_vec(): void
+    {
+        $this->expectExceptionMessage('Keys: [0, 1] did not exist.');
+        $this->expectException(MissingKeyException::class);
+        $this->vec()->dropIndices([0, 1])->all();
+    }
+
     public function test_map():void
     {
         $mapped = $this->vec([1, 2])->map(fn($v): int => $v * 2);
@@ -228,9 +245,9 @@ final class VecTest extends TestCase
 
     public function test_reindex(): void
     {
-        self::assertSame([1, 3], $this->vec([1, 2, 3])->dropKeys([1])->all(), 'with except');
+        self::assertSame([1, 3], $this->vec([1, 2, 3])->dropIndices([1])->all(), 'with except');
         self::assertSame([1, 3], $this->vec([1, 2, 3])->takeIf(fn($n) => (bool)($n % 2))->all(), 'with filter');
-        self::assertSame([2], $this->vec([1, 2, 3])->takeKeys([1])->all(), 'with only');
+        self::assertSame([2], $this->vec([1, 2, 3])->takeIndices([1])->all(), 'with only');
         self::assertSame([2, 1], $this->vec([1, 2])->reverse()->all(), 'with reverse');
         self::assertSame([1, 2], $this->vec([null, 1, 2])->without(null)->all(), 'with without');
     }
@@ -301,6 +318,22 @@ final class VecTest extends TestCase
         $this->expectExceptionMessage('$iterable2 must be a list, map given.');
         $this->expectException(TypeMismatchException::class);
         $this->vec([1])->symDiff(['a' => 1]);
+    }
+
+    public function test_takeIndices(): void
+    {
+        $this->assertSame([], $this->vec()->takeIndices([])->all(), 'empty');
+        $this->assertSame([], $this->vec([1])->takeIndices([])->all(), 'take none');
+        $this->assertSame([2], $this->vec([1, 2])->takeIndices([1])->all(), 'take one');
+        $this->assertSame([1, 2], $this->vec([1, 2])->takeIndices([0, 1])->all(), 'take all');
+        $this->assertSame([], $this->vec(['a'])->takeIndices([1], false)->all(), 'take missing unsafe');
+    }
+
+    public function test_takeIndices_safe_vec(): void
+    {
+        $this->expectExceptionMessage('Keys: [0, 1] did not exist.');
+        $this->expectException(MissingKeyException::class);
+        $this->vec()->takeIndices([0, 1])->all();
     }
 
     public function test_zip(): void

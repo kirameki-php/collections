@@ -177,6 +177,22 @@ final class MapTest extends TestCase
         self::assertTrue($map->doesNotContainKey('c'), 'non-existing key');
     }
 
+    public function test_dropKeys(): void
+    {
+        $this->assertSame([], $this->map()->dropKeys([])->all(), 'empty');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->dropKeys([])->all(), 'remove none');
+        $this->assertSame(['b' => 1], $this->map(['a' => 1, 'b' => 1])->dropKeys(['a'])->all(), 'remove one');
+        $this->assertSame([], $this->map(['a' => 1, 'b' => 1])->dropKeys(['a', 'b'])->all(), 'remove all');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1])->dropKeys(['b'], false)->all(), 'remove missing unsafe');
+    }
+
+    public function test_dropKeys_safe_map(): void
+    {
+        $this->expectExceptionMessage("Keys: ['a', 'b'] did not exist.");
+        $this->expectException(MissingKeyException::class);
+        $this->map()->dropKeys(['a', 'b'])->all();
+    }
+
     public function test_firstKey(): void
     {
         $map = $this->map(['a' => 1, 'b' => 2]);
@@ -454,6 +470,15 @@ final class MapTest extends TestCase
         $map = $this->map(['b' => 2, 'a' => 1, 'c' => -1]);
         self::assertSame(['a' => 1, 'b' => 2, 'c' => -1], $map->sortWithKey(fn($a, $b) => $a <=> $b)->all(), 'sort by key');
         self::assertSame(['c' => -1, 'b' => 2, 'a' => 1], $map->sortWithKey(fn($a, $b) => $b <=> $a)->all(), 'sort by key reverse');
+    }
+
+    public function test_takeKeys(): void
+    {
+        $this->assertSame([], $this->map()->takeKeys([])->all(), 'empty');
+        $this->assertSame([], $this->map(['a' => 1])->takeKeys([])->all(), 'take none');
+        $this->assertSame(['a' => 1], $this->map(['a' => 1, 'b' => 1])->takeKeys(['a'])->all(), 'take one');
+        $this->assertSame(['a' => 1, 'b' => 1], $this->map(['a' => 1, 'b' => 1])->takeKeys(['a', 'b'])->all(), 'take all');
+        $this->assertSame([], $this->map(['a' => 1])->takeKeys(['b'], false)->all(), 'take missing unsafe');
     }
 
     public function test_toUrlQuery(): void
