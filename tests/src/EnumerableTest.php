@@ -506,14 +506,14 @@ final class EnumerableTest extends TestCase
         $this->assertSame([1], $this->vec([1])->each(fn() => null)->all());
         $obj = new stdClass();
         $this->vec([1, 2])->each(fn($n, $k) => $obj->{"x{$k}"} = $n);
-        $this->assertSame(['x0' => 1, 'x1' => 2], (array) $obj);
+        $this->assertSame(['x0' => 1, 'x1' => 2], (array)$obj);
 
         $this->assertInstanceOf(Map::class, $this->map()->each(fn() => null));
         $this->assertSame([], $this->map()->each(fn() => null)->all());
         $this->assertSame(['a' => 1], $this->map(['a' => 1])->each(fn() => null)->all());
         $obj = new stdClass();
         $this->map(['a' => 1, 'b' => 2])->each(fn($n, $k) => $obj->{"x{$k}"} = $n);
-        $this->assertSame(['xa' => 1, 'xb' => 2], (array) $obj);
+        $this->assertSame(['xa' => 1, 'xb' => 2], (array)$obj);
     }
 
     public function test_endsWith(): void
@@ -605,14 +605,14 @@ final class EnumerableTest extends TestCase
     public function test_first_on_empty(): void
     {
         $this->expectExceptionMessage('$iterable must contain at least one element.');
-        $this->expectException(EmptyNotAllowedException::class) ;
+        $this->expectException(EmptyNotAllowedException::class);
         $this->vec()->first();
     }
 
     public function test_first_no_match(): void
     {
         $this->expectExceptionMessage('Failed to find matching condition.');
-        $this->expectException(NoMatchFoundException::class) ;
+        $this->expectException(NoMatchFoundException::class);
         $this->vec([1])->first(fn() => false);
     }
 
@@ -628,14 +628,14 @@ final class EnumerableTest extends TestCase
     public function test_firstIndex_on_empty(): void
     {
         $this->expectExceptionMessage('Failed to find matching condition.');
-        $this->expectException(NoMatchFoundException::class) ;
+        $this->expectException(NoMatchFoundException::class);
         $this->vec()->firstIndex(fn() => true);
     }
 
     public function test_firstIndex_no_match(): void
     {
         $this->expectExceptionMessage('Failed to find matching condition.');
-        $this->expectException(NoMatchFoundException::class) ;
+        $this->expectException(NoMatchFoundException::class);
         $this->vec([1, 2])->firstIndex(fn() => false);
     }
 
@@ -688,14 +688,14 @@ final class EnumerableTest extends TestCase
     {
         $this->assertSame(0, $this->vec()->fold(0, fn($sum, $i) => $sum + $i), 'empty');
         $this->assertSame(10, $this->vec([1, 2, 3])->fold(4, fn($sum, $i) => $sum + $i), 'sum');
-        $this->assertSame(['a1' => 1, 'a2' => 2], $this->vec([1, 2])->fold([], function($sum, $i) {
+        $this->assertSame(['a1' => 1, 'a2' => 2], $this->vec([1, 2])->fold([], function ($sum, $i) {
             $sum["a{$i}"] = $i;
             return $sum;
         }), 'sum');
 
         $this->assertSame(0, $this->map()->fold(0, fn($acc, $i) => $acc + $i), 'empty');
         $this->assertSame(6, $this->map(['a' => 1, 'b' => 2, 'c' => 3])->fold(0, fn($acc, $i) => $acc + $i), 'sum');
-        $this->assertSame(['c' => 3, 'xa' => 1, 'xb' => 2], $this->map(['a' => 1, 'b' => 2])->fold(['c' => 3], function($sum, $i, $k) {
+        $this->assertSame(['c' => 3, 'xa' => 1, 'xb' => 2], $this->map(['a' => 1, 'b' => 2])->fold(['c' => 3], function ($sum, $i, $k) {
             $sum["x{$k}"] = $i;
             return $sum;
         }), 'sum');
@@ -838,14 +838,14 @@ final class EnumerableTest extends TestCase
     public function test_last_on_empty(): void
     {
         $this->expectExceptionMessage('$iterable must contain at least one element.');
-        $this->expectException(EmptyNotAllowedException::class) ;
+        $this->expectException(EmptyNotAllowedException::class);
         $this->vec()->last();
     }
 
     public function test_last_no_match(): void
     {
         $this->expectExceptionMessage('Failed to find matching condition.');
-        $this->expectException(NoMatchFoundException::class) ;
+        $this->expectException(NoMatchFoundException::class);
         $this->vec([1])->last(fn() => false);
     }
 
@@ -861,14 +861,14 @@ final class EnumerableTest extends TestCase
     public function test_lastIndex_on_empty(): void
     {
         $this->expectExceptionMessage('Failed to find matching condition.');
-        $this->expectException(NoMatchFoundException::class) ;
+        $this->expectException(NoMatchFoundException::class);
         $this->vec()->lastIndex(fn() => true);
     }
 
     public function test_lastIndex_no_match(): void
     {
         $this->expectExceptionMessage('Failed to find matching condition.');
-        $this->expectException(NoMatchFoundException::class) ;
+        $this->expectException(NoMatchFoundException::class);
         $this->vec([1, 2])->lastIndex(fn() => false);
     }
 
@@ -959,7 +959,7 @@ final class EnumerableTest extends TestCase
     public function test_max_on_empty(): void
     {
         $this->expectExceptionMessage('$iterable must contain at least one element.');
-        $this->expectException(EmptyNotAllowedException::class) ;
+        $this->expectException(EmptyNotAllowedException::class);
         $this->vec()->max();
     }
 
@@ -1014,8 +1014,8 @@ final class EnumerableTest extends TestCase
         $this->assertSame([1, 0], $this->vec([1])->mergeRecursive([0])->all(), 'single');
         $this->assertSame([1, [2, 3], 4], $this->vec([1, [2, 3]])->mergeRecursive([4])->all(), 'single');
 
-        $this->assertSame(['a' => 3], $this->map(['a' => [1,2]])->mergeRecursive(['a' => 3])->all(), 'override');
-        $this->assertSame(['a' => [1,2,3]], $this->map(['a' => [1,2]])->mergeRecursive(['a' => [3]])->all(), 'append');
+        $this->assertSame(['a' => 3], $this->map(['a' => [1, 2]])->mergeRecursive(['a' => 3])->all(), 'override');
+        $this->assertSame(['a' => [1, 2, 3]], $this->map(['a' => [1, 2]])->mergeRecursive(['a' => [3]])->all(), 'append');
     }
 
     public function test_min(): void
@@ -1065,7 +1065,7 @@ final class EnumerableTest extends TestCase
     public function test_minOrNull_contains_nan(): void
     {
         $this->expectExceptionMessage('$iterable cannot contain NAN.');
-        $this->expectException(InvalidElementException::class) ;
+        $this->expectException(InvalidElementException::class);
         $this->vec([1, NAN, 1])->minOrNull();
     }
 
@@ -1138,7 +1138,7 @@ final class EnumerableTest extends TestCase
         $this->assertSame(0, $this->map(['a' => 1, 'b' => 2])->pipe(fn($i) => 0));
     }
 
-    public  function test_prioritize(): void
+    public function test_prioritize(): void
     {
         $this->assertSame([], $this->vec()->prioritize(fn($i) => $i > 1)->all(), 'empty');
         $this->assertSame([1], $this->vec([1])->prioritize(fn($i) => $i > 1)->all(), 'one');
@@ -1151,6 +1151,36 @@ final class EnumerableTest extends TestCase
         $this->assertSame(['c' => 2, 'a' => 0, 'b' => 1], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 1)->all(), 'different priority');
         $this->assertSame(['b' => 1, 'c' => 2, 'a' => 0], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 0)->all(), 'one');
         $this->assertSame(['b' => 1, 'a' => 0, 'c' => 2], $this->map(['a' => 0, 'b' => 1, 'c' => 2])->prioritize(fn($i) => $i > 0, 1)->all(), 'one');
+    }
+
+    public function test_ratio(): void
+    {
+        self::assertSame(1.0, $this->vec([1])->ratio(static fn() => true), 'one true');
+        self::assertSame(0.0, $this->vec([1])->ratio(static fn() => false), 'one false');
+        self::assertSame(1.0, $this->vec([1, 2])->ratio(static fn() => true), 'all true');
+        self::assertSame(0.0, $this->vec([1, 2])->ratio(static fn() => false), 'all false');
+        self::assertSame(0.5, $this->vec([1, 2])->ratio(static fn($i) => $i > 1), 'half');
+        self::assertSame(1 / 3, $this->vec([1, 2, 3])->ratio(static fn($i) => $i > 2), 'third');
+        self::assertSame(1 / 2, $this->map(['a' => 1, 'b' => 2])->ratio(static fn($i) => $i > 1), 'map');
+    }
+
+    public function test_ratio_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        $this->vec([])->ratio(static fn() => true);
+    }
+
+    public function test_ratioOrNull(): void
+    {
+        self::assertNull($this->vec([])->ratioOrNull(static fn() => true), 'empty');
+        self::assertSame(1.0, $this->vec([1])->ratioOrNull(static fn() => true), 'one true');
+        self::assertSame(0.0, $this->vec([1])->ratioOrNull(static fn() => false), 'one false');
+        self::assertSame(1.0, $this->vec([1, 2])->ratioOrNull(static fn() => true), 'all true');
+        self::assertSame(0.0, $this->vec([1, 2])->ratioOrNull(static fn() => false), 'all false');
+        self::assertSame(0.5, $this->vec([1, 2])->ratioOrNull(static fn($i) => $i > 1), 'half');
+        self::assertSame(1 / 3, $this->vec([1, 2, 3])->ratioOrNull(static fn($i) => $i > 2), 'third');
+        self::assertSame(1 / 2, $this->map(['a' => 1, 'b' => 2])->ratioOrNull(static fn($i) => $i > 1), 'map');
     }
 
     public function test_reduce(): void

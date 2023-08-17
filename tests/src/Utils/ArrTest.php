@@ -2225,6 +2225,36 @@ final class ArrTest extends TestCase
         Arr::push($map, 1);
     }
 
+    public function test_ratio(): void
+    {
+        self::assertSame(1.0, Arr::ratio([1], static fn() => true), 'one true');
+        self::assertSame(0.0, Arr::ratio([1], static fn() => false), 'one false');
+        self::assertSame(1.0, Arr::ratio([1, 2], static fn() => true), 'all true');
+        self::assertSame(0.0, Arr::ratio([1, 2], static fn() => false), 'all false');
+        self::assertSame(0.5, Arr::ratio([1, 2], static fn($i) => $i > 1), 'half');
+        self::assertSame(1/3, Arr::ratio([1, 2, 3], static fn($i) => $i > 2), 'third');
+        self::assertSame(1/2, Arr::ratio(['a' => 1, 'b' => 2], static fn($i) => $i > 1), 'assoc');
+    }
+
+    public function test_ratio_on_empty(): void
+    {
+        $this->expectExceptionMessage('$iterable must contain at least one element.');
+        $this->expectException(EmptyNotAllowedException::class);
+        Arr::ratio([], static fn() => true);
+    }
+
+    public function test_ratioOrNull(): void
+    {
+        self::assertNull(Arr::ratioOrNull([], static fn() => true), 'empty');
+        self::assertSame(1.0, Arr::ratioOrNull([1], static fn() => true), 'one true');
+        self::assertSame(0.0, Arr::ratioOrNull([1], static fn() => false), 'one false');
+        self::assertSame(1.0, Arr::ratioOrNull([1, 2], static fn() => true), 'all true');
+        self::assertSame(0.0, Arr::ratioOrNull([1, 2], static fn() => false), 'all false');
+        self::assertSame(0.5, Arr::ratioOrNull([1, 2], static fn($i) => $i > 1), 'half');
+        self::assertSame(1/3, Arr::ratioOrNull([1, 2, 3], static fn($i) => $i > 2), 'third');
+        self::assertSame(1/2, Arr::ratioOrNull(['a' => 1, 'b' => 2], static fn($i) => $i > 1), 'assoc');
+    }
+
     public function test_reduce(): void
     {
         // reduce with keys
