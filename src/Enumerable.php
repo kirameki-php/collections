@@ -888,6 +888,31 @@ trait Enumerable
     }
 
     /**
+     * Returns the ratio of values that satisfy the given condition.
+     * Throws `EmptyNotAllowedException` if collection is empty.
+     *
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return float
+     */
+    public function ratio(Closure $condition): float
+    {
+        return Arr::ratio($this, $condition);
+    }
+
+    /**
+     * Returns the ratio of values that satisfy the given condition.
+     *
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return float|null
+     */
+    public function ratioOrNull(Closure $condition): ?float
+    {
+        return Arr::ratioOrNull($this, $condition);
+    }
+
+    /**
      * Iteratively reduce collection to a single value by invoking
      * `$callback($reduced, $val, $key)`.
      * Throws `EmptyNotAllowedException` if the collection is empty.

@@ -3763,6 +3763,76 @@ final class Arr
     }
 
     /**
+     * Returns the ratio of values that satisfy the given condition.
+     * Throws `EmptyNotAllowedException` if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::ratio([1, 2, 3], fn($r, $v) => true); // 1.0
+     * Arr::ratio([0, 1, 1], fn($r, $v) => false); // 0.0
+     * Arr::ratio([], fn($r, $v) => true); // null
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return float
+     */
+    public static function ratio(iterable $iterable, Closure $condition): float
+    {
+        $ratio = self::ratioOrNull($iterable, $condition);
+
+        if ($ratio !== null) {
+            return $ratio;
+        }
+
+        throw new EmptyNotAllowedException('$iterable must contain at least one element.', [
+            'iterable' => $iterable,
+            'condition' => $condition,
+        ]);
+    }
+
+    /**
+     * Returns the ratio of values that satisfy the given condition.
+     * Returns **null** if `$iterable` is empty.
+     *
+     * Example:
+     * ```php
+     * Arr::ratioOrNull([1, 2, 3], fn($r, $v) => true); // 1.0
+     * Arr::ratioOrNull([0, 1, 1], fn($r, $v) => false); // 0.0
+     * Arr::ratioOrNull([], fn($r, $v) => true); // null
+     * ```
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be traversed.
+     * @param Closure(TValue, TKey): bool $condition
+     * User defined condition callback. The callback must return a boolean value.
+     * @return float|null
+     */
+    public static function ratioOrNull(iterable $iterable, Closure $condition): ?float
+    {
+        $total = 0;
+        $trues = 0;
+        foreach ($iterable as $key => $value) {
+            $total++;
+            if(self::verifyBool($condition, $key, $value)) {
+                $trues++;
+            }
+        }
+
+        if ($total === 0) {
+            return null;
+        }
+
+        return (float) ($trues / $total);
+    }
+
+    /**
      * Iteratively reduce `$iterable` to a single value by invoking
      * `$callback($reduced, $val, $key)`.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
