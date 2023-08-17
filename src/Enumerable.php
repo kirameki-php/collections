@@ -888,7 +888,7 @@ trait Enumerable
     }
 
     /**
-     * Returns the ratio of values that satisfy the given condition.
+     * Returns the ratio of values that satisfy the `$condition`.
      * Throws `EmptyNotAllowedException` if collection is empty.
      *
      * @param Closure(TValue, TKey): bool $condition
@@ -901,7 +901,8 @@ trait Enumerable
     }
 
     /**
-     * Returns the ratio of values that satisfy the given condition.
+     * Returns the ratio of values that satisfy the `$condition`.
+     * Returns **null** if the collection is empty.
      *
      * @param Closure(TValue, TKey): bool $condition
      * User defined condition callback. The callback must return a boolean value.

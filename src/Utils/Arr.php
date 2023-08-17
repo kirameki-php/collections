@@ -3763,7 +3763,7 @@ final class Arr
     }
 
     /**
-     * Returns the ratio of values that satisfy the given condition.
+     * Returns the ratio of values that satisfy the `$condition`.
      * Throws `EmptyNotAllowedException` if `$iterable` is empty.
      *
      * Example:
@@ -3796,7 +3796,7 @@ final class Arr
     }
 
     /**
-     * Returns the ratio of values that satisfy the given condition.
+     * Returns the ratio of values that satisfy the `$condition`.
      * Returns **null** if `$iterable` is empty.
      *
      * Example:
