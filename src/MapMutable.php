@@ -37,8 +37,10 @@ class MapMutable extends Map
     /**
      * Set the given key value pair to the collection.
      *
-     * @param TKey $key The key to be set.
-     * @param TValue $value The value to be set.
+     * @param TKey $key
+     * The key to be set.
+     * @param TValue $value
+     * The value to be set.
      * @return $this
      */
     public function set(int|string $key, mixed $value): static
