@@ -74,8 +74,6 @@ use const SORT_ASC;
 use const SORT_DESC;
 use const SORT_REGULAR;
 
-// TODO replaceKeys
-// TODO dropRepeats
 final class Arr
 {
     private const EMPTY = [];
@@ -528,7 +526,7 @@ final class Arr
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
      * @param iterable<int, TKey> $keys
-     * Values to be searched.
+     * Keys to be searched.
      * @return bool
      */
     public static function containsAllKeys(

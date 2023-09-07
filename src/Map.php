@@ -39,6 +39,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @inheritDoc
      * @param TKey $offset
      * @return bool
      */
@@ -49,6 +50,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @inheritDoc
      * @param TKey $offset
      * @return TValue
      */
@@ -59,6 +61,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @private
      * @param TKey $offset
      * @param TValue $value
      * @return void
@@ -69,6 +72,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @private
      * @param TKey $offset
      * @return void
      */
@@ -78,6 +82,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @inheritDoc
      * @return object
      */
     public function jsonSerialize(): object
@@ -86,7 +91,11 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     *  Returns **true** if `$iterable` contains all the provided `$keys`,
+     *  **false** otherwise.
+     *
      * @param iterable<int, TKey> $keys
+     *  Keys to be searched.
      * @return bool
      */
     public function containsAllKeys(iterable $keys): bool
@@ -95,7 +104,11 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     *  Returns **true** if `$iterable` contains any of the provided `$keys`,
+     *  **false** otherwise.
+     *
      * @param iterable<int, TKey> $keys
+     * Keys to be searched.
      * @return bool
      */
     public function containsAnyKeys(iterable $keys): bool
@@ -104,7 +117,10 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     *  Returns **true** if a given key exists within iterable, **false** otherwise.
+     *
      * @param TKey $key
+     * Key to be searched.
      * @return bool
      */
     public function containsKey(mixed $key): bool
@@ -113,16 +129,24 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Compares the keys from the collection against the keys from `$items` and returns the difference.
+     *
      * @param iterable<TKey, TValue> $items
+     * Items to be compared with the collection.
+     * @param Closure(TKey, TKey): int|null $by
+     * [Optional] Callback which can be used for comparison of items in both iterables.
      * @return static
      */
-    public function diffKeys(iterable $items): static
+    public function diffKeys(iterable $items, Closure $by = null): static
     {
-        return $this->instantiate(Arr::diffKeys($this, $items));
+        return $this->instantiate(Arr::diffKeys($this, $items, $by, $this->reindex()));
     }
 
     /**
+     * Returns **false** if a given key exists within iterable, **true** otherwise.
+     *
      * @param TKey $key
+     * Key to be searched.
      * @return bool
      */
     public function doesNotContainKey(mixed $key): bool
@@ -154,6 +178,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `MissingKeyException` if `$iterable` contains fewer keys than `$keys`.
      *
      * @param iterable<int, TKey> $keys
+     * Keys to be checked.
      * @return $this
      */
     public function ensureExactKeys(iterable $keys): static
@@ -168,6 +193,8 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Throws `EmptyNotAllowedException` if the collection is empty.
      *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TKey
      */
     public function firstKey(?Closure $condition = null): mixed
@@ -180,6 +207,8 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * Returns **null** if the collection is empty or if there were no matching conditions.
      *
      * @param Closure(TValue, TKey): bool|null $condition
+     * [Optional] User defined condition callback. The callback must return a boolean value.
+     * Defaults to **null**.
      * @return TKey|null
      */
     public function firstKeyOrNull(?Closure $condition = null): mixed

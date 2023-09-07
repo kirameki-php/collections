@@ -29,6 +29,7 @@ class VecMutable extends Vec
     }
 
     /**
+     * @inheritDoc
      * @param int|null $offset
      * @param TValue $value
      * @return void
@@ -51,6 +52,7 @@ class VecMutable extends Vec
     }
 
     /**
+     * @inheritDoc
      * @param int $offset
      * @return void
      */
@@ -61,6 +63,8 @@ class VecMutable extends Vec
     }
 
     /**
+     * Returns an immutable copy of this map.
+     *
      * @return Vec<TValue>
      */
     public function immutable(): Vec

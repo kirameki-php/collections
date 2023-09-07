@@ -25,6 +25,8 @@ class MapMutable extends Map
     }
 
     /**
+     * Returns an immutable copy of this map.
+     *
      * @return Map<TKey, TValue>
      */
     public function immutable(): Map
@@ -33,8 +35,10 @@ class MapMutable extends Map
     }
 
     /**
-     * @param TKey $key
-     * @param TValue $value
+     * Set the given key value pair to the collection.
+     *
+     * @param TKey $key The key to be set.
+     * @param TValue $value The value to be set.
      * @return $this
      */
     public function set(int|string $key, mixed $value): static
@@ -44,9 +48,14 @@ class MapMutable extends Map
     }
 
     /**
+     * Set the given key value pair to the collection only if the entry already exists.
+     *
      * @param TKey $key
+     * The key to be set.
      * @param TValue $value
-     * @param bool $result
+     * The value to be set.
+     * @param bool &$result
+     * [Optional] A bool reference to store the result of the operation.
      * @return $this
      */
     public function setIfExists(int|string $key, mixed $value, bool &$result = false): static
@@ -56,9 +65,14 @@ class MapMutable extends Map
     }
 
     /**
+     * Set the given key value pair to the collection only if the entry does exist.
+     *
      * @param TKey $key
+     * The key to be set.
      * @param TValue $value
-     * @param bool $result
+     * The value to be set.
+     * @param bool &$result
+     * [Optional] A bool reference to store the result of the operation.
      * @return $this
      */
     public function setIfNotExists(int|string $key, mixed $value, bool &$result = false): static

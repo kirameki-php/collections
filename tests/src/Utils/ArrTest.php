@@ -457,37 +457,19 @@ final class ArrTest extends TestCase
 
     public function test_diffKeys(): void
     {
-        // empty array1
-        self::assertSame([], Arr::diffKeys([], [1]));
+        self::assertSame([], Arr::diffKeys([], [1]), 'empty array1');
+        self::assertSame([1], Arr::diffKeys([1], []), 'empty array2');
+        self::assertSame([2], Arr::diffKeys([1, 2], [3]), 'same values in list');
+        self::assertSame(['a' => 1, 'b' => 2], Arr::diffKeys(['a' => 1, 'b' => 2], ['c' => 2]), 'unique keys but has same values');
+        self::assertSame(['b' => 2], Arr::diffKeys(['a' => 1, 'b' => 2], ['a' => 2, 'c' => 3]), 'retain only on left side');
+        self::assertSame([2], Arr::diffKeys([1, 2], [3], reindex: true), 'reindex: true on list');
+        self::assertSame([2], Arr::diffKeys(['a' => 1, 'b' => 2], ['a' => 3], reindex: true), 'reindex: true on assoc');
+        self::assertSame([1 => 2], Arr::diffKeys([1, 2], [3], reindex: false), 'reindex: false on list');
+        self::assertSame(['b' => 2], Arr::diffKeys(['a' => 1, 'b' => 2], ['a' => 3], reindex: false), 'reindex: false on assoc');
 
-        // empty array2
-        self::assertSame([1], Arr::diffKeys([1], []));
-
-        // same values in list
-        self::assertSame([2], Arr::diffKeys([1, 2], [3]));
-
-        // unique keys but has same values
-        self::assertSame(['a' => 1, 'b' => 2], Arr::diffKeys(['a' => 1, 'b' => 2], ['c' => 2]));
-
-        // retain only on left side
-        self::assertSame(['b' => 2], Arr::diffKeys(['a' => 1, 'b' => 2], ['a' => 2, 'c' => 3]));
-
-        // reindex: true on list
-        self::assertSame([2], Arr::diffKeys([1, 2], [3], reindex: true));
-
-        // reindex: true on assoc
-        self::assertSame([2], Arr::diffKeys(['a' => 1, 'b' => 2], ['a' => 3], reindex: true));
-
-        // reindex: false on list
-        self::assertSame([1 => 2], Arr::diffKeys([1, 2], [3], reindex: false));
-
-        // reindex: false on assoc
-        self::assertSame(['b' => 2], Arr::diffKeys(['a' => 1, 'b' => 2], ['a' => 3], reindex: false));
-
-        // with custom diff subject
         $by = static fn(string $a, string $b) => substr($a, 1) <=> substr($b, 1);
         $diff = Arr::diffKeys(['a1' => 0, 'b2' => 1], ['c1' => 2], $by);
-        self::assertSame(['b2' => 1], $diff);
+        self::assertSame(['b2' => 1], $diff, 'with custom diff subject');
     }
 
     public function test_doesNotContain(): void

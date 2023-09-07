@@ -10,6 +10,7 @@ use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\ErrorException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
@@ -165,6 +166,10 @@ final class MapTest extends TestCase
         self::assertSame(['a' => 1, 'b' => 2], $map->diffKeys(['c' => 1])->all());
         self::assertSame(['a' => 1], $map->diffKeys(['b' => 8, 'c' => 9])->all());
         self::assertSame([], $map->diffKeys(['a' => 7, 'b' => 8, 'c' => 9])->all());
+
+        $by = static fn(string $a, string $b) => substr($a, 1) <=> substr($b, 1);
+        $diff = $this->map(['a1' => 0, 'b2' => 1])->diffKeys(['c1' => 2], $by);
+        self::assertSame(['b2' => 1], $diff, 'with custom diff subject');
     }
 
     public function test_doesNotContainKey(): void

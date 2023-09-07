@@ -100,6 +100,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @inheritDoc
      * @param int $offset
      * @return bool
      */
@@ -111,6 +112,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @inheritDoc
      * @param int $offset
      * @return TValue
      */
@@ -122,6 +124,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @private
      * @param int|null $offset
      * @param TValue $value
      * @return void
@@ -132,6 +135,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @private
      * @param TValue $offset
      * @return void
      */

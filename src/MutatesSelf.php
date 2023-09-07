@@ -30,6 +30,7 @@ trait MutatesSelf
     abstract protected function &getItemsAsRef(): array;
 
     /**
+     * @inheritDoc
      * @param int|string|null $offset
      * @param TValue $value
      * @return void
@@ -55,6 +56,7 @@ trait MutatesSelf
     }
 
     /**
+     * @inheritDoc
      * @param mixed $offset
      * @return void
      */
