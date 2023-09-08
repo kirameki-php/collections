@@ -168,7 +168,7 @@ final class MapTest extends TestCase
         self::assertSame([], $map->diffKeys(['a' => 7, 'b' => 8, 'c' => 9])->all());
 
         $by = static fn(string $a, string $b) => substr($a, 1) <=> substr($b, 1);
-        $diff = $this->map(['a1' => 0, 'b2' => 1])->diffKeys(['c1' => 2], $by);
+        $diff = $this->map(['a1' => 0, 'b2' => 1])->diffKeys(['c1' => 2], $by)->all();
         self::assertSame(['b2' => 1], $diff, 'with custom diff subject');
     }
 

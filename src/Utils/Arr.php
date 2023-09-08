@@ -17,6 +17,7 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Core\Type;
+use Kirameki\Core\Value;
 use Random\Randomizer;
 use Traversable;
 use function array_diff_ukey;
@@ -1276,11 +1277,11 @@ final class Arr
     public static function ensureElementType(iterable $iterable, string $type): void
     {
         foreach ($iterable as $key => $val) {
-            if (Type::is($val, $type)) {
+            if (Value::isType($val, $type)) {
                 continue;
             }
 
-            $given = Type::of($val);
+            $given = Value::getType($val);
             throw new TypeMismatchException("Expected type: {$type}, Got: {$given} at {$key}.", [
                 'iterable' => $iterable,
                 'type' => $type,

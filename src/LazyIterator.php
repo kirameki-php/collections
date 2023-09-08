@@ -14,6 +14,7 @@ final readonly class LazyIterator implements IteratorAggregate
 {
     /**
      * @param iterable<TKey, TValue> $items
+     * Iterable elements to be used in collection.
      */
     public function __construct(
         protected iterable $items,
@@ -22,6 +23,7 @@ final readonly class LazyIterator implements IteratorAggregate
     }
 
     /**
+     * @inheritDoc
      * @return Traversable<TKey, TValue>
      */
     public function getIterator(): Traversable

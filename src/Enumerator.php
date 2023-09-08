@@ -45,10 +45,19 @@ abstract class Enumerator implements Countable, IteratorAggregate
 
     /**
      * @inheritDoc
-     *
+     * @return Traversable<TKey, TValue>
+     */
+    public function getIterator(): Traversable
+    {
+        yield from $this->items;
+    }
+
+    /**
      * NOTE: Overridden to prevent calling Arr::count() directly since it calls count()
      * internally if the given `$iterable` implements Countable, which will call itself
      * again and cause an infinite loop.
+     *
+     * @inheritDoc
      */
     public function count(?Closure $condition = null): int
     {
@@ -58,14 +67,19 @@ abstract class Enumerator implements Countable, IteratorAggregate
     }
 
     /**
-     * @return Traversable<TKey, TValue>
+     * Returns a new instance which collection is iterated lazily for
+     * some functions like `chunk`, `each`, `map`, and `filter`.
+     *
+     * @return static
      */
-    public function getIterator(): Traversable
+    public function lazy(): static
     {
-        yield from $this->items;
+        return $this->instantiate(new LazyIterator($this->items));
     }
 
     /**
+     * Returns a new instance as an eager collection.
+     *
      * @return static
      */
     public function eager(): static
@@ -94,20 +108,10 @@ abstract class Enumerator implements Countable, IteratorAggregate
     }
 
     /**
-     * Returns a new instance which collection is iterated lazily for
-     * some functions like `chunk`, `each`, `map`, and `filter`.
-     *
-     * @return static
-     */
-    public function lazy(): static
-    {
-        return $this->instantiate(new LazyIterator($this->items));
-    }
-
-    /**
      * Invokes `$callback` with `$this` as argument and returns `$this`.
      *
      * @param Closure($this): mixed $callback
+     * Callback to be invoked.
      * @return $this
      */
     public function tap(Closure $callback): static
