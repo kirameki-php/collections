@@ -362,6 +362,7 @@ trait Enumerable
      * Empty collections are considered valid.
      *
      * @param string $type
+     * Type(s) to be checked against. Ex: 'int|string|null'
      * @return $this
      */
     public function ensureElementType(string $type): static

@@ -1237,7 +1237,9 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
+     * Iterable to be checked.
      * @param iterable<int, TValue> $values
+     * Values to be checked against.
      * @return bool
      */
     public static function endsWith(
@@ -1271,7 +1273,9 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
+     * Iterable to be checked.
      * @param string $type
+     * Type(s) to be checked against. Ex: 'int|string|null'
      * @return void
      */
     public static function ensureElementType(iterable $iterable, string $type): void
@@ -1298,7 +1302,9 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
+     * Iterable to be checked.
      * @param iterable<int, TKey> $keys
+     * Keys to be checked against.
      * @return void
      */
     public static function ensureExactKeys(iterable $iterable, iterable $keys): void
