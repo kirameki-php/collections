@@ -8,9 +8,7 @@ use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Json;
-use Kirameki\Dumper\Config as DumperConfig;
 use Random\Randomizer;
-use function dump;
 use function is_iterable;
 use const PHP_INT_MAX;
 use const SORT_REGULAR;
@@ -333,19 +331,6 @@ trait Enumerable
     public function dropWhile(Closure $condition): static
     {
         return $this->instantiate(Iter::dropWhile($this, $condition, $this->reindex()));
-    }
-
-    /**
-     * Dump the contents of the collection.
-     *
-     * @param DumperConfig|null $config
-     * Config used for the dumper.
-     * @return $this
-     */
-    public function dump(?DumperConfig $config = null): static
-    {
-        dump($this, $config);
-        return $this;
     }
 
     /**
