@@ -16,7 +16,6 @@ use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
-use Kirameki\Core\Type;
 use Kirameki\Core\Value;
 use Random\Randomizer;
 use Traversable;
