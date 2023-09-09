@@ -39,6 +39,7 @@ use function array_unshift;
 use function array_values;
 use function arsort;
 use function asort;
+use function ceil;
 use function count;
 use function current;
 use function end;
@@ -6170,7 +6171,7 @@ final class Arr
                     'value' => $val,
                 ]),
             };
-        // @codeCoverageIgnoreStart
+            // @codeCoverageIgnoreStart
         } catch (JsonException $e) {
             throw new UnreachableException(
                 message: 'json_encode should never throw an error here but it did.',

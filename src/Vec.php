@@ -13,6 +13,8 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Random\Randomizer;
+use function array_map;
+use function count;
 use function gettype;
 use function is_array;
 use function is_int;

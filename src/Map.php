@@ -9,6 +9,7 @@ use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use Random\Randomizer;
+use function is_array;
 use const SORT_REGULAR;
 
 /**
