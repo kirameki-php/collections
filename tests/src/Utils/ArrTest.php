@@ -2587,7 +2587,7 @@ final class ArrTest extends TestCase
     public function test_sampleKeys(): void
     {
         $list_10 = range(0, 10);
-        $map_abcd = ['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3];
+        $mapAlpha = ['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3];
         $randomizer = new Randomizer(new Xoshiro256StarStar(100));
 
         self::assertThat(
@@ -2607,7 +2607,7 @@ final class ArrTest extends TestCase
 
         self::assertSame(
             ['c', 'd'],
-            Arr::sampleKeys($map_abcd, 2, false, $randomizer),
+            Arr::sampleKeys($mapAlpha, 2, false, $randomizer),
             'map without replacement',
         );
 
@@ -2619,7 +2619,7 @@ final class ArrTest extends TestCase
 
         self::assertSame(
             ['a', 'b', 'c', 'c'],
-            Arr::sampleKeys($map_abcd, 4, true, $randomizer),
+            Arr::sampleKeys($mapAlpha, 4, true, $randomizer),
             'map with replacement',
         );
 
