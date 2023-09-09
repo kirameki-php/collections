@@ -3,11 +3,9 @@
 namespace Tests\Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
-use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\LazyIterator;
-use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Collections\VecMutable;
 use Kirameki\Core\Exceptions\InvalidArgumentException;

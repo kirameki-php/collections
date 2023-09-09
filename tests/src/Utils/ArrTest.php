@@ -13,7 +13,6 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\InvalidOrderException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
-use Kirameki\Collections\Map;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;

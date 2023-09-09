@@ -10,7 +10,6 @@ use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\LazyIterator;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
-use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\ErrorException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;

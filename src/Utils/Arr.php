@@ -2357,7 +2357,7 @@ final class Arr
     {
         $result = [];
         foreach ($iterable as $oldKey => $val) {
-            $newKey = self::ensureKey($callback($val, $oldKey));
+            $newKey = self::ensureKeyType($callback($val, $oldKey));
 
             if (!$overwrite && array_key_exists($newKey, $result)) {
                 throw new DuplicateKeyException("Tried to overwrite existing key: {$newKey}.", [
@@ -6128,7 +6128,7 @@ final class Arr
      * @param mixed $key
      * @return array-key
      */
-    private static function ensureKey(
+    private static function ensureKeyType(
         mixed $key,
     ): int|string
     {

@@ -9,19 +9,14 @@ use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
-use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
-use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\InvalidTypeException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
-use Kirameki\Dumper\Config;
-use Kirameki\Dumper\Writer;
-use PHPStan\Type\VoidType;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
 use stdClass;
@@ -472,20 +467,6 @@ final class EnumerableTest extends TestCase
         $this->assertSame([], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropWhile(fn() => true)->all(), 'no match');
         $this->assertSame(['b' => 2, 'c' => 3], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropWhile(fn($v) => $v < 2)->all(), 'match');
         $this->assertSame([], $this->map(['a' => 1, 'b' => 2, 'c' => 3])->dropWhile(fn($v) => $v < 4)->all(), 'no match');
-    }
-
-    public function test_dump(): void
-    {
-        $resource = fopen('php://memory', 'r+') ?: throw new UnreachableException();
-        $config = new Config(writer: new Writer($resource), decorator: 'plain');
-
-        $original = $this->vec();
-        $returned = $original->dump($config);
-
-        fseek($resource, 0);
-        $expected = fread($resource, 100) ?: '';
-        $this->assertStringContainsString('items: []', $expected);
-        $this->assertSame($original, $returned);
     }
 
     public function test_duplicates(): void

@@ -2,15 +2,10 @@
 
 namespace Tests\Kirameki\Collections;
 
-use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Vec;
-use Kirameki\Collections\VecMutable;
-use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
-use Random\Engine\Xoshiro256StarStar;
-use Random\Randomizer;
 
 final class VecMutableTest extends TestCase
 {
