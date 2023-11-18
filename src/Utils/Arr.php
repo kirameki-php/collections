@@ -1782,9 +1782,7 @@ final class Arr
         iterable $iterable,
     ): array
     {
-        return ($iterable instanceof Traversable)
-            ? iterator_to_array($iterable)
-            : $iterable;
+        return iterator_to_array($iterable);
     }
 
     /**
