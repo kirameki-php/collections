@@ -5787,7 +5787,7 @@ final class Arr
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
      * Defaults to **null**.
-     * @return (TKey is int ? array<int, TValue> : array<TKey, TValue>)
+     * @return array<TKey, TValue>
      */
     public static function takeKeys(
         iterable $iterable,
