@@ -1608,7 +1608,7 @@ final class ArrTest extends TestCase
 
     public function test_mapWithKey_with_invalid_callback(): void
     {
-        $this->expectExceptionMessage(Iter::class . '::verifyIterable(): Return value must be of type Traversable|array, bool returned');
+        $this->expectExceptionMessage(Iter::class . '::verifyIterable(): Return value must be of type Traversable|array, true returned');
         $this->expectException(TypeError::class);
         Arr::mapWithKey(['a' => 1, 'b' => 2], fn($v, $k) => true);
     }
