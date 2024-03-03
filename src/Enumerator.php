@@ -14,7 +14,7 @@ use function is_countable;
  * @template TKey of array-key
  * @template TValue
  * @implements IteratorAggregate<TKey, TValue>
- * @phpstan-consistent-constructor
+ * @consistent-constructor
  */
 abstract class Enumerator implements Countable, IteratorAggregate
 {

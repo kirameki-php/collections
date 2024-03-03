@@ -17,7 +17,7 @@ use const SORT_REGULAR;
  * @template TValue
  * @extends Enumerator<TKey, TValue>
  * @implements ArrayAccess<TKey, TValue>
- * @phpstan-consistent-constructor
+ * @consistent-constructor
  */
 class Map extends Enumerator implements ArrayAccess, JsonSerializable
 {

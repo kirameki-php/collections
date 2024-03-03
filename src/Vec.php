@@ -25,7 +25,7 @@ use const PHP_INT_MAX;
  * @template TValue
  * @extends Enumerator<int, TValue>
  * @implements ArrayAccess<int, TValue>
- * @phpstan-consistent-constructor
+ * @consistent-constructor
  */
 class Vec extends Enumerator implements ArrayAccess, JsonSerializable
 {
