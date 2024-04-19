@@ -4,6 +4,7 @@ namespace Tests\Kirameki\Collections;
 
 use Closure;
 use DateTime;
+use Kirameki\Collections\Exceptions\CountMismatchException;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
@@ -12,6 +13,7 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
+use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\InvalidTypeException;
@@ -517,7 +519,7 @@ final class EnumerableTest extends TestCase
         $this->assertFalse($this->map(['a' => 1, 'b' => 2])->endsWith(['c' => 3]), 'different value');
     }
 
-    public function test_ensureValuesOfType(): void
+    public function test_ensureElementType(): void
     {
         // on empty
         foreach (['int', 'float', 'bool', 'string', 'array', 'object'] as $type) {
@@ -542,14 +544,30 @@ final class EnumerableTest extends TestCase
         $this->assertTrue(true, 'no exception');
     }
 
-    public function test_ensureValuesOfType_with_invalid_type(): void
+    public function test_ensureCountIs(): void
+    {
+        $this->assertInstanceOf(Vec::class, $this->vec()->ensureCountIs(0));
+        $this->assertInstanceOf(Vec::class, $this->vec([1])->ensureCountIs(1));
+        $this->assertInstanceOf(Vec::class, $this->vec([1, 2])->ensureCountIs(2));
+        $this->assertInstanceOf(Map::class, $this->map()->ensureCountIs(0));
+        $this->assertInstanceOf(Map::class, $this->map(['a' => 1, 'b' => 2])->ensureCountIs(2));
+    }
+
+    public function test_ensureCountIs_mismatched_size(): void
+    {
+        $this->expectExceptionMessage('Expected count: 2, Got: 3.');
+        $this->expectException(CountMismatchException::class);
+        $this->vec([1, 2, 3])->ensureCountIs(2);
+    }
+
+    public function test_ensureElementType_with_invalid_type(): void
     {
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid type: invalid');
         $this->vec([1])->ensureElementType('invalid');
     }
 
-    public function test_ensureValuesOfType_with_mismatch_value(): void
+    public function test_ensureElementType_with_mismatch_value(): void
     {
         $this->expectExceptionMessage('Expected type: string|float, Got: int at 0.');
         $this->expectException(TypeMismatchException::class);

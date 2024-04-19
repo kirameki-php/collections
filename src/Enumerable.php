@@ -359,6 +359,20 @@ trait Enumerable
     }
 
     /**
+     * Ensures that count of this collection is equal to `$size`.
+     * Throws `CountMismatchException` if count is not equal to `$size`.
+     *
+     * @param int $size
+     * Expected size of the iterable.
+     * @return $this
+     */
+    public function ensureCountIs(int $size): static
+    {
+        Arr::ensureCountIs($this, $size);
+        return $this;
+    }
+
+    /**
      * Ensures that all elements of the collection are of the given `$type`.
      * Throws `InvalidTypeException` if `$type` is not a valid type.
      * Throws `TypeMismatchException` if any element is not of the expected type.

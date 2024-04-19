@@ -4,6 +4,7 @@ namespace Kirameki\Collections\Utils;
 
 use Closure;
 use JsonException;
+use Kirameki\Collections\Exceptions\CountMismatchException;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\ExcessKeyException;
@@ -1265,6 +1266,32 @@ final class Arr
     }
 
     /**
+     * Ensures that count of `$iterable` is equal to `$size`.
+     * Throws `CountMismatchException` if count is not equal to `$size`.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     * @param iterable<TKey, TValue> $iterable
+     * Iterable to be checked.
+     * @param int $size
+     * Expected size of the iterable.
+     * @return void
+     */
+    public static function ensureCountIs(
+        iterable $iterable,
+        int $size,
+    ): void
+    {
+        $selfCount = self::count($iterable);
+        if ($selfCount !== $size) {
+            throw new CountMismatchException("Expected count: {$size}, Got: {$selfCount}.", [
+                'iterable' => $iterable,
+                'count' => $size,
+            ]);
+        }
+    }
+
+    /**
      * Ensures that all elements of `$iterable` are of the given `$type`.
      * Throws `InvalidTypeException` if `$type` is not a valid type.
      * Throws `TypeMismatchException` if any element is not of the expected type.
@@ -1278,7 +1305,10 @@ final class Arr
      * Type(s) to be checked against. Ex: 'int|string|null'
      * @return void
      */
-    public static function ensureElementType(iterable $iterable, string $type): void
+    public static function ensureElementType(
+        iterable $iterable,
+        string $type,
+    ): void
     {
         foreach ($iterable as $key => $val) {
             if (Value::isType($val, $type)) {
@@ -1307,7 +1337,10 @@ final class Arr
      * Keys to be checked against.
      * @return void
      */
-    public static function ensureExactKeys(iterable $iterable, iterable $keys): void
+    public static function ensureExactKeys(
+        iterable $iterable,
+        iterable $keys,
+    ): void
     {
         $asserting = array_keys(self::from($iterable));
         $keys = self::from($keys);

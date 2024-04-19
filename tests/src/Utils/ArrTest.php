@@ -4,6 +4,7 @@ namespace Tests\Kirameki\Collections\Utils;
 
 use Closure;
 use DateTime;
+use Kirameki\Collections\Exceptions\CountMismatchException;
 use Kirameki\Collections\Exceptions\DuplicateKeyException;
 use Kirameki\Collections\Exceptions\EmptyNotAllowedException;
 use Kirameki\Collections\Exceptions\ExcessKeyException;
@@ -754,6 +755,20 @@ final class ArrTest extends TestCase
         self::assertTrue(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['b' => 2, 'c' => 3]), 'map: exact match');
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2]), 'map: match start');
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2, 'd' => 4]), 'map: partial match');
+    }
+
+    public function test_ensureCountIs(): void
+    {
+        Arr::ensureCountIs([], 0); // empty
+        Arr::ensureCountIs([1, 2], 2); // list
+        Arr::ensureCountIs(['a' => 1, 'b' => 2], 2); // assoc;
+    }
+
+    public function test_ensureCountIs_mismatched_size(): void
+    {
+        $this->expectExceptionMessage('Expected count: 2, Got: 3.');
+        $this->expectException(CountMismatchException::class);
+        Arr::ensureCountIs([1, 2, 3], 2);
     }
 
     public function test_ensureElementType(): void
