@@ -13,24 +13,18 @@ use Kirameki\Collections\Exceptions\InvalidKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Collections\Map;
 use Kirameki\Collections\MapMutable;
-use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Vec;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\InvalidTypeException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
-use Kirameki\Core\Exceptions\UnreachableException;
+use Kirameki\Core\SortOrder;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
 use stdClass;
-use function fopen;
-use function fread;
-use function fseek;
 use function is_string;
 use function range;
 use const INF;
 use const NAN;
-use const SORT_ASC;
-use const SORT_DESC;
 use const SORT_STRING;
 
 final class EnumerableTest extends TestCase
@@ -1503,13 +1497,15 @@ final class EnumerableTest extends TestCase
 
     public function test_sort(): void
     {
-        $this->assertSame([], $this->vec()->sort(SORT_ASC)->all(), 'empty');
-        $this->assertSame([1], $this->vec([1])->sort(SORT_ASC)->all(), 'one');
-        $this->assertSame([1, 2], $this->vec([2, 1])->sort(SORT_ASC)->all(), 'sort asc');
-        $this->assertSame([2, 1], $this->vec([1, 2])->sort(SORT_DESC)->all(), 'sort desc');
-        $this->assertSame([1, 2, 3], $this->vec([2, 1, 3])->sort(SORT_ASC, fn($a) => $a)->all(), 'with by');
-        $this->assertSame(["2", "10"], $this->vec(["10", "2"])->sort(SORT_ASC)->all(), 'sort regular');
-        $this->assertSame(["10", "2"], $this->vec(["2", "10"])->sort(SORT_ASC, flag: SORT_STRING)->all(), 'with flag');
+        $asc = SortOrder::Ascending;
+        $desc = SortOrder::Descending;
+        $this->assertSame([], $this->vec()->sort($asc)->all(), 'empty');
+        $this->assertSame([1], $this->vec([1])->sort($asc)->all(), 'one');
+        $this->assertSame([1, 2], $this->vec([2, 1])->sort($asc)->all(), 'sort asc');
+        $this->assertSame([2, 1], $this->vec([1, 2])->sort($desc)->all(), 'sort desc');
+        $this->assertSame([1, 2, 3], $this->vec([2, 1, 3])->sort($asc, fn($a) => $a)->all(), 'with by');
+        $this->assertSame(["2", "10"], $this->vec(["10", "2"])->sort($asc)->all(), 'sort regular');
+        $this->assertSame(["10", "2"], $this->vec(["2", "10"])->sort($asc, flag: SORT_STRING)->all(), 'with flag');
     }
 
     public function test_sortAsc(): void

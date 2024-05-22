@@ -20,6 +20,7 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\InvalidTypeException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
+use Kirameki\Core\SortOrder;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use stdClass;
@@ -40,8 +41,6 @@ use function tmpfile;
 use function urlencode;
 use const INF;
 use const NAN;
-use const SORT_ASC;
-use const SORT_DESC;
 use const SORT_NATURAL;
 
 final class ArrTest extends TestCase
@@ -3187,22 +3186,8 @@ final class ArrTest extends TestCase
 
     public function test_sort(): void
     {
-        self::assertSame([1, 2, 3, 4], Arr::sort([4, 2, 1, 3], SORT_ASC));
-        self::assertSame([4, 3, 2, 1], Arr::sort([4, 2, 1, 3], SORT_DESC));
-    }
-
-    public function test_sort_invalid_order(): void
-    {
-        $this->expectExceptionMessage('Order must be SORT_ASC (4) or SORT_DESC (3). 0 given.');
-        $this->expectException(InvalidOrderException::class);
-        Arr::sort([4], 0);
-    }
-
-    public function test_sort_invalid_order_with_callback(): void
-    {
-        $this->expectExceptionMessage('Order must be SORT_ASC (4) or SORT_DESC (3). 0 given.');
-        $this->expectException(InvalidOrderException::class);
-        Arr::sort([4], 0, fn() => 0);
+        self::assertSame([1, 2, 3, 4], Arr::sort([4, 2, 1, 3], SortOrder::Ascending));
+        self::assertSame([4, 3, 2, 1], Arr::sort([4, 2, 1, 3], SortOrder::Descending));
     }
 
     public function test_sortAsc(): void

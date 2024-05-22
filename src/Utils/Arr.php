@@ -17,6 +17,7 @@ use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
+use Kirameki\Core\SortOrder;
 use Kirameki\Core\Value;
 use Random\Randomizer;
 use Traversable;
@@ -72,8 +73,6 @@ use function uksort;
 use const JSON_THROW_ON_ERROR;
 use const PHP_INT_MAX;
 use const PHP_QUERY_RFC3986;
-use const SORT_ASC;
-use const SORT_DESC;
 use const SORT_REGULAR;
 
 final class Arr
@@ -5008,8 +5007,8 @@ final class Arr
      *
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param int $order
-     * Order of the sort. Must be `SORT_ASC` or `SORT_DESC`.
+     * @param SortOrder $order
+     * Order of the sort.
      * @param Closure(TValue, TKey): mixed|null $by
      * [Optional] User defined comparison callback.
      * The value returned will be used to sort the array.
@@ -5029,7 +5028,7 @@ final class Arr
      */
     public static function sort(
         iterable $iterable,
-        int $order,
+        SortOrder $order,
         ?Closure $by = null,
         int $flag = SORT_REGULAR,
         ?bool $reindex = null,
@@ -5040,18 +5039,12 @@ final class Arr
 
         if ($by !== null) {
             $refs = self::map($copy, $by);
-            match ($order) {
-                SORT_ASC => asort($refs, $flag),
-                SORT_DESC => arsort($refs, $flag),
-                default => throw new InvalidOrderException("Order must be SORT_ASC (4) or SORT_DESC (3). {$order} given."),
-            };
             $sorted = self::map($refs, fn($val, $key) => $copy[$key]);
         } else {
             $sorted = $copy;
             match ($order) {
-                SORT_ASC => asort($sorted, $flag),
-                SORT_DESC => arsort($sorted, $flag),
-                default => throw new InvalidOrderException("Order must be SORT_ASC (4) or SORT_DESC (3). {$order} given."),
+                SortOrder::Ascending => asort($sorted, $flag),
+                SortOrder::Descending => arsort($sorted, $flag),
             };
         }
 
@@ -5093,7 +5086,7 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return self::sort($iterable, SORT_ASC, $by, $flag, $reindex);
+        return self::sort($iterable, SortOrder::Ascending, $by, $flag, $reindex);
     }
 
     /**
@@ -5212,7 +5205,7 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return self::sort($iterable, SORT_DESC, $by, $flag, $reindex);
+        return self::sort($iterable, SortOrder::Descending, $by, $flag, $reindex);
     }
 
     /**

@@ -8,6 +8,7 @@ use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Json;
+use Kirameki\Core\SortOrder;
 use Random\Randomizer;
 use function array_map;
 use function gettype;
@@ -1224,8 +1225,8 @@ trait Enumerable
     /**
      * Sort the collection by value in the given order.
      *
-     * @param int $order
-     * Order of the sort. Must be `SORT_ASC` or `SORT_DESC`.
+     * @param SortOrder $order
+     * Order of the sort.
      * @param Closure(TValue, TKey): mixed|null $by
      * [Optional] User defined comparison callback.
      * The value returned will be used to sort the array.
@@ -1235,7 +1236,7 @@ trait Enumerable
      * @return static
      */
     public function sort(
-        int $order,
+        SortOrder $order,
         ?Closure $by = null,
         int $flag = SORT_REGULAR,
     ): static
