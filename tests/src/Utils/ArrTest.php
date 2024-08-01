@@ -21,6 +21,7 @@ use Kirameki\Core\Exceptions\InvalidTypeException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Core\SortOrder;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 use stdClass;
@@ -756,6 +757,7 @@ final class ArrTest extends TestCase
         self::assertFalse(Arr::endsWith(['a' => 1, 'b' => 2, 'c' => 3], ['a' => 1, 'b' => 2, 'd' => 4]), 'map: partial match');
     }
 
+    #[DoesNotPerformAssertions]
     public function test_ensureCountIs(): void
     {
         Arr::ensureCountIs([], 0); // empty

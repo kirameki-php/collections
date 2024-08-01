@@ -73,6 +73,8 @@ use function uksort;
 use const JSON_THROW_ON_ERROR;
 use const PHP_INT_MAX;
 use const PHP_QUERY_RFC3986;
+use const SORT_ASC;
+use const SORT_DESC;
 use const SORT_REGULAR;
 
 final class Arr
@@ -5039,6 +5041,10 @@ final class Arr
 
         if ($by !== null) {
             $refs = self::map($copy, $by);
+            match ($order) {
+                SortOrder::Ascending => asort($refs, $flag),
+                SortOrder::Descending => arsort($refs, $flag),
+            };
             $sorted = self::map($refs, fn($val, $key) => $copy[$key]);
         } else {
             $sorted = $copy;
