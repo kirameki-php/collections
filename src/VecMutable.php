@@ -4,6 +4,7 @@ namespace Kirameki\Collections;
 
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Utils\Arr;
+use Override;
 use function count;
 
 /**
@@ -34,6 +35,7 @@ class VecMutable extends Vec
      * @param TValue $value
      * @return void
      */
+    #[Override]
     public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->ensureOffsetIsIndex($offset);
@@ -56,6 +58,7 @@ class VecMutable extends Vec
      * @param int $offset
      * @return void
      */
+    #[Override]
     public function offsetUnset(mixed $offset): void
     {
         $this->ensureOffsetIsIndex($offset);

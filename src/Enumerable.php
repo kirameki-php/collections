@@ -9,6 +9,7 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Json;
 use Kirameki\Core\SortOrder;
+use Override;
 use Random\Randomizer;
 use function array_map;
 use function gettype;
@@ -197,6 +198,7 @@ trait Enumerable
      * Defaults to **null**.
      * @return int
      */
+    #[Override]
     public function count(?Closure $condition = null): int
     {
         return Arr::count($this, $condition);

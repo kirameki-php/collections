@@ -11,7 +11,6 @@ use Kirameki\Collections\Exceptions\ExcessKeyException;
 use Kirameki\Collections\Exceptions\IndexOutOfBoundsException;
 use Kirameki\Collections\Exceptions\InvalidElementException;
 use Kirameki\Collections\Exceptions\InvalidKeyException;
-use Kirameki\Collections\Exceptions\InvalidOrderException;
 use Kirameki\Collections\Exceptions\MissingKeyException;
 use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
@@ -20,7 +19,6 @@ use Kirameki\Core\Exceptions\UnreachableException;
 use Kirameki\Core\SortOrder;
 use Kirameki\Core\Value;
 use Random\Randomizer;
-use Traversable;
 use function array_diff_ukey;
 use function array_fill;
 use function array_intersect;
@@ -73,13 +71,11 @@ use function uksort;
 use const JSON_THROW_ON_ERROR;
 use const PHP_INT_MAX;
 use const PHP_QUERY_RFC3986;
-use const SORT_ASC;
-use const SORT_DESC;
 use const SORT_REGULAR;
 
 final class Arr
 {
-    private const EMPTY = [];
+    private const array EMPTY = [];
 
     /**
      * Default randomizer that will be used on `shuffle`, `sample`, `sampleMany`.

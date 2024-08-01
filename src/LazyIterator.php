@@ -3,6 +3,7 @@
 namespace Kirameki\Collections;
 
 use IteratorAggregate;
+use Override;
 use Traversable;
 
 /**
@@ -26,6 +27,7 @@ final readonly class LazyIterator implements IteratorAggregate
      * @inheritDoc
      * @return Traversable<TKey, TValue>
      */
+    #[Override]
     public function getIterator(): Traversable
     {
         yield from $this->items;

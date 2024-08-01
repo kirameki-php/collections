@@ -6,6 +6,7 @@ use Closure;
 use Countable;
 use IteratorAggregate;
 use Kirameki\Collections\Utils\Arr;
+use Override;
 use Traversable;
 use function count;
 use function is_countable;
@@ -59,6 +60,7 @@ abstract class Enumerator implements Countable, IteratorAggregate
      *
      * @inheritDoc
      */
+    #[Override]
     public function count(?Closure $condition = null): int
     {
         return $condition === null && is_countable($this->items)

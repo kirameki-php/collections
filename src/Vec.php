@@ -12,6 +12,7 @@ use Kirameki\Collections\Utils\Range;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\NotSupportedException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
+use Override;
 use Random\Randomizer;
 use function array_map;
 use function count;
@@ -407,6 +408,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     /**
      * @inheritDoc
      */
+    #[Override]
     protected function reindex(): bool
     {
         return true;

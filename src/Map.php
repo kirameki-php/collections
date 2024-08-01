@@ -8,6 +8,7 @@ use JsonSerializable;
 use Kirameki\Collections\Utils\Arr;
 use Kirameki\Collections\Utils\Iter;
 use Kirameki\Core\Exceptions\NotSupportedException;
+use Override;
 use Random\Randomizer;
 use function is_array;
 use const SORT_REGULAR;
@@ -542,6 +543,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     /**
      * @inheritDoc
      */
+    #[Override]
     protected function reindex(): bool
     {
         return false;
