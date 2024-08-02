@@ -24,11 +24,14 @@ jobs:
         php_version: 8.3
         php_extensions: intl mbstring pcntl xdebug
         args: --coverage-clover ./coverage.xml
+    - uses: php-actions/phpstan@v3
+      with:
+        php_version: 8.3
+        memory_limit: 1G
     - uses: codecov/codecov-action@v4
       with:
-        name: codecov2
+        name: codecov3
         files: ./coverage.xml
         fail_ci_if_error: true
         verbose: true
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }}
