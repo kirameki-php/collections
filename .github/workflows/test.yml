@@ -9,7 +9,7 @@ jobs:
       with:
         php_version: 8.3
         php_extensions: intl pcntl
-    - uses: php-actions/phpunit@v3
+    - uses: php-actions/phpunit@v4
       env:
         XDEBUG_MODE: coverage
       with:
