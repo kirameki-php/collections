@@ -1601,7 +1601,7 @@ trait Enumerable
      * @param iterable<TKey, TValue> $items
      * @param int $depth
      * @param bool $validate
-     * @return array<TKey, TValue>
+     * @return array<TKey, mixed>
      */
     protected function asArrayRecursive(
         iterable $items,
