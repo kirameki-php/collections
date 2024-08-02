@@ -15,10 +15,12 @@ jobs:
       with:
         bootstrap: vendor/autoload.php
         configuration: phpunit.xml
+        php_version: 8.3
         php_extensions: intl mbstring pcntl xdebug
         args: --coverage-clover ./coverage.xml
     - uses: php-actions/phpstan@v3
       with:
+        php_version: 8.3
         memory_limit: 1G
     - uses: codecov/codecov-action@v3
       with:
