@@ -198,7 +198,6 @@ trait Enumerable
      * Defaults to **null**.
      * @return int
      */
-    #[Override]
     public function count(?Closure $condition = null): int
     {
         return Arr::count($this, $condition);
