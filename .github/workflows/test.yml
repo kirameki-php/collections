@@ -30,7 +30,6 @@ jobs:
         memory_limit: 1G
     - uses: codecov/codecov-action@v4
       with:
-        name: codecov3
         files: ./coverage.xml
         fail_ci_if_error: true
         verbose: true
