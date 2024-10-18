@@ -16,6 +16,7 @@ use Kirameki\Collections\Exceptions\NoMatchFoundException;
 use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Exceptions\UnreachableException;
+use Kirameki\Core\Func;
 use Kirameki\Core\SortOrder;
 use Kirameki\Core\Value;
 use Random\Randomizer;
@@ -740,7 +741,7 @@ final class Arr
         }
 
         $count = 0;
-        $condition ??= static fn() => true;
+        $condition ??= Func::true();
         foreach ($iterable as $key => $val) {
             if (self::verifyBool($condition, $key, $val)) {
                 ++$count;
@@ -782,7 +783,7 @@ final class Arr
     {
         $array1 = self::from($iterable1);
         $array2 = self::from($iterable2);
-        $by ??= static fn(mixed $a, mixed $b): int => $a <=> $b;
+        $by ??= Func::spaceship();
         $reindex ??= array_is_list($array1);
 
         $result = array_udiff($array1, $array2, $by);
@@ -824,7 +825,7 @@ final class Arr
     {
         $array1 = self::from($iterable1);
         $array2 = self::from($iterable2);
-        $by ??= static fn(mixed $a, mixed $b): int => $a <=> $b;
+        $by ??= Func::spaceship();
         $reindex ??= array_is_list($array1);
 
         $result = array_diff_ukey($array1, $array2, $by);
@@ -1500,7 +1501,7 @@ final class Arr
     ): ?int
     {
         if (!($condition instanceof Closure)) {
-            $condition = static fn(mixed $v): bool => $v === $condition;
+            $condition = Func::match($condition);
         }
 
         $count = 0;
@@ -1580,7 +1581,7 @@ final class Arr
         ?Closure $condition = null,
     ): int|string|null
     {
-        $condition ??= static fn() => true;
+        $condition ??= Func::true();
         foreach ($iterable as $key => $val) {
             if (self::verifyBool($condition, $key, $val)) {
                 return $key;
@@ -1618,7 +1619,7 @@ final class Arr
         ?Closure $condition = null,
     ): mixed
     {
-        $condition ??= static fn() => true;
+        $condition ??= Func::true();
 
         foreach ($iterable as $key => $val) {
             if (self::verifyBool($condition, $key, $val)) {
@@ -2622,7 +2623,7 @@ final class Arr
         $copy = self::from($iterable);
         end($copy);
 
-        $condition ??= static fn() => true;
+        $condition ??= Func::true();
 
         while (($key = key($copy)) !== null) {
             $val = current($copy);
@@ -2670,7 +2671,7 @@ final class Arr
         $array = self::from($iterable);
         end($array);
 
-        $condition ??= static fn($v, $k) => true;
+        $condition ??= Func::true();
 
         while (($key = key($array)) !== null) {
             /** @var TKey $key */
@@ -4510,8 +4511,8 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::satisfyAll([1, 2], static fn($v) => is_int($v)); // true
-     * Arr::satisfyAll([1, 2.1], static fn($v) => is_int($v)); // false
+     * Arr::satisfyAll([1, 2], is_int(...)); // true
+     * Arr::satisfyAll([1, 2.1], is_int(...)); // false
      * Arr::satisfyAll([]); // true
      * ```
      *
@@ -4543,8 +4544,8 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::satisfyAny([1, null, 2, false], static fn($v) => is_null($v)); // true
-     * Arr::satisfyAny([1, 2], static fn($v) => is_float($v)); // false
+     * Arr::satisfyAny([1, null, 2, false], is_null(...)); // true
+     * Arr::satisfyAny([1, 2], is_float(...)); // false
      * Arr::satisfyAny([]); // false
      * ```
      *
@@ -4577,7 +4578,7 @@ final class Arr
      * Example:
      * ```php
      * Arr::satisfyNone(['a', 'b'], static fn($v) => empty($v)); // true
-     * Arr::satisfyNone([1, 2.1], static fn($v) => is_int($v)); // false
+     * Arr::satisfyNone([1, 2.1], is_int(...)); // false
      * Arr::satisfyNone([]); // true
      * ```
      *
@@ -4609,8 +4610,8 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::satisfyOnce([1, 'a'], static fn($v) => is_int($v)); // true
-     * Arr::satisfyOnce([1, 2], static fn($v) => is_int($v)); // false
+     * Arr::satisfyOnce([1, 'a'], is_int(...)); // true
+     * Arr::satisfyOnce([1, 2], is_int(...)); // false
      * Arr::satisfyOnce([]); // false
      * ```
      *
@@ -5689,7 +5690,7 @@ final class Arr
             }
         }
 
-        $by ??= static fn(mixed $a, mixed $b): int => $a <=> $b;
+        $by ??= Func::spaceship();
 
         $diff1 = array_values(array_udiff($array1, $array2, $by));
         $diff2 = array_values(array_udiff($array2, $array1, $by));
@@ -6092,7 +6093,7 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return self::filter($iterable, static fn($v) => $v !== $value, $reindex);
+        return self::filter($iterable, Func::notMatch($value), $reindex);
     }
 
     /**
