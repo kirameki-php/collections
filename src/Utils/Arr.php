@@ -2117,8 +2117,8 @@ final class Arr
      *
      * Example:
      * ```php
-     * Arr::intersectKeys(['a' => 1, 'b' => 2, 'c' => 3], ['b' => 1])); // ['b' => 2]
-     * Arr::intersectKeys([1, 2, 3], [1, 3])); // [1, 2]
+     * Arr::intersectKeys(['a' => 1, 'b' => 2, 'c' => 3], ['b' => 1]); // ['b' => 2]
+     * Arr::intersectKeys([1, 2, 3], [1, 3]); // [1, 2]
      * ```
      *
      * @template TKey of array-key
@@ -2915,12 +2915,12 @@ final class Arr
     ): array
     {
         $result = null;
-        foreach ($iterables as $iter) {
+        foreach ($iterables as $iterable) {
             if ($result === null) {
-                $result = self::from($iter);
+                $result = self::from($iterable);
                 continue;
             }
-            $result = self::mergeRecursive($result, $iter, 1);
+            $result = self::mergeRecursive($result, $iterable, 1);
         }
 
         if ($result === null) {
@@ -4974,7 +4974,7 @@ final class Arr
      * Example:
      * ```php
      * Arr::windows(range(0, 4), 3) // [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
-     * Arr::windows(['a' => 1, 'b' => 2, 'c' => 3], 2) // [['a' => 1, 'b' => 2], ['b' => 2, , 'c' => 3]]
+     * Arr::windows(['a' => 1, 'b' => 2, 'c' => 3], 2) // [['a' => 1, 'b' => 2], ['b' => 2, 'c' => 3]]
      * ```
      *
      * @template TKey of array-key
@@ -5326,7 +5326,7 @@ final class Arr
      * ```php
      * Arr::splitBeforeIndex([1, 2, 3], 1) // [[1, 2], [3]]
      * Arr::splitBeforeIndex([1, 2, 3], -2) // [[1, 2], [3]]
-     * Arr::splitBeforeIndex([1, 2, 3], 10) // [1, 2, 3], []]
+     * Arr::splitBeforeIndex([1, 2, 3], 10) // [[1, 2, 3], []]
      * ```
      *
      * @template TKey of array-key
@@ -5417,7 +5417,7 @@ final class Arr
      * Example:
      * ```php
      * Arr::splitBeforeIndex([1, 2, 3], 2) // [[1, 2], [3]]
-     * Arr::splitBeforeIndex([1, 2, 3], 10) // [1, 2, 3], []]
+     * Arr::splitBeforeIndex([1, 2, 3], 10) // [[1, 2, 3], []]
      * ```
      *
      * @template TKey of array-key
@@ -6124,8 +6124,8 @@ final class Arr
         }
 
         $grouped = [];
-        foreach ($iterables as $iter) {
-            $array = self::from($iter);
+        foreach ($iterables as $iterable) {
+            $array = self::from($iterable);
             $grouped[] = $array;
             if (!array_is_list($array)) {
                 $position = count($grouped);
