@@ -1501,7 +1501,7 @@ final class Arr
     ): ?int
     {
         if (!($condition instanceof Closure)) {
-            $condition = Func::match($condition);
+            $condition = Func::same($condition);
         }
 
         $count = 0;
@@ -6093,7 +6093,7 @@ final class Arr
         ?bool $reindex = null,
     ): array
     {
-        return self::filter($iterable, Func::notMatch($value), $reindex);
+        return self::filter($iterable, Func::notSame($value), $reindex);
     }
 
     /**
