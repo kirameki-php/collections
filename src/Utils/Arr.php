@@ -729,7 +729,7 @@ final class Arr
      * @param Closure(TValue, TKey): bool|null $condition
      * [Optional] Condition to determine if given item should be counted.
      * Defaults to **null**.
-     * @return int
+     * @return int<0, max>
      */
     public static function count(
         iterable $iterable,
