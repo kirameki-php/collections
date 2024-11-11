@@ -108,7 +108,7 @@ final class Arr
      * Iterable which the value is getting appended.
      * @param T ...$values
      * Value(s) to be appended to the array.
-     * @return array<int, T>
+     * @return list<T>
      */
     public static function append(
         iterable $iterable,
@@ -338,7 +338,7 @@ final class Arr
      * Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
      * Defaults to **null**.
-     * @return array<int, array<TKey, TValue>>
+     * @return list<array<TKey, TValue>>
      */
     public static function chunk(
         iterable $iterable,
@@ -1003,7 +1003,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param array<int, array-key> $keys
+     * @param list<array-key> $keys
      * Keys to be excluded.
      * @param bool $safe
      * [Optional] If this is set to **true**, `MissingKeyException` will be
@@ -1677,7 +1677,7 @@ final class Arr
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): iterable<int, TMapValue> $callback
      * Callback to be used to map the values.
-     * @return array<int, TMapValue>
+     * @return list<TMapValue>
      */
     public static function flatMap(
         iterable $iterable,
@@ -1697,7 +1697,7 @@ final class Arr
      * @param int $depth
      * [Optional] Specify how deep a nested iterable should be flattened.
      * Depth must be >= 1. Default: 1.
-     * @return array<int, mixed>
+     * @return list<mixed>
      */
     public static function flatten(iterable $iterable, int $depth = 1): array
     {
@@ -2413,7 +2413,7 @@ final class Arr
      * @template TKey of array-key
      * @param iterable<TKey, mixed> $iterable
      * Iterable to be traversed.
-     * @return array<int, TKey>
+     * @return list<TKey>
      */
     public static function keys(
         iterable $iterable,
@@ -3229,7 +3229,7 @@ final class Arr
      * Apply padding until the array size reaches the given length. Must be >= 0.
      * @param TValue $value
      * Value inserted into each padding.
-     * @return array<int, TValue>
+     * @return list<TValue>
      */
     public static function padLeft(
         iterable $iterable,
@@ -3285,7 +3285,7 @@ final class Arr
      * Apply padding until the array size reaches the given length. Must be >= 0.
      * @param TValue $value
      * Value inserted into each padding.
-     * @return array<int, TValue>
+     * @return list<TValue>
      */
     public static function padRight(
         iterable $iterable,
@@ -3472,11 +3472,11 @@ final class Arr
      * ```
      *
      * @template T
-     * @param array<int, T> $iterable
+     * @param list<T> $iterable
      * Iterable to be prepended.
      * @param T ...$values
      * Value(s) to be prepended to the array.
-     * @return array<int, T>
+     * @return list<T>
      */
     public static function prepend(
         iterable $iterable,
@@ -3742,7 +3742,7 @@ final class Arr
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
      * Defaults to **null**.
-     * @param array<int, TKey>|null &$missed
+     * @param list<TKey>|null &$missed
      * [Optional][Reference] `$keys` that did not exist in `$array`.
      * @return array<TKey, TValue>
      */
@@ -4049,7 +4049,7 @@ final class Arr
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
      * Defaults to **null**.
-     * @return array<int, TKey>
+     * @return list<TKey>
      */
     public static function remove(
         array &$array,
@@ -4096,7 +4096,7 @@ final class Arr
      * Iterable to be traversed.
      * @param int<0, max> $times
      * Number of times `$iterable` will be repeated.
-     * @return array<int, TValue>
+     * @return list<TValue>
      */
     public static function repeat(
         iterable $iterable,
@@ -4360,7 +4360,7 @@ final class Arr
      * [Optional] Randomizer to be used.
      * Default randomizer (Secure) will be used if **null**.
      * Defaults to **null**.
-     * @return array<int, TKey>
+     * @return list<TKey>
      */
     public static function sampleKeys(
         iterable $iterable,
@@ -4432,7 +4432,7 @@ final class Arr
      * [Optional] Randomizer to be used.
      * Default randomizer (Secure) will be used if **null**.
      * Defaults to **null**.
-     * @return array<int, TValue>
+     * @return list<TValue>
      */
     public static function sampleMany(
         iterable $iterable,
@@ -5002,7 +5002,7 @@ final class Arr
      * @param bool|null $reindex
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
-     * @return array<int, array<TKey, TValue>>
+     * @return list<array<TKey, TValue>>
      */
     public static function slide(
         iterable $iterable,
@@ -5685,7 +5685,7 @@ final class Arr
      * Return 0 if first argument is equal to the 2nd.
      * Return -1 if first argument is less than the 2nd.
      * Defaults to **null**.
-     * @return array<int, TValue>
+     * @return list<TValue>
      */
     public static function symDiff(
         iterable $iterable1,
