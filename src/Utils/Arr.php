@@ -6038,13 +6038,17 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @return array<int, TValue>
+     * @return list<TValue>
      */
     public static function values(
         iterable $iterable,
     ): array
     {
-        return iterator_to_array(Iter::values($iterable));
+        $values = [];
+        foreach ($iterable as $val) {
+            $values[] = $val;
+        }
+        return $values;
     }
 
     /**
