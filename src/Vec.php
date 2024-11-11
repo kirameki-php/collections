@@ -60,7 +60,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
                 ++$counter;
             }
         })($times);
-        return new static(new LazyIterator($generator));
+        return new self(new LazyIterator($generator));
     }
 
     /**
@@ -81,7 +81,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
         bool $includeEnd = true,
     ): self
     {
-        return new static(new Range($start, $end, $includeEnd));
+        return new self(new Range($start, $end, $includeEnd));
     }
 
     /**
