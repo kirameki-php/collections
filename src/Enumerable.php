@@ -9,7 +9,6 @@ use Kirameki\Core\Exceptions\InvalidArgumentException;
 use Kirameki\Core\Exceptions\TypeMismatchException;
 use Kirameki\Core\Json;
 use Kirameki\Core\SortOrder;
-use Override;
 use Random\Randomizer;
 use function array_map;
 use function gettype;
@@ -1528,12 +1527,12 @@ trait Enumerable
     ): mixed
     {
         if ($bool instanceof Closure) {
-            $bool = $bool($this);
-            if (!is_bool($bool)) {
-                $type = gettype($bool);
+            $_bool = $bool($this);
+            if (!is_bool($_bool)) {
+                $type = gettype($_bool);
                 throw new TypeMismatchException("Expected \$bool (Closure) to return bool, {$type} given.", [
                     'this' => $this,
-                    'bool' => $bool,
+                    'bool' => $_bool,
                     'callback' => $callback,
                     'fallback' => $fallback,
                 ]);

@@ -360,7 +360,8 @@ final class Arr
      * $array = ['a' => 1, 'b' => 2]; Arr::clear($array); // []
      * ```
      *
-     * @param array<array-key, mixed> &$array
+     * @param array<array-key, mixed> $array
+     * @param-out array<array-key, mixed> $array
      * Reference of array to be cleared.
      * @return void
      */
@@ -3380,7 +3381,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be popped.
      * @return TValue
      */
@@ -3412,7 +3414,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be popped.
      * @param int $amount
      * Amount of elements to pop. Must be a positive integer.
@@ -3445,7 +3448,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be popped.
      * @return TValue|null
      */
@@ -3601,7 +3605,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be pulled.
      * @param TKey $key
      * Key to be pulled from the array.
@@ -3644,7 +3649,8 @@ final class Arr
      * @template TKey of array-key
      * @template TValue
      * @template TDefault
-     * @param array<TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be pulled.
      * @param TKey $key
      * Key to be pulled from the array.
@@ -3693,7 +3699,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be pulled.
      * @param TKey $key
      * Key to be pulled from the array.
@@ -3726,7 +3733,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be pulled.
      * @param iterable<TKey> $keys
      * Keys or indexes to be pulled from the array.
@@ -3777,7 +3785,8 @@ final class Arr
      * ```
      *
      * @template T
-     * @param array<T> &$array
+     * @param array<T> $array
+     * @param-out array<T> $array
      * Array reference which the value is getting push to.
      * @param T ...$values
      * Value(s) to be pushed on to the array.
@@ -3993,7 +4002,8 @@ final class Arr
      * Arr::reindex($array); // $array will be [1]
      * ```
      *
-     * @param array<array-key, mixed> &$array
+     * @param array<array-key, mixed> $array
+     * @param-out array<array-key, mixed> $array
      * [Reference] Array to be re-indexed.
      * @return void
      */
@@ -4028,7 +4038,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to have the value removed.
      * @param TValue $value
      * Value to be removed.
@@ -4652,7 +4663,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be set.
      * @param TKey $key
      * Key to set to in the array.
@@ -4681,7 +4693,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be set.
      * @param TKey $key
      * Key to set to in the array.
@@ -4752,7 +4765,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be shifted.
      * @return TValue
      * The shifted value.
@@ -4784,7 +4798,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be shifted.
      * @param int $amount
      * Amount of elements to be shifted.
@@ -4821,7 +4836,8 @@ final class Arr
      *
      * @template TKey of array-key
      * @template TValue
-     * @param array<TKey, TValue> &$array
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be shifted.
      * @return TValue|null
      * The shifted value.
