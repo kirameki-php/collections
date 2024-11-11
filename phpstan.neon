@@ -3,6 +3,7 @@ includes:
 
 parameters:
     level: 8
+    treatPhpDocTypesAsCertain: false
     paths:
     - src/
     excludePaths:
@@ -11,8 +12,4 @@ parameters:
     -
         message: '#^Method Kirameki\\Collections\\Utils\\Arr\:\:shuffle\(\) should return array\<TKey of \(int\|string\), TValue\> but returns array\<int\|string, TValue\>\.$#'
         count: 1
-        path: src/Utils/Arr.php
-    -
-        message: '#^Result of \&\& is always false\.$#'
-        count: 2
         path: src/Utils/Arr.php
