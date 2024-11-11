@@ -2735,7 +2735,7 @@ final class Arr
      * Iterable to be traversed.
      * @param Closure(TValue, TKey): TMapValue $callback
      * Callback to be used to map the values.
-     * @return array<TKey, TMapValue>
+     * @return ($iterable is list<TValue> ? list<TMapValue> : array<TKey, TMapValue>)
      */
     public static function map(
         iterable $iterable,
