@@ -294,14 +294,14 @@ final class Arr
      * @template TValue of float|int
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @return TValue|null
+     * @return float|null
      */
     public static function averageOrNull(
         iterable $iterable,
-    ): float|int|null
+    ): float|null
     {
         $size = 0;
-        $sum = 0;
+        $sum = 0.0;
         foreach ($iterable as $val) {
             $sum += $val;
             ++$size;
@@ -311,7 +311,7 @@ final class Arr
             return null;
         }
 
-        if (is_float($sum) && is_nan($sum)) {
+        if (is_nan($sum)) {
             throw new InvalidElementException('$iterable cannot contain NAN.', [
                 'iterable' => $iterable,
             ]);
