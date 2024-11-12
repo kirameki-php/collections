@@ -190,8 +190,8 @@ trait MutatesSelf
      *
      * @param iterable<TKey> $keys
      * Keys or indexes to be pulled.
-     * @param array<int, TKey>|null $missed
-     * @param-out array<int, TKey>|null $missed
+     * @param list<TKey>|null $missed
+     * @param-out list<TKey>|null $missed
      * [Optional][Reference] `$keys` that did not exist.
      * @return static
      */

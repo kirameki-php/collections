@@ -260,11 +260,11 @@ final class Arr
      * @template TValue of float|int
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @return TValue
+     * @return float
      */
     public static function average(
         iterable $iterable,
-    ): float|int
+    ): float
     {
         $average = self::averageOrNull($iterable);
 
@@ -348,7 +348,7 @@ final class Arr
     {
         $array = self::from($iterable);
         $reindex ??= array_is_list($array);
-        return iterator_to_array(Iter::chunk($array, $size, $reindex));
+        return Arr::values(Iter::chunk($array, $size, $reindex));
     }
 
     /**
@@ -1003,7 +1003,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> $iterable
      * Iterable to be traversed.
-     * @param list<array-key> $keys
+     * @param iterable<int, array-key> $keys
      * Keys to be excluded.
      * @param bool $safe
      * [Optional] If this is set to **true**, `MissingKeyException` will be
@@ -3472,7 +3472,7 @@ final class Arr
      * ```
      *
      * @template T
-     * @param list<T> $iterable
+     * @param iterable<array-key, T> $iterable
      * Iterable to be prepended.
      * @param T ...$values
      * Value(s) to be prepended to the array.
