@@ -84,6 +84,15 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * @inheritDoc
+     */
+    #[Override]
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
+    }
+
+    /**
      * @return array<int, TValue>
      */
     protected function &getItemsAsRef(): array
@@ -192,14 +201,6 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     public function indices(): Vec
     {
         return $this->newVec(Iter::keys($this));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function instantiate(mixed $iterable): static
-    {
-        return new static($iterable);
     }
 
     /**

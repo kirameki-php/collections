@@ -31,6 +31,15 @@ class VecMutable extends Vec
 
     /**
      * @inheritDoc
+     */
+    #[Override]
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
+    }
+
+    /**
+     * @inheritDoc
      * @param int|null $offset
      * @param TValue $value
      * @return void
@@ -73,13 +82,5 @@ class VecMutable extends Vec
     public function immutable(): Vec
     {
         return new Vec($this->items);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function instantiate(mixed $iterable): static
-    {
-        return new static($iterable);
     }
 }

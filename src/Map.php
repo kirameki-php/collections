@@ -22,6 +22,15 @@ use const SORT_REGULAR;
 class Map extends Enumerator implements ArrayAccess, JsonSerializable
 {
     /**
+     * @inheritDoc
+     */
+    #[Override]
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
+    }
+
+    /**
      * @return array<TKey, TValue>
      */
     protected function &getItemsAsRef(): array
@@ -292,14 +301,6 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function keys(): Vec
     {
         return $this->newVec(Iter::keys($this));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function instantiate(mixed $iterable): static
-    {
-        return new static($iterable);
     }
 
     /**

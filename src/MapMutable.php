@@ -3,6 +3,7 @@
 namespace Kirameki\Collections;
 
 use Kirameki\Collections\Utils\Arr;
+use Override;
 
 /**
  * @template TKey of array-key
@@ -25,6 +26,15 @@ class MapMutable extends Map
     }
 
     /**
+     * @inheritDoc
+     */
+    #[Override]
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
+    }
+
+    /**
      * Returns an immutable copy of this map.
      *
      * @return Map<TKey, TValue>
@@ -32,14 +42,6 @@ class MapMutable extends Map
     public function immutable(): Map
     {
         return new Map($this->items);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function instantiate(mixed $iterable): static
-    {
-        return new static($iterable);
     }
 
     /**
