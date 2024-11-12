@@ -74,4 +74,12 @@ class VecMutable extends Vec
     {
         return new Vec($this->items);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
+    }
 }

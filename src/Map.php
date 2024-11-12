@@ -18,7 +18,6 @@ use const SORT_REGULAR;
  * @template TValue
  * @extends Enumerator<TKey, TValue>
  * @implements ArrayAccess<TKey, TValue>
- * @consistent-constructor
  */
 class Map extends Enumerator implements ArrayAccess, JsonSerializable
 {
@@ -293,6 +292,14 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
     public function keys(): Vec
     {
         return $this->newVec(Iter::keys($this));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
     }
 
     /**

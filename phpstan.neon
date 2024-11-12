@@ -10,6 +10,8 @@ parameters:
     - tests/*
     ignoreErrors:
     -
+        message: '#^Unsafe usage of new static\(\)\.$#'
+    -
         message: '#^Method Kirameki\\Collections\\Utils\\Arr\:\:shuffle\(\) should return array\<TKey of \(int\|string\), TValue\> but returns array\<int\|string, TValue\>\.$#'
         count: 1
         path: src/Utils/Arr.php

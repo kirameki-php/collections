@@ -35,6 +35,14 @@ class MapMutable extends Map
     }
 
     /**
+     * @inheritDoc
+     */
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
+    }
+
+    /**
      * Set the given key value pair to the collection.
      *
      * @param TKey $key

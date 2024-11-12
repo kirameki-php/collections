@@ -528,14 +528,11 @@ trait Enumerable
     /**
      * Create a new instance of the collection with the given `$items`.
      *
-     * @param iterable<TKey, TValue> $items
+     * @param iterable<TKey, TValue> $iterable
      * Iterable elements to be used in collection
      * @return static
      */
-    public function instantiate(mixed $items): static
-    {
-        return new static($items);
-    }
+    abstract public function instantiate(mixed $iterable): static;
 
     /**
      * Returns the intersection of collection's values.

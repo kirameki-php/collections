@@ -26,7 +26,6 @@ use const PHP_INT_MAX;
  * @template TValue
  * @extends Enumerator<int, TValue>
  * @implements ArrayAccess<int, TValue>
- * @consistent-constructor
  */
 class Vec extends Enumerator implements ArrayAccess, JsonSerializable
 {
@@ -193,6 +192,14 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
     public function indices(): Vec
     {
         return $this->newVec(Iter::keys($this));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function instantiate(mixed $iterable): static
+    {
+        return new static($iterable);
     }
 
     /**
