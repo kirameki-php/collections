@@ -1684,7 +1684,7 @@ final class Arr
         Closure $callback,
     ): array
     {
-        return iterator_to_array(Iter::flatMap($iterable, $callback));
+        return Arr::values(Iter::flatMap($iterable, $callback));
     }
 
     /**
@@ -2419,7 +2419,7 @@ final class Arr
         iterable $iterable,
     ): array
     {
-        return iterator_to_array(Iter::keys($iterable));
+        return Arr::values(Iter::keys($iterable));
     }
 
     /**
@@ -3742,7 +3742,8 @@ final class Arr
      * [Optional] Result will be re-indexed if **true**.
      * If **null**, the result will be re-indexed only if it's a list.
      * Defaults to **null**.
-     * @param list<TKey>|null &$missed
+     * @param list<TKey>|null $missed
+     * @param-out list<TKey>|null $missed
      * [Optional][Reference] `$keys` that did not exist in `$array`.
      * @return array<TKey, TValue>
      */
@@ -3762,6 +3763,7 @@ final class Arr
                 unset($array[$key]);
                 $pulled[$key] = $value;
             } else {
+                $missed ??= [];
                 $missed[] = $key;
             }
         }
