@@ -4,6 +4,8 @@ namespace Kirameki\Collections;
 
 use Kirameki\Collections\Utils\Arr;
 use Override;
+use function assert;
+use function is_array;
 
 /**
  * @template TKey of array-key
@@ -55,6 +57,7 @@ class MapMutable extends Map
      */
     public function set(int|string $key, mixed $value): static
     {
+        assert(is_array($this->items));
         Arr::set($this->items, $key, $value);
         return $this;
     }
@@ -72,6 +75,7 @@ class MapMutable extends Map
      */
     public function setIfExists(int|string $key, mixed $value, bool &$result = false): static
     {
+        assert(is_array($this->items));
         $result = Arr::setIfExists($this->items, $key, $value);
         return $this;
     }
@@ -89,6 +93,7 @@ class MapMutable extends Map
      */
     public function setIfNotExists(int|string $key, mixed $value, bool &$result = false): static
     {
+        assert(is_array($this->items));
         $result = Arr::setIfNotExists($this->items, $key, $value);
         return $this;
     }
