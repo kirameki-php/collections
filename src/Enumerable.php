@@ -1524,12 +1524,12 @@ trait Enumerable
     ): mixed
     {
         if ($bool instanceof Closure) {
-            $_bool = $bool($this);
-            if (!is_bool($_bool)) {
-                $type = gettype($_bool);
+            $bool = $bool($this);
+            if (!is_bool($bool)) {
+                $type = gettype($bool);
                 throw new TypeMismatchException("Expected \$bool (Closure) to return bool, {$type} given.", [
                     'this' => $this,
-                    'bool' => $_bool,
+                    'bool' => $bool,
                     'callback' => $callback,
                     'fallback' => $fallback,
                 ]);

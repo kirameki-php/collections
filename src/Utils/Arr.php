@@ -2909,7 +2909,7 @@ final class Arr
      * @template TValue
      * @param iterable<TKey, TValue> ...$iterables
      * Iterable(s) to be merged.
-     * @return array<TKey, TValue>
+     * @return ($iterables is list<TValue> ? list<TValue> : array<TKey, TValue>)
      */
     public static function merge(
         iterable ...$iterables,
@@ -3588,6 +3588,7 @@ final class Arr
             ]);
         }
 
+        /** @var TValue */
         return $product;
     }
 
@@ -4398,15 +4399,18 @@ final class Arr
             // Randomizer::pickArrayKeys() returns keys in order, so we
             // shuffle the result to randomize the order as well.
             $keys = $randomizer->pickArrayKeys($array, $amount);
-            return $randomizer->shuffleArray($keys);
+            $result = $randomizer->shuffleArray($keys);
+            return array_values($result);
         }
 
         $keys = array_keys($array);
         $max = count($keys) - 1;
-        return array_map(
-            static fn() => $keys[$randomizer->getInt(0, $max)],
-            range(0, $amount - 1),
-        );
+
+        $result = [];
+        for ($i = 0; $i < $amount; $i++) {
+            $result[] = $keys[$randomizer->getInt(0, $max)];
+        }
+        return $result;
     }
 
     /**
@@ -5016,7 +5020,7 @@ final class Arr
             $iterable = self::from($iterable);
             $reindex = array_is_list($iterable);
         }
-        return iterator_to_array(Iter::slide($iterable, $size, $reindex));
+        return Arr::values(Iter::slide($iterable, $size, $reindex));
     }
 
     /**
@@ -5323,17 +5327,24 @@ final class Arr
     {
         $array = self::from($iterable);
         $reindex ??= array_is_list($array);
+
+        if (count($array) === 0) {
+            return [];
+        }
+
         $groups = [];
-        $i = 0;
+        $current = [];
         foreach ($array as $key => $val) {
             $reindex
-                ? $groups[$i][] = $val
-                : $groups[$i][$key] = $val;
+                ? $current[] = $val
+                : $current[$key] = $val;
             if (self::verifyBool($condition, $key, $val)) {
-                ++$i;
-                $groups[$i] = [];
+                $groups[] = $current;
+                $current = [];
             }
         }
+        $groups[] = $current;
+
         return $groups;
     }
 
@@ -5410,22 +5421,23 @@ final class Arr
     {
         $array = self::from($iterable);
         $reindex ??= array_is_list($array);
+
+        if (count($array) === 0) {
+            return [];
+        }
+
         $groups = [];
-        $i = 0;
-        $init = true;
+        $current = [];
         foreach ($array as $key => $val) {
-            if ($init) {
-                $groups[$i] = [];
-                $init = false;
-            }
             if (self::verifyBool($condition, $key, $val)) {
-                ++$i;
-                $groups[$i] = [];
+                $groups[] = $current;
+                $current = [];
             }
             $reindex
-                ? $groups[$i][] = $val
-                : $groups[$i][$key] = $val;
+                ? $current[] = $val
+                : $current[$key] = $val;
         }
+        $groups[] = $current;
         return $groups;
     }
 
@@ -5513,17 +5525,21 @@ final class Arr
         $chunk = (int) ceil($total / $parts);
 
         $split = [];
-        $i = 0;
+        $current = [];
         $count = 0;
         foreach ($array as $key => $val) {
             $reindex
-                ? $split[$i][] = $val
-                : $split[$i][$key] = $val;
+                ? $current[] = $val
+                : $current[$key] = $val;
             ++$count;
             if ($count === $chunk) {
                 $count = 0;
-                ++$i;
+                $split[] = $current;
+                $current = [];
             }
+        }
+        if (count($current) > 0) {
+            $split[] = $current;
         }
         return $split;
     }
@@ -5598,6 +5614,7 @@ final class Arr
             ]);
         }
 
+        /** @var TValue */
         return $total;
     }
 

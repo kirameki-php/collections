@@ -122,11 +122,11 @@ final class ArrTest extends TestCase
 
     public function test_average(): void
     {
-        self::assertSame(1, Arr::average([1]), 'only one element');
+        self::assertSame(1.0, Arr::average([1]), 'only one element');
         self::assertSame(1.5, Arr::average([1, 2]), 'using float');
-        self::assertSame(2, Arr::average([1, 2, 3]), 'using int');
-        self::assertSame(0, Arr::average([0, 0, 0]), 'all zeros');
-        self::assertSame(2, Arr::average(['a' => 1, 'b' => 2, 'c' => 3]), 'from assoc');
+        self::assertSame(2.0, Arr::average([1, 2, 3]), 'using int');
+        self::assertSame(0.0, Arr::average([0, 0, 0]), 'all zeros');
+        self::assertSame(2.0, Arr::average(['a' => 1, 'b' => 2, 'c' => 3]), 'from assoc');
     }
 
     public function test_average_not_empty(): void
@@ -145,11 +145,11 @@ final class ArrTest extends TestCase
     public function test_averageOrNull(): void
     {
         self::assertSame(null, Arr::averageOrNull([]), 'empty');
-        self::assertSame(1, Arr::averageOrNull([1]), 'only one element');
+        self::assertSame(1.0, Arr::averageOrNull([1]), 'only one element');
         self::assertSame(1.5, Arr::averageOrNull([1, 2]), 'using float');
-        self::assertSame(2, Arr::averageOrNull([1, 2, 3]), 'using int');
-        self::assertSame(0, Arr::averageOrNull([0, 0, 0]), 'all zeros');
-        self::assertSame(2, Arr::averageOrNull(['a' => 1, 'b' => 2, 'c' => 3]), 'from assoc');
+        self::assertSame(2.0, Arr::averageOrNull([1, 2, 3]), 'using int');
+        self::assertSame(0.0, Arr::averageOrNull([0, 0, 0]), 'all zeros');
+        self::assertSame(2.0, Arr::averageOrNull(['a' => 1, 'b' => 2, 'c' => 3]), 'from assoc');
     }
 
     public function test_averageOrNull_with_NAN(): void

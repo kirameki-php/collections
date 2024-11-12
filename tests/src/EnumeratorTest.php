@@ -16,6 +16,14 @@ final class EnumeratorTest extends TestCase
     {
         return new class($items) extends Enumerator {
             protected function reindex(): bool { return false; }
+
+            /**
+             * @inheritDoc
+             */
+            public function instantiate(mixed $iterable): static
+            {
+                return new static($iterable);
+            }
         };
     }
 
