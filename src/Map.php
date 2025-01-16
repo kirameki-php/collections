@@ -147,7 +147,7 @@ class Map extends Enumerator implements ArrayAccess, JsonSerializable
      * [Optional] Callback which can be used for comparison of items in both iterables.
      * @return static
      */
-    public function diffKeys(iterable $items, Closure $by = null): static
+    public function diffKeys(iterable $items, ?Closure $by = null): static
     {
         return $this->instantiate(Arr::diffKeys($this, $items, $by, $this->reindex()));
     }

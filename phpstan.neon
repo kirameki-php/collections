@@ -12,11 +12,3 @@ parameters:
         message: '#^Generator expects key type TKey of \(int\|string\), int given\.$#'
         count: 5
         path: src/Utils/Iter.php
-    -
-        message: '#^Parameter \&\$array @param-out type of method #'
-        count: 5
-        path: src/Utils/Arr.php
-    -
-        message: '#^Method Kirameki\\Collections\\Utils\\Arr\:\:shuffle\(\) should return array\<TKey of \(int\|string\), TValue\> but returns array\<int\|string, TValue\>\.$#'
-        count: 1
-        path: src/Utils/Arr.php

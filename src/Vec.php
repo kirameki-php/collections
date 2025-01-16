@@ -351,7 +351,7 @@ class Vec extends Enumerator implements ArrayAccess, JsonSerializable
      * Defaults to **null**.
      * @return static
      */
-    public function symDiff(iterable $iterable, Closure $by = null): static
+    public function symDiff(iterable $iterable, ?Closure $by = null): static
     {
         return $this->instantiate(Arr::symDiff($this, $iterable, $by));
     }

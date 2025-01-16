@@ -65,7 +65,6 @@ use function krsort;
 use function ksort;
 use function max;
 use function prev;
-use function range;
 use function spl_object_id;
 use function uasort;
 use function uksort;
@@ -778,7 +777,7 @@ final class Arr
     public static function diff(
         iterable $iterable1,
         iterable $iterable2,
-        Closure $by = null,
+        ?Closure $by = null,
         ?bool $reindex = null,
     ): array
     {
@@ -820,7 +819,7 @@ final class Arr
     public static function diffKeys(
         iterable $iterable1,
         iterable $iterable2,
-        Closure $by = null,
+        ?Closure $by = null,
         ?bool $reindex = null,
     ): array
     {
@@ -4005,8 +4004,10 @@ final class Arr
      * Arr::reindex($array); // $array will be [1]
      * ```
      *
-     * @param array<array-key, mixed> $array
-     * @param-out array<array-key, mixed> $array
+     * @template TKey of array-key
+     * @template TValue
+     * @param array<TKey, TValue> $array
+     * @param-out array<TKey, TValue> $array
      * [Reference] Array to be re-indexed.
      * @return void
      */
@@ -5709,7 +5710,7 @@ final class Arr
     public static function symDiff(
         iterable $iterable1,
         iterable $iterable2,
-        Closure $by = null,
+        ?Closure $by = null,
     ): array
     {
         $array1 = self::from($iterable1);
