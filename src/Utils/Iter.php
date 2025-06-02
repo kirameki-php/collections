@@ -692,7 +692,7 @@ final class Iter
     }
 
     /**
-     * Invoke the condition closure and make sure that it returns a iterable value.
+     * Invoke the condition closure and make sure that it returns an iterable value.
      *
      * @template TKey of array-key
      * @template TValue
